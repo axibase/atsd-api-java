@@ -39,7 +39,7 @@ public class TestUtil {
     public static final String NNN_TYPE = "java-nnn-type";
     public static final String TTT_ENTITY = "ttt-entity";
     public static final String SSS_ENTITY = "sss-entity";
-    public static final String NNN_ENTITY = "nnn-entity";
+    public static final String NNN_ENTITY = "nnn-entity3";
     public static final String TTT_METRIC = "ttt-metric";
     public static final String SSS_METRIC = "sss-metric";
     public static final String SSS_TAG = "sss-tag";

@@ -17,14 +17,16 @@ package com.axibase.tsd.client;
 import com.axibase.tsd.RerunRule;
 import com.axibase.tsd.TestUtil;
 import com.axibase.tsd.model.data.Property;
+import com.axibase.tsd.model.data.command.AddSeriesCommand;
+import com.axibase.tsd.model.data.series.Series;
 import com.axibase.tsd.model.meta.*;
 import org.junit.*;
 
 import java.util.*;
 
 import static com.axibase.tsd.TestUtil.*;
-import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.*;
+import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
 
 /**
  * @author Nikolay Malevanny.
@@ -57,160 +59,232 @@ public class MetaDataServiceTest {
 
     @Test
     public void testRetrieveMetric() throws Exception {
-        Metric metric = metaDataService.retrieveMetric(TTT_METRIC);
+        final String metricName = "test-retrive-metric";
+        if(metaDataService.retrieveMetric(metricName) == null) {
+            assertTrue(metaDataService.createOrReplaceMetric(createNewTestMetric(metricName)));
+        }
+
+        Metric metric = metaDataService.retrieveMetric(metricName);
         assertNotNull(metric);
-        assertEquals(TTT_METRIC, metric.getName());
+        assertEquals(metric.getName(), metricName);
     }
 
     @Test
     public void testCreateOrReplaceMetric() throws Exception {
-        Metric metric = metaDataService.retrieveMetric(TTT_METRIC);
-        metric.setDataType(DataType.LONG);
-        metaDataService.createOrReplaceMetric(metric);
+        final String metricName = "test-create-or-replace-metric";
+        if(metaDataService.retrieveMetric(metricName) != null) {
+            assertTrue(metaDataService.createOrReplaceMetric(createNewTestMetric(metricName)));
+        }
 
-        Metric updatedMetric = metaDataService.retrieveMetric(TTT_METRIC);
-        assertNotNull(updatedMetric);
-        assertEquals(TTT_METRIC, updatedMetric.getName());
-        assertEquals(DataType.LONG, updatedMetric.getDataType());
+        Metric metric = createNewTestMetric(metricName);
+        {
+            metric.setDataType(DataType.DOUBLE);
+            Assert.assertTrue(metaDataService.createOrReplaceMetric(metric));
+            metric = metaDataService.retrieveMetric(metricName);
+            assertEquals(metric.getName(),metricName);
+            assertEquals(metric.getDataType(), DataType.DOUBLE);
+        }
 
-        updatedMetric.setDataType(DataType.DOUBLE);
-        metaDataService.createOrReplaceMetric(updatedMetric);
-
-        metric = metaDataService.retrieveMetric(TTT_METRIC);
-        assertNotNull(metric);
-        assertEquals(DataType.DOUBLE, metric.getDataType());
+        {
+            metric.setDataType(DataType.FLOAT);
+            Assert.assertTrue(metaDataService.createOrReplaceMetric(metric));
+            metric = metaDataService.retrieveMetric(metricName);
+            assertEquals(metric.getName(), metricName);
+            assertEquals(metric.getDataType(), DataType.FLOAT);
+        }
     }
 
     @Test
     public void testCreateAndDeleteMetric() throws Exception {
-        Metric newTestMetric = createNewTestMetric();
-        try {
-            metaDataService.deleteMetric(newTestMetric);
-        } catch (Throwable e) {
-            // ignore
+        final String metricName = "test-create-and-delete-metric";
+        Metric metric = createNewTestMetric(metricName);
+
+        if(metaDataService.retrieveMetric(metricName) != null) {
+            assertTrue(metaDataService.deleteMetric(metric));
         }
-        assertNull(metaDataService.retrieveMetric(NNN_METRIC));
+        assertNull(metaDataService.retrieveMetric(metricName));
 
-        assertTrue(metaDataService.createOrReplaceMetric(newTestMetric));
-        assertNotNull(metaDataService.retrieveMetric(NNN_METRIC));
+        assertTrue(metaDataService.createOrReplaceMetric(metric));
 
-        assertTrue(metaDataService.deleteMetric(newTestMetric));
-        assertNull(metaDataService.retrieveMetric(NNN_METRIC));
+        Metric insertedMetric = metaDataService.retrieveMetric(metricName);
+        assertNotNull(insertedMetric);
+        assertEquals(insertedMetric.getName(), metric.getName());
+        assertEquals(insertedMetric.getTags(), metric.getTags());
+
+        assertTrue(metaDataService.deleteMetric(insertedMetric));
+        assertNull(metaDataService.retrieveMetric(metricName));
     }
 
     @Test
     public void testUpdateMetric() throws Exception {
-        Metric metric = metaDataService.retrieveMetric(TTT_METRIC);
-        Map<String, String> oldTags = metric.getTags();
-
-        if (oldTags != null && oldTags.containsKey(UUU_TAG)) {
-            oldTags.remove(UUU_TAG);
-            metaDataService.createOrReplaceMetric(metric);
+        final String metricName = "test-update-metric";
+        if(metaDataService.retrieveMetric(metricName) != null) {
+            assertTrue(metaDataService.deleteMetric(createNewTestMetric(metricName)));//TODO why we send Metric, but use only metricName?
         }
+        assertNull(metaDataService.retrieveMetric(metricName));
 
-        Map<String, String> newTags = new HashMap<String, String>();
-        newTags.put(UUU_TAG, "uuu-tag-value");
+        Metric metric = createNewTestMetric(metricName);
+        Map<String, String> defaultTags = new HashMap<>();
+        defaultTags.put("test-tag1", "test-tag1-val");
+        defaultTags.put("test-tag2", "test-tag2-val");
+        metric.setTags(defaultTags);
+        assertTrue(metaDataService.createOrReplaceMetric(metric));
+
+
+
+        metric = metaDataService.retrieveMetric(metricName);
+        assertNotNull(metric);
+        assertEquals(metric.getName(), metricName);
+        assertEquals(metric.getTags(), defaultTags);
+        assertEquals(metric.getTags().get("test-tag2"), "test-tag2-val");
+
+
+        Map<String, String> newTags = new HashMap<>();
+        newTags.put("test-tag2", "test-tag2-new-val");
+        newTags.put("test-tag3", "test-tag3-val");
+        newTags.put("test-tag4", "test-tag4-val");
+
         metric.setTags(newTags);
 
-        metaDataService.updateMetric(metric);
+        assertTrue(metaDataService.updateMetric(metric));
 
-        metric = metaDataService.retrieveMetric(TTT_METRIC);
-        assertTrue(metric.getTags().containsKey(UUU_TAG));
-
-        metric.setTags(oldTags);
-        metaDataService.createOrReplaceMetric(metric);
-
-        metric = metaDataService.retrieveMetric(TTT_METRIC);
-        assertFalse(metric.getTags().containsKey(UUU_TAG));
-    }
-
-    @Test
-    public void testRetrieveEntities() throws Exception {
-        {
-            List<Entity> entities = metaDataService.retrieveEntities(null, "name like 'ttt-*'", TagAppender.ALL, 1);
-            assertTrue(entities.get(0) instanceof Entity);
-            assertEquals(1, entities.size());
-        }
-
-        {
-            List<Entity> entities = metaDataService.retrieveEntities(null, "name = 'ttt-entity'", TagAppender.ALL, 1);
-            assertTrue(entities.get(0) instanceof Entity);
-            assertEquals(1, entities.size());
-        }
+        metric = metaDataService.retrieveMetric(metricName);
+        assertNotNull(metric);
+        assertTrue(metric.getTags().containsKey("test-tag1"));
+        assertTrue(metric.getTags().containsKey("test-tag2"));
+        assertTrue(metric.getTags().containsKey("test-tag3"));
+        assertTrue(metric.getTags().containsKey("test-tag4"));
+        assertEquals(metric.getTags().get("test-tag2"), "test-tag2-new-val");
     }
 
     @Test
     public void testRetrieveEntity() throws Exception {
-        Entity entity = metaDataService.retrieveEntity(TTT_ENTITY);
-        assertEquals(TTT_ENTITY, entity.getName());
+        final String entityName = "test-retrieve-entity";
+        if(metaDataService.retrieveEntity(entityName) == null) {
+            assertTrue(metaDataService.createOrReplaceEntity(new Entity(entityName)));
+        }
+        assertEquals(entityName, metaDataService.retrieveEntity(entityName).getName());
     }
 
     @Test
-    public void testCreateOrReplaceEntity() throws Exception {
-        Entity entity = metaDataService.retrieveEntity(TTT_ENTITY);
-        assertEquals(TTT_ENTITY, entity.getName());
-        if (entity.getTags().containsKey("uuu-tag-1")) {
-            entity.getTags().remove("uuu-tag-1");
+    public void testRetrieveEntities() throws Exception {
+        final String entityName = "test-retrieve-entities";
+        if(metaDataService.retrieveEntity(entityName) == null) {
+            assertTrue(metaDataService.createOrReplaceEntity(new Entity(entityName)));
         }
 
-        Map<String, String> tags = entity.getTags();
-        Map<String, String> savedTags = new HashMap<String, String>(tags);
-        tags.put("uuu-tag-1", "uuu-tag-value-1");
-        entity.setTags(tags);
-        assertTrue(metaDataService.createOrReplaceEntity(entity));
+        {
+            List<Entity> entities = metaDataService.retrieveEntities(null, "name like '*'", TagAppender.ALL, 1);
+            assertEquals(1, entities.size());
+            assertTrue(entities.get(0) instanceof Entity);
+        }
 
-        Entity updatedEntity = metaDataService.retrieveEntity(TTT_ENTITY);
-        assertEquals(TTT_ENTITY, updatedEntity.getName());
-        assertTrue(updatedEntity.getTags().containsKey("uuu-tag-1"));
+        {
+            List entities = metaDataService.retrieveEntities(null, "name = '" + entityName + "'", TagAppender.ALL, 1);
+            assertEquals(1, entities.size());
 
-        updatedEntity.setTags(savedTags);
-        metaDataService.createOrReplaceEntity(updatedEntity);
+            assertTrue(entities.get(0) instanceof Entity);
+            assertEquals(((Entity) entities.get(0)).getName(), entityName);
+        }
+    }
 
-        entity = metaDataService.retrieveEntity(TTT_ENTITY);
-        assertEquals(TTT_ENTITY, entity.getName());
-        assertFalse(entity.getTags().containsKey("uuu-tag-1"));
+    @Test
+    public void testCreateOrReplaceEntityWithoutTags() throws  Exception {
+        final String entityName = "test-create-or-replace-entity-without-tags";
+        if (metaDataService.retrieveEntity(entityName) != null) {
+            metaDataService.deleteEntity(new Entity(entityName));
+        }
+        assertNull(metaDataService.retrieveEntity(entityName));
+
+        Assert.assertTrue(metaDataService.createOrReplaceEntity(new Entity(entityName)));
+        Entity newEntity = metaDataService.retrieveEntity(entityName);
+        assertEquals(entityName, newEntity.getName());
+        assertEquals(new HashMap<>(), newEntity.getTags());
+    }
+
+    @Test
+    public void testCreateOrReplaceEntityWithTags() throws Exception {
+        final String entityName = "test-create-or-replace-entity-with-tags";
+        if (metaDataService.retrieveEntity(entityName) != null) {
+            metaDataService.deleteEntity(new Entity(entityName));
+        }
+        assertNull(metaDataService.retrieveEntity(entityName));
+
+        Entity entity = new Entity(entityName);
+
+        {
+            Map<String, String> tags = new HashMap<>();
+            tags.put("test-tag1", "test-tag1-val");
+            tags.put("test-tag2", "test-tag2-val1");
+            entity.setTags(tags);
+            Assert.assertTrue(metaDataService.createOrReplaceEntity(entity));
+            entity = metaDataService.retrieveEntity(entityName);
+            assertEquals(entityName, entity.getName());
+            assertEquals(entity.getTags(), tags);
+        }
+
+        {
+            Map<String, String> tags = new HashMap<>();
+            tags.put("test-tag2", "test-tag2-val2");
+            tags.put("test-tag3", "test-tag3-val");
+            entity.setTags(tags);
+            Assert.assertTrue(metaDataService.createOrReplaceEntity(entity));
+            entity = metaDataService.retrieveEntity(entityName);
+            assertEquals(entityName, entity.getName());
+            assertEquals(entity.getTags(), tags);
+        }
+    }
+
+    @Ignore
+    @Test
+    public void testCreateOrReplaceInvalidEntityWithoutTags() throws  Exception {
+        final String entityName = "te_____st-cre ate-invalid-^%entityƒџќѕ∆-w\"ith''ou't-tags";
+
+        if (metaDataService.retrieveEntity(entityName) != null) {
+            metaDataService.deleteEntity(new Entity(entityName));
+        }
+        assertNull(metaDataService.retrieveEntity(entityName));
+
+        Entity entity = new Entity(entityName);
+        assertFalse(metaDataService.createOrReplaceEntity(entity));
+        assertNull(metaDataService.retrieveEntity(entityName));
+    }
+
+    @Test
+    @Ignore
+    public void testCreateOrReplaceEntityWithInvalidTags() throws Exception {
+        final String entityName = "test-create-entity-with-invalid-tags";
+
+        if (metaDataService.retrieveEntity(entityName) != null) {
+            metaDataService.deleteEntity(new Entity(entityName));
+        }
+        assertNull(metaDataService.retrieveEntity(entityName));
+
+        Entity entity = new Entity(entityName);
+        entity.buildTags("test- t__\\\'\" onclick=alert(1) 'g1", "test-__-  tag1-val", "test-tag2", "test-tag2-val");
+        Assert.assertFalse(metaDataService.createOrReplaceEntity(entity));
+        assertNull(metaDataService.retrieveEntity(entityName));
     }
 
     @Test
     public void testCreateAndDeleteEntity() throws Exception {
-        if (metaDataService.retrieveEntity(NNN_ENTITY) != null) {
-            metaDataService.deleteEntity(new Entity(NNN_ENTITY));
+        final String entityName = "test-create-and-delete-entity";
+        if (metaDataService.retrieveEntity(entityName) != null) {
+            metaDataService.deleteEntity(new Entity(entityName));
         }
+        assertNull(metaDataService.retrieveEntity(entityName));
 
-        Entity entity = new Entity(NNN_ENTITY);
+        Entity entity = new Entity(entityName);
         entity.buildTags("nnn-test-tag-1", "nnn-test-tag-value-1");
-        metaDataService.createOrReplaceEntity(entity);
-
-        assertNotNull(metaDataService.retrieveEntity(NNN_ENTITY));
-
-        metaDataService.deleteEntity(entity);
-
-        assertNull(metaDataService.retrieveEntity(NNN_ENTITY));
-    }
-
-    @Test
-    public void testUpdateEntity() throws Exception {
-        Entity entity = metaDataService.retrieveEntity(TTT_ENTITY);
-        Map<String, String> oldTags = entity.getTags();
-        if (oldTags.containsKey(UUU_TAG)) {
-            oldTags.remove(UUU_TAG);
-            metaDataService.createOrReplaceEntity(entity);
-        }
-
-        Map<String, String> newTags = new HashMap<String, String>(oldTags);
-        newTags.put(UUU_TAG, "uuu-tag-value");
-        entity.setTags(newTags);
-
         assertTrue(metaDataService.createOrReplaceEntity(entity));
 
-        entity = metaDataService.retrieveEntity(TTT_ENTITY);
-        assertTrue(entity.getTags().containsKey(UUU_TAG));
+        Entity newEntity = metaDataService.retrieveEntity(entityName);
+        assertNotNull(newEntity);
+        assertEquals(newEntity.getName(), entityName);
+        assertEquals(newEntity.getTags(), entity.getTags());
 
-        entity.setTags(oldTags);
-        metaDataService.createOrReplaceEntity(entity);
-
-        entity = metaDataService.retrieveEntity(TTT_ENTITY);
-        assertFalse(entity.getTags().containsKey(UUU_TAG));
+        assertTrue(metaDataService.deleteEntity(entity));
+        assertNull(metaDataService.retrieveEntity(entityName));
     }
 
     @Test
@@ -286,7 +360,7 @@ public class MetaDataServiceTest {
             metaDataService.createOrReplaceEntityGroup(entityGroup);
         }
 
-        Map<String, String> newTags = new HashMap<String, String>(oldTags);
+        Map<String, String> newTags = new HashMap<>(oldTags);
         newTags.put(UUU_TAG, "uuu-tag-value");
         entityGroup.setTags(newTags);
 
@@ -309,7 +383,7 @@ public class MetaDataServiceTest {
                 , new Entity("java-sss-entity")));
         List<Entity> entityList = metaDataService
                 .retrieveGroupEntities(TTT_ENTITY_GROUP, null, null, TagAppender.ALL, null);
-        if (entityList.size()==0) {
+        if (entityList.size() == 0) {
             entityList = fixTestDataEntityGroupEntity();
         }
         Entity entity = entityList.get(0);
@@ -322,7 +396,7 @@ public class MetaDataServiceTest {
         {
             List<Entity> entityList = metaDataService
                     .retrieveGroupEntities(TTT_ENTITY_GROUP, null, null, TagAppender.ALL, null);
-            if (entityList.size()==0) {
+            if (entityList.size() == 0) {
                 entityList = fixTestDataEntityGroupEntity();
             }
             Entity entity = entityList.get(0);
@@ -339,21 +413,50 @@ public class MetaDataServiceTest {
     }
 
     @Test
-    public void testRetrieveEntityAndTags() throws Exception {
-        List<EntityAndTags> entityAndTagsList = metaDataService.retrieveEntityAndTags(TTT_METRIC, null);
-        EntityAndTags entityAndTags = entityAndTagsList.get(0);
+    public void testRetrieveEntityAndTagsByMetric() throws Exception {
+        final String entityName = "test-retrive-entity-and-tags-by-metric-entity";
+        final String metricName = "test-retrive-entity-and-tags-by-metric-metric";
+        Map<String, String> tags = new HashMap<>();
+        tags.put("test-tag1", "test-tag1-val");
+        tags.put("test-tag2", "test-tag2-val");
+
+        if(metaDataService.retrieveEntity(entityName) == null) {
+            AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName, "test-tag1", "test-tag1-val", "test-tag2", "test-tag2-val");
+            addSeriesCommand.addSeries(new Series(1456489150000L, 1));
+            assertTrue(dataService.addSeries(addSeriesCommand));
+        }
+
+        List entityAndTagsList = metaDataService.retrieveEntityAndTags(metricName, null);
+
         assertTrue(entityAndTagsList.size() > 0);
-        assertEquals(TTT_ENTITY, entityAndTags.getEntityName());
-        assertTrue(entityAndTags.getTags().containsKey("ttt-tag-1"));
-        assertTrue(entityAndTags.getTags().size() > 0);
+        assertTrue(entityAndTagsList.get(0) instanceof EntityAndTags);
+        assertEquals(((EntityAndTags) entityAndTagsList.get(0)).getEntityName(), entityName);
+        assertEquals(((EntityAndTags) entityAndTagsList.get(0)).getTags(), tags);
+
+
+
+
     }
 
     @Test
     public void testRetrieveEntityAndTagsByMetricAndEntity() throws Exception {
-        List<EntityAndTags> entityAndTagsList = metaDataService.retrieveEntityAndTags(TTT_METRIC, TTT_ENTITY);
-        EntityAndTags entityAndTags = entityAndTagsList.get(0);
+        final String entityName = "test-retrive-entity-and-tags-by-metric-and-entity-entity";
+        final String metricName = "test-retrive-entity-and-tags-by-metric-and-entity-metric";
+        Map<String, String> tags = new HashMap<>();
+        tags.put("test-tag1", "test-tag1-val");
+        tags.put("test-tag2", "test-tag2-val");
+
+        if(metaDataService.retrieveEntity(entityName) == null) {
+            AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName, "test-tag1", "test-tag1-val", "test-tag2", "test-tag2-val");
+            addSeriesCommand.addSeries(new Series(1456489150000L, 1));
+            assertTrue(dataService.addSeries(addSeriesCommand));
+        }
+
+        List entityAndTagsList = metaDataService.retrieveEntityAndTags(metricName, entityName);
+
         assertTrue(entityAndTagsList.size() > 0);
-        assertEquals(TTT_ENTITY, entityAndTags.getEntityName());
+        assertTrue(entityAndTagsList.get(0) instanceof EntityAndTags);
+        assertEquals(((EntityAndTags) entityAndTagsList.get(0)).getEntityName(), entityName);
 
         try {
             metaDataService.retrieveEntityAndTags(" ", " ");
@@ -370,17 +473,25 @@ public class MetaDataServiceTest {
             fixTestDataProperty(dataService);
         }
         Set<String> propertyTypes = metaDataService.retrievePropertyTypes(TTT_ENTITY, 0L);
-        assertTrue(propertyTypes.size() > 0 );
+        assertTrue(propertyTypes.size() > 0);
         assertTrue(propertyTypes.contains(TTT_TYPE));
-        assertTrue(propertyTypes.contains(TTT_TYPE+".t"));
+        assertTrue(propertyTypes.contains(TTT_TYPE + ".t"));
     }
 
 
     @Test
     public void testRetrieveMetricsByEntity() throws Exception {
-        List metrics = metaDataService.retrieveMetrics(TTT_ENTITY, null, "name like '*'", null, 10);
-        assertTrue(metrics.get(0) instanceof Metric);
+        final String metricName = "test-retrieve-metrics-by-entity-metric";
+        final String entityName = "test-retrieve-metrics-by-entity-entity";
+        if(metaDataService.retrieveMetric(metricName) == null) {
+            AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName, "test-tag1", "test-tag1-val", "test-tag2", "test-tag2-val");
+            addSeriesCommand.addSeries(new Series(1456489150000L, 1));
+            assertTrue(dataService.addSeries(addSeriesCommand));
+        }
+        List metrics = metaDataService.retrieveMetrics(entityName, null, "name like '*'", null, 1);
         assertEquals(1, metrics.size());
+        assertTrue(metrics.get(0) instanceof Metric);
+        assertEquals(((Metric) metrics.get(0)).getName(), metricName);
     }
 
     @After
@@ -388,9 +499,9 @@ public class MetaDataServiceTest {
         httpClientManager.close();
     }
 
-    private Metric createNewTestMetric() {
+    private Metric createNewTestMetric(String metricName) {
         Metric newMetric = new Metric();
-        newMetric.setName(NNN_METRIC);
+        newMetric.setName(metricName);
         newMetric.setDataType(DataType.INTEGER);
         newMetric.setDescription("test");
         newMetric.setEnabled(false);
