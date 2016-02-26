@@ -12,7 +12,7 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.axibase.tsd.model.data;
+package com.axibase.tsd.model.data.series;
 
 /**
  * @author Nikolay Malevanny.

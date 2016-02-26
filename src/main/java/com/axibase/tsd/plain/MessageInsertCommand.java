@@ -38,7 +38,7 @@ public class MessageInsertCommand extends AbstractInsertCommand {
     protected void appendValues(StringBuilder sb) {
         //message e:<entity> s:<timestamp> t:<key-1>=<value-2> t:<key-2>=<value-2> m:<message>
         if (StringUtils.isNoneBlank(messageText)) {
-            sb.append(" m:").append(normalize(messageText));
+            sb.append(" m:").append(messageText);
         }
     }
 }

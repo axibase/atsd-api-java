@@ -15,7 +15,7 @@
 
 package com.axibase.tsd.plain;
 
-import com.axibase.tsd.util.AtsdUtil;
+import static com.axibase.tsd.util.AtsdUtil.checkPropertyTypeIsEmpty;
 
 import java.util.Collections;
 import java.util.Map;
@@ -32,7 +32,7 @@ public class PropertyInsertCommand extends AbstractInsertCommand {
     public PropertyInsertCommand(String entityName, String typeName, Long timeMillis, Map<String, String> keys,
                                  Map<String, String> values) {
         super(PROPERTY_COMMAND, entityName, timeMillis, Collections.<String, String>emptyMap());
-        AtsdUtil.check(typeName, "Type name is null");
+        checkPropertyTypeIsEmpty(typeName);
         this.typeName = typeName;
         this.keys = (keys == null) ? Collections.<String, String>emptyMap() : keys;
         this.values = (values == null) ? Collections.<String, String>emptyMap() : values;
@@ -41,7 +41,7 @@ public class PropertyInsertCommand extends AbstractInsertCommand {
     @Override
     protected void appendValues(StringBuilder sb) {
         // property e:abc001 t:disk k:name=sda v:size=203459 v:fs_type=nfs
-        sb.append(" t:").append(clean(typeName));
+        sb.append(" t:").append(typeName);
         appendKeysAndValues(sb, " k:", keys);
         appendKeysAndValues(sb, " v:", values);
     }

@@ -21,7 +21,7 @@ import com.axibase.tsd.util.AtsdUtil;
 import java.util.Collections;
 import java.util.Map;
 
-import static com.axibase.tsd.util.AtsdUtil.checkMetricName;
+import static com.axibase.tsd.util.AtsdUtil.checkMetricIsEmpty;
 
 /**
  * @author Nikolay Malevanny.
@@ -33,7 +33,7 @@ public class InsertCommand extends AbstractInsertCommand {
 
     public InsertCommand(String entityName, String metricName, Series series, Map<String, String> tags) {
         super(SERIES_COMMAND, entityName, series.getTimeMillis(), tags);
-        checkMetricName(metricName);
+        checkMetricIsEmpty(metricName);
         this.metricName = metricName;
         this.series = series;
     }
@@ -48,7 +48,7 @@ public class InsertCommand extends AbstractInsertCommand {
 
     @Override
     protected void appendValues(StringBuilder sb) {
-        sb.append(" m:").append(clean(metricName)).append('=').append(series.getValue());
+        sb.append(" m:").append(metricName).append('=').append(series.getValue());
     }
 
 }

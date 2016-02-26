@@ -14,7 +14,6 @@
  */
 package com.axibase.tsd.model.data.series;
 
-import com.axibase.tsd.model.data.SeriesType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

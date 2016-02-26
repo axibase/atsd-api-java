@@ -14,7 +14,7 @@
  */
 package com.axibase.tsd.model.data.command;
 
-import com.axibase.tsd.model.data.SeriesType;
+import com.axibase.tsd.model.data.series.SeriesType;
 import com.axibase.tsd.model.data.TimeFormat;
 import com.axibase.tsd.model.data.series.Interval;
 import com.axibase.tsd.model.data.series.Join;

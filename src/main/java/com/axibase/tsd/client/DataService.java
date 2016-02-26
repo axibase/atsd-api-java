@@ -78,8 +78,8 @@ public class DataService {
      */
     public boolean addSeries(AddSeriesCommand... addSeriesCommands) {
         for (AddSeriesCommand addSeriesCommand : addSeriesCommands) {
-            checkEntityName(addSeriesCommand.getEntityName());
-            checkMetricName(addSeriesCommand.getMetricName());
+            checkEntityIsEmpty(addSeriesCommand.getEntityName());
+            checkMetricIsEmpty(addSeriesCommand.getMetricName());
         }
         QueryPart<GetSeriesResult> query = new Query<GetSeriesResult>("series")
                 .path("insert");
@@ -94,7 +94,7 @@ public class DataService {
      * @return true if success
      */
     public boolean addSeriesCsv(String entityName, String data, String... tagNamesAndValues) {
-        checkEntityName(entityName);
+        checkEntityIsEmpty(entityName);
         check(data, "Data is empty");
         QueryPart<GetSeriesResult> query = new Query<GetSeriesResult>("series")
                 .path("csv")
@@ -179,7 +179,7 @@ public class DataService {
      * @return properties for entity and type
      */
     public List<Property> retrieveProperties(String entityName, String typeName) {
-        checkEntityName(entityName);
+        checkEntityIsEmpty(entityName);
         check(typeName, "Property type name is empty");
         QueryPart<Property> query = new Query<Property>("properties");
         query = query.path(entityName).path("types").path(typeName);
@@ -192,8 +192,8 @@ public class DataService {
      */
     public boolean insertProperties(Property... properties) {
         for (Property property : properties) {
-            checkEntityName(property.getEntityName());
-            checkType(property.getType());
+            checkEntityIsEmpty(property.getEntityName());
+            checkPropertyTypeIsEmpty(property.getType());
         }
         QueryPart<Property> query = new Query<Property>("properties")
                 .path("insert");
@@ -206,7 +206,7 @@ public class DataService {
      */
     public boolean insertMessages(Message... messages) {
         for (Message message : messages) {
-            checkEntityName(message.getEntityName());
+            checkEntityIsEmpty(message.getEntityName());
         }
         QueryPart<Message> query = new Query<Message>("messages")
                 .path("insert");

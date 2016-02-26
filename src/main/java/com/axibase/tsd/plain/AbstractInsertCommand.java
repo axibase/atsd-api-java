@@ -15,13 +15,10 @@
 
 package com.axibase.tsd.plain;
 
-import com.axibase.tsd.util.AtsdUtil;
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Collections;
 import java.util.Map;
 
-import static com.axibase.tsd.util.AtsdUtil.checkEntityName;
+import static com.axibase.tsd.util.AtsdUtil.checkEntityIsEmpty;
 
 /**
  * @author Nikolay Malevanny.
@@ -34,7 +31,7 @@ public abstract class AbstractInsertCommand implements PlainCommand {
 
     public AbstractInsertCommand(String commandName, String entityName, Long timeMillis, Map<String, String> tags) {
         this.commandName = commandName;
-        checkEntityName(entityName);
+        checkEntityIsEmpty(entityName);
         this.entityName = entityName;
         this.timeMillis = timeMillis;
         this.tags = tags == null ? Collections.<String, String>emptyMap() : tags;
@@ -43,7 +40,7 @@ public abstract class AbstractInsertCommand implements PlainCommand {
     @Override
     public final String compose() {
         StringBuilder sb = new StringBuilder(commandName)
-                .append(' ').append("e:").append(clean(entityName));
+                .append(' ').append("e:").append(entityName);
         if (timeMillis != null) {
             sb.append(' ').append("ms:").append(timeMillis);
         }
@@ -54,23 +51,10 @@ public abstract class AbstractInsertCommand implements PlainCommand {
 
     protected static void appendKeysAndValues(StringBuilder sb, String prefix, Map<String, String> map) {
         for (Map.Entry<String, String> tagNameAndValue : map.entrySet()) {
-            sb.append(prefix).append(clean(tagNameAndValue.getKey()))
-                    .append('=').append(normalize(tagNameAndValue.getValue()));
+            sb.append(prefix).append(tagNameAndValue.getKey())
+                    .append('=').append(tagNameAndValue.getValue());
         }
     }
 
     protected abstract void appendValues(StringBuilder sb);
-
-    protected static String normalize(String value) {
-        if (value.contains(" ") || value.contains("\"") || value.contains("=")) {
-            return "\"" + value + "\"";
-        } else {
-            return value;
-        }
-    }
-
-    protected static String clean(String value) {
-        AtsdUtil.check(value, "Value is empty: " + value);
-        return StringUtils.replacePattern(value.trim(), "[\\s\'\"]", "_");
-    }
 }

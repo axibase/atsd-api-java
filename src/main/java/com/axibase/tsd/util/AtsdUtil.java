@@ -71,19 +71,20 @@ public class AtsdUtil {
         }
     }
 
-    public static void checkType(String type) {
+    public static void checkPropertyTypeIsEmpty(String type) {
         check(type, "Type is empty");
     }
 
-    public static void checkEntityName(String entityName) {
+    public static void checkEntityIsEmpty(String entityName) {
         check(entityName, "Entity name is empty");
     }
 
-    public static void checkEntityGroupName(String entityGroupName) {
+    public static void checkEntityGroupIsEmpty(String entityGroupName) {
         check(entityGroupName, "Entity group name is empty");
     }
 
-    public static void checkMetricName(String metricName) {
+    public static void checkMetricIsEmpty(String metricName) {
         check(metricName, "Metric name is empty");
     }
+
 }
