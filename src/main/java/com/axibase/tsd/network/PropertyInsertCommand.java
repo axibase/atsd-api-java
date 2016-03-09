@@ -13,12 +13,12 @@
  * permissions and limitations under the License.
  */
 
-package com.axibase.tsd.plain;
-
-import static com.axibase.tsd.util.AtsdUtil.checkPropertyTypeIsEmpty;
+package com.axibase.tsd.network;
 
 import java.util.Collections;
 import java.util.Map;
+
+import static com.axibase.tsd.util.AtsdUtil.checkPropertyTypeIsEmpty;
 
 /**
  * @author Nikolay Malevanny.

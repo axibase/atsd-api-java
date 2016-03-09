@@ -16,8 +16,8 @@
 package com.axibase.tsd.client;
 
 import com.axibase.tsd.model.system.MarkerState;
-import com.axibase.tsd.plain.MarkerCommand;
-import com.axibase.tsd.plain.PlainCommand;
+import com.axibase.tsd.network.MarkerCommand;
+import com.axibase.tsd.network.PlainCommand;
 import com.axibase.tsd.query.Query;
 import com.axibase.tsd.query.QueryPart;
 import org.slf4j.Logger;

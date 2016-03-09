@@ -16,7 +16,6 @@ package com.axibase.tsd.model.meta;
 
 
 import com.axibase.tsd.util.AtsdUtil;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -49,36 +48,44 @@ public class Entity {
         return name;
     }
 
-    public void setName(String name) {
+    public Entity setName(String name) {
         this.name = name;
+        return this;
     }
 
     public Boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public Entity setEnabled(Boolean enabled) {
         this.enabled = enabled;
+        return this;
+
     }
 
     public Long getLastInsertTime() {
         return lastInsertTime;
     }
 
-    public void setLastInsertTime(Long lastInsertTime) {
+    public Entity setLastInsertTime(Long lastInsertTime) {
         this.lastInsertTime = lastInsertTime;
+        return this;
+
     }
 
     public Map<String, String> getTags() {
         return tags;
     }
 
-    public void setTags(Map<String, String> tags) {
+    public Entity setTags(Map<String, String> tags) {
         this.tags = tags;
+        return this;
+
     }
 
-    public void buildTags(String... tagNamesAndValues) {
+    public Entity buildTags(String... tagNamesAndValues) {
         setTags(AtsdUtil.toMap(tagNamesAndValues));
+        return this;
     }
 
     @Override

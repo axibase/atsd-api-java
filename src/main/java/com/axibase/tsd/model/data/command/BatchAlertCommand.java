@@ -17,7 +17,6 @@ package com.axibase.tsd.model.data.command;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**

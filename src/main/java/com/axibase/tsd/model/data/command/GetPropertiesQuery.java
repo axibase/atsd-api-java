@@ -93,8 +93,9 @@ public class GetPropertiesQuery {
         this.last = last;
     }
 
-    public void setKey(Map<String, String> key) {
+    public GetPropertiesQuery setKey(Map<String, String> key) {
         this.key = key;
+        return this;
     }
 
     public void setKeyExpression(String keyExpression) {

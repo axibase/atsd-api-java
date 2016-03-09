@@ -14,11 +14,11 @@
  */
 package com.axibase.tsd.model.data.command;
 
-import com.axibase.tsd.model.data.series.SeriesType;
 import com.axibase.tsd.model.data.TimeFormat;
 import com.axibase.tsd.model.data.series.Interval;
 import com.axibase.tsd.model.data.series.Join;
 import com.axibase.tsd.model.data.series.Rate;
+import com.axibase.tsd.model.data.series.SeriesType;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

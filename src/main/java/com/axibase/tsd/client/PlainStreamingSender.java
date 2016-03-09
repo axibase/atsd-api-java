@@ -16,8 +16,8 @@
 package com.axibase.tsd.client;
 
 import com.axibase.tsd.model.system.ClientConfiguration;
-import com.axibase.tsd.plain.MarkerCommand;
-import com.axibase.tsd.plain.PlainCommand;
+import com.axibase.tsd.network.MarkerCommand;
+import com.axibase.tsd.network.PlainCommand;
 import com.axibase.tsd.util.AtsdUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -36,7 +36,9 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 
 import static com.axibase.tsd.util.AtsdUtil.MARKER_KEYWORD;
@@ -67,7 +69,7 @@ class PlainStreamingSender extends AbstractHttpEntity implements Runnable {
         if (old != null) {
             messages = old.messages;
             markerToMessages = old.markerToMessages;
-            log.info("Reborn plain commands sender using previous messages, size: {}", messages.size());
+            log.info("Reborn network commands sender using previous messages, size: {}", messages.size());
         }
     }
 

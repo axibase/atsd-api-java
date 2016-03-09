@@ -38,24 +38,29 @@ public class EntityAndTags {
         return entityName;
     }
 
-    public void setEntityName(String entityName) {
+    public EntityAndTags setEntityName(String entityName) {
         this.entityName = entityName;
+        return this;
+
     }
 
     public Long getLastInsertTime() {
         return lastInsertTime;
     }
 
-    public void setLastInsertTime(Long lastInsertTime) {
+    public EntityAndTags setLastInsertTime(Long lastInsertTime) {
         this.lastInsertTime = lastInsertTime;
+        return this;
+
     }
 
     public Map<String, String> getTags() {
         return tags;
     }
 
-    public void setTags(Map<String, String> tags) {
+    public EntityAndTags setTags(Map<String, String> tags) {
         this.tags = tags;
+        return this;
     }
 
     @Override

@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-package com.axibase.tsd.plain;
+package com.axibase.tsd.network;
 
 import org.apache.commons.lang3.StringUtils;
 

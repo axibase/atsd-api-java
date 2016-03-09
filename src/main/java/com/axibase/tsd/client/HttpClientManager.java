@@ -15,7 +15,7 @@
 package com.axibase.tsd.client;
 
 import com.axibase.tsd.model.system.ClientConfiguration;
-import com.axibase.tsd.plain.PlainCommand;
+import com.axibase.tsd.network.PlainCommand;
 import com.axibase.tsd.query.QueryPart;
 import org.apache.commons.pool2.BasePooledObjectFactory;
 import org.apache.commons.pool2.PooledObject;
@@ -26,7 +26,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
-import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**

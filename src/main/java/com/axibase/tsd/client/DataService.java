@@ -20,7 +20,7 @@ import com.axibase.tsd.model.data.series.GetSeriesBatchResult;
 import com.axibase.tsd.model.data.series.GetSeriesResult;
 import com.axibase.tsd.model.data.series.aggregate.AggregateType;
 import com.axibase.tsd.model.system.Format;
-import com.axibase.tsd.plain.PlainCommand;
+import com.axibase.tsd.network.PlainCommand;
 import com.axibase.tsd.query.Query;
 import com.axibase.tsd.query.QueryPart;
 
@@ -57,7 +57,7 @@ public class DataService {
      * @return list of {@code GetSeriesResult}
      */
     public List<GetSeriesResult> retrieveSeries(GetSeriesQuery... seriesQueries) {
-        QueryPart<GetSeriesBatchResult> query = new Query<GetSeriesBatchResult>("series");
+        QueryPart<GetSeriesBatchResult> query = new Query<>("series");
         GetSeriesBatchResult seriesBatchResult = httpClientManager.requestData(GetSeriesBatchResult.class, query,
                 post(new BatchQuery<GetSeriesQuery>(Arrays.asList(seriesQueries))));
         return seriesBatchResult == null ? Collections.<GetSeriesResult>emptyList() : seriesBatchResult.getSeriesResults();
@@ -180,7 +180,7 @@ public class DataService {
      */
     public List<Property> retrieveProperties(String entityName, String typeName) {
         checkEntityIsEmpty(entityName);
-        check(typeName, "Property type name is empty");
+        checkPropertyTypeIsEmpty(typeName);
         QueryPart<Property> query = new Query<Property>("properties");
         query = query.path(entityName).path("types").path(typeName);
         return httpClientManager.requestDataList(Property.class, query, null);
@@ -199,6 +199,13 @@ public class DataService {
                 .path("insert");
         return httpClientManager.updateData(query, post(Arrays.asList(properties)));
     }
+
+    public List<Message> retrieveMessages(GetMessagesQuery getMessagesQuery, GetMessagesQuery... getMessagesQueries) {
+        QueryPart<Message> query = new Query<>("messages");
+        return httpClientManager.requestDataList(Message.class, query,
+                post(new BatchQuery<GetMessagesQuery>(getMessagesQuery, getMessagesQueries)));
+    }
+
 
     /**
      * @param messages list of {@code Message} to add.

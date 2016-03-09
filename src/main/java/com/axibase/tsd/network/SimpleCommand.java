@@ -13,11 +13,20 @@
  * permissions and limitations under the License.
  */
 
-package com.axibase.tsd.plain;
+package com.axibase.tsd.network;
 
 /**
- * @author Nikolay Malevanny.
- */
-public interface PlainCommand {
-    String compose();
+* @author Nikolay Malevanny.
+*/
+public class SimpleCommand implements PlainCommand {
+    private final String command;
+
+    public SimpleCommand(String command) {
+        this.command = command;
+    }
+
+    @Override
+    public String compose() {
+        return command;
+    }
 }

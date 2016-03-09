@@ -65,8 +65,9 @@ public class PropertyMatcher {
         this.entityName = entityName;
     }
 
-    public void setKey(Map<String, String> key) {
+    public PropertyMatcher setKey(Map<String, String> key) {
         this.key = key;
+        return this;
     }
 
     public void setCreatedBeforeTime(Long createdBeforeTime) {

@@ -14,11 +14,9 @@
  */
 package com.axibase.tsd.util;
 
-import com.axibase.tsd.model.data.series.Series;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.core.MediaType;
-import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;

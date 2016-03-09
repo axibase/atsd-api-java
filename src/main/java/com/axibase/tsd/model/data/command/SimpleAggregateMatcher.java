@@ -18,7 +18,6 @@ import com.axibase.tsd.model.data.series.Interpolate;
 import com.axibase.tsd.model.data.series.Interval;
 import com.axibase.tsd.model.data.series.aggregate.AggregateType;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.ArrayList;
 import java.util.Arrays;

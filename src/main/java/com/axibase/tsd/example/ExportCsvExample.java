@@ -15,15 +15,15 @@
 package com.axibase.tsd.example;
 
 import com.axibase.tsd.model.data.command.GetSeriesQuery;
-import com.axibase.tsd.model.data.command.SimpleAggregateMatcher;
-import com.axibase.tsd.model.data.series.*;
-import com.axibase.tsd.model.data.series.aggregate.AggregateType;
-import com.axibase.tsd.model.meta.EntityAndTags;
-import com.axibase.tsd.model.meta.Metric;
+import com.axibase.tsd.model.data.series.GetSeriesResult;
+import com.axibase.tsd.model.data.series.Series;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;

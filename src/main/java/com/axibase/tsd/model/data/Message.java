@@ -51,63 +51,71 @@ public class Message {
         return entityName;
     }
 
-    public void setEntityName(String entityName) {
+    public Message setEntityName(String entityName) {
         this.entityName = entityName;
+        return this;
     }
 
     public String getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public Message setDate(String date) {
         this.date = date;
+        return this;
     }
 
     public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Long timestamp) {
+    public Message setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
+        return this;
     }
 
     public String getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public Message setMessage(String message) {
         this.message = message;
+        return this;
     }
 
     public Severity getSeverity() {
         return severity;
     }
 
-    public void setSeverity(Severity severity) {
+    public Message setSeverity(Severity severity) {
         this.severity = severity;
+        return this;
     }
 
     public String getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public Message setType(String type) {
         this.type = type;
+        return this;
     }
 
     public String getSource() {
         return source;
     }
 
-    public void setSource(String source) {
+    public Message setSource(String source) {
         this.source = source;
+        return this;
     }
 
     public Map<String, String> getTags() {
         return tags;
     }
 
-    public void setTags(Map<String, String> tags) {
+    public Message setTags(Map<String, String> tags) {
         this.tags = tags;
+        return this;
     }
 }

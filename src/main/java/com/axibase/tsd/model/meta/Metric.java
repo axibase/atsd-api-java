@@ -15,7 +15,6 @@
 package com.axibase.tsd.model.meta;
 
 import com.axibase.tsd.util.AtsdUtil;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -53,116 +52,145 @@ public class Metric {
         return name;
     }
 
-    public void setName(String name) {
+    public Metric setName(String name) {
         this.name = name;
+        return this;
+
     }
 
     public String getLabel() {
         return label;
     }
 
-    public void setLabel(String label) {
+    public Metric setLabel(String label) {
         this.label = label;
+        return this;
+
     }
 
     public Boolean isEnabled() {
         return enabled;
     }
 
-    public void setEnabled(Boolean enabled) {
+    public Metric setEnabled(Boolean enabled) {
         this.enabled = enabled;
+        return this;
+
     }
 
     public DataType getDataType() {
         return dataType;
     }
 
-    public void setDataType(DataType dataType) {
+    public Metric setDataType(DataType dataType) {
         this.dataType = dataType;
+        return this;
+
     }
 
     public TimePrecision getTimePrecision() {
         return timePrecision;
     }
 
-    public void setTimePrecision(TimePrecision timePrecision) {
+    public Metric setTimePrecision(TimePrecision timePrecision) {
         this.timePrecision = timePrecision;
+        return this;
+
     }
 
     public Boolean isPersistent() {
         return persistent;
     }
 
-    public void setPersistent(Boolean persistent) {
+    public Metric setPersistent(Boolean persistent) {
         this.persistent = persistent;
+        return this;
+
     }
 
     public String getFilter() {
         return filter;
     }
 
-    public void setFilter(String filter) {
+    public Metric setFilter(String filter) {
         this.filter = filter;
+        return this;
+
     }
 
     public Double getMinValue() {
         return minValue;
     }
 
-    public void setMinValue(Double minValue) {
+    public Metric setMinValue(Double minValue) {
         this.minValue = minValue;
+        return this;
+
     }
 
     public Double getMaxValue() {
         return maxValue;
     }
 
-    public void setMaxValue(Double maxValue) {
+    public Metric setMaxValue(Double maxValue) {
         this.maxValue = maxValue;
+        return this;
+
     }
 
     public InvalidAction getInvalidAction() {
         return invalidAction;
     }
 
-    public void setInvalidAction(InvalidAction invalidAction) {
+    public Metric setInvalidAction(InvalidAction invalidAction) {
         this.invalidAction = invalidAction;
+        return this;
+
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
+    public Metric setDescription(String description) {
         this.description = description;
+        return this;
+
     }
 
     public Integer getRetentionInterval() {
         return retentionInterval;
     }
 
-    public void setRetentionInterval(Integer retentionInterval) {
+    public Metric setRetentionInterval(Integer retentionInterval) {
         this.retentionInterval = retentionInterval;
+        return this;
+
     }
 
     public Long getLastInsertTime() {
         return lastInsertTime;
     }
 
-    public void setLastInsertTime(Long lastInsertTime) {
+    public Metric setLastInsertTime(Long lastInsertTime) {
         this.lastInsertTime = lastInsertTime;
+        return this;
+
     }
 
     public Map<String, String> getTags() {
         return tags;
     }
 
-    public void setTags(Map<String, String> tags) {
+    public Metric setTags(Map<String, String> tags) {
         this.tags = tags;
+        return this;
+
     }
 
-    public void buildTags(String... tagNamesAndValues) {
+    public Metric buildTags(String... tagNamesAndValues) {
         setTags(AtsdUtil.toMap(tagNamesAndValues));
+        return this;
     }
 
     @Override

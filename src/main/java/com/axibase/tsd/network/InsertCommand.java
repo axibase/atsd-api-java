@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 
-package com.axibase.tsd.plain;
+package com.axibase.tsd.network;
 
 import com.axibase.tsd.model.data.series.Series;
 import com.axibase.tsd.util.AtsdUtil;
