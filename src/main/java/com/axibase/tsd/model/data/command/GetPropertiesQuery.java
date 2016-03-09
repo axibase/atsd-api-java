@@ -28,8 +28,8 @@ public class GetPropertiesQuery {
     @JsonProperty(value = "entity")
     private final String entityName;
     private final String type;
-    private long startTime;
-    private long endTime;
+    private Long startTime = null;
+    private Long endTime = null;
     private String limit;
     private boolean last;
     private Map<String, String> key;
@@ -77,20 +77,24 @@ public class GetPropertiesQuery {
         return timeFormat;
     }
 
-    public void setStartTime(long startTime) {
+    public GetPropertiesQuery setStartTime(long startTime) {
         this.startTime = startTime;
+        return this;
     }
 
-    public void setEndTime(long endTime) {
+    public GetPropertiesQuery setEndTime(long endTime) {
         this.endTime = endTime;
+        return this;
     }
 
-    public void setLimit(String limit) {
+    public GetPropertiesQuery setLimit(String limit) {
         this.limit = limit;
+        return this;
     }
 
-    public void setLast(boolean last) {
+    public GetPropertiesQuery setLast(boolean last) {
         this.last = last;
+        return this;
     }
 
     public GetPropertiesQuery setKey(Map<String, String> key) {
@@ -98,12 +102,14 @@ public class GetPropertiesQuery {
         return this;
     }
 
-    public void setKeyExpression(String keyExpression) {
+    public GetPropertiesQuery setKeyExpression(String keyExpression) {
         this.keyExpression = keyExpression;
+        return this;
     }
 
-    public void setTimeFormat(TimeFormat timeFormat) {
+    public GetPropertiesQuery setTimeFormat(TimeFormat timeFormat) {
         this.timeFormat = timeFormat;
+        return this;
     }
 
     @Override

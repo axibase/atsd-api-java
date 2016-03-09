@@ -38,8 +38,8 @@ public class GetAlertQuery {
     @JsonProperty(value = "minSeverity")
     private Integer minSeverityId;
     private TimeFormat timeFormat;
-    private Long startTime;
-    private Long endTime;
+    private Long startTime = null;
+    private Long endTime = null;
     private String startDate;
     private String endDate;
     private Interval interval;

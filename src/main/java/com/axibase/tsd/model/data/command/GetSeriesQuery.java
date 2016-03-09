@@ -31,8 +31,8 @@ import java.util.Map;
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetSeriesQuery {
-    private Long startTime;
-    private Long endTime;
+    private Long startTime = null;
+    private Long endTime = null;
     private String startDate;
     private String endDate;
     private Interval interval;
