@@ -12,16 +12,21 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.axibase.tsd.client;
+package com.axibase.tsd.client.dataService;
 
 import com.axibase.tsd.RerunRule;
 import com.axibase.tsd.TestUtil;
-import com.axibase.tsd.model.data.*;
-import com.axibase.tsd.model.data.command.*;
+import com.axibase.tsd.client.DataService;
+import com.axibase.tsd.client.HttpClientManager;
+import com.axibase.tsd.client.SeriesCommandPreparer;
+import com.axibase.tsd.model.data.TimeFormat;
+import com.axibase.tsd.model.data.command.AddSeriesCommand;
+import com.axibase.tsd.model.data.command.GetSeriesQuery;
+import com.axibase.tsd.model.data.command.SimpleAggregateMatcher;
 import com.axibase.tsd.model.data.series.*;
 import com.axibase.tsd.model.data.series.aggregate.AggregateType;
 import com.axibase.tsd.model.system.Format;
-import com.axibase.tsd.plain.*;
+import com.axibase.tsd.network.*;
 import com.axibase.tsd.util.AtsdUtil;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -29,7 +34,9 @@ import org.junit.*;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -40,7 +47,7 @@ import static com.axibase.tsd.TestUtil.*;
 import static com.axibase.tsd.util.AtsdUtil.toMap;
 import static junit.framework.Assert.*;
 
-public class DataServiceTest {
+public class SerieTest {
 
     private DataService dataService;
     private HttpClientManager httpClientManager;
@@ -229,211 +236,14 @@ public class DataServiceTest {
     public void testRetrieveLastSeries() throws Exception {
         GetSeriesQuery c1 = createTestGetTestCommand();
         c1.setAggregateMatcher(null);
-        List<GetSeriesResult> seriesList = dataService.retrieveLastSeries(c1);
+        List seriesList = dataService.retrieveLastSeries(c1);
 
         assertTrue(seriesList.get(0) instanceof GetSeriesResult);
         assertEquals(1, seriesList.size());
     }
 
-    @Test
-    public void testRetrieveProperties() throws Exception {
-        List<Property> properties = dataService.retrieveProperties(buildPropertiesQuery());
-        if (properties.size() == 0) {
-            properties = fixTestDataProperty(dataService);
-        }
-
-        for (Property property : properties) {
-            System.out.println("property = " + property);
-        }
-        assertTrue(properties.get(0) instanceof Property);
-        assertEquals(1, properties.size());
-    }
-
-    @Test
-    public void testRetrievePropertiesWithDate() throws Exception {
-        GetPropertiesQuery getPropertiesQuery = buildPropertiesQuery();
-        getPropertiesQuery.setTimeFormat(TimeFormat.ISO);
-        List<Property> properties = dataService.retrieveProperties(getPropertiesQuery);
-        if (properties.size() == 0) {
-            properties = fixTestDataProperty(dataService);
-        }
-
-        for (Property property : properties) {
-            System.out.println("property = " + property);
-        }
-        Property property = properties.get(0);
-        assertEquals(1, properties.size());
-        assertTrue(StringUtils.isNoneBlank(property.getDate()));
-    }
-
-    @Test
-    public void testRetrievePropertiesByEntityNameAndPropertyTypeName() throws Exception {
-        List<Property> properties = dataService.retrieveProperties(TTT_ENTITY, TTT_TYPE);
-        if (properties.size() == 0) {
-            fixTestDataProperty(dataService);
-            properties = dataService.retrieveProperties(TTT_ENTITY, TTT_TYPE);
-        }
-
-        assertTrue(properties.get(0) instanceof Property);
-        assertEquals(1, properties.size());
-    }
-
-    @Test
-    public void testInsertProperties() throws Exception {
-        { // check that new property does not exist
-            GetPropertiesQuery newPropCommand = createGetNewPropCommand();
-            List<Property> properties = dataService.retrieveProperties(newPropCommand);
-            if (properties.size() > 0) {
-                dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(
-                        new Property(NNN_TYPE, NNN_ENTITY, null, null)));
-            }
-        }
-        { // create new property
-            assertTrue(dataService.insertProperties(new Property(NNN_TYPE, NNN_ENTITY,
-                    toMap("nnn-test-key-1", "nnn-test-key-value-1"),
-                    toMap("nnn-name", "nnn-value"))));
-        }
-        { // check that new property exists
-            List<Property> properties = dataService.retrieveProperties(createGetNewPropCommand());
-            assertEquals(1, properties.size());
-        }
-        { // delete property
-            BatchPropertyCommand deletePropertyCommand = BatchPropertyCommand.createDeleteCommand(
-                    new Property(NNN_TYPE, NNN_ENTITY,
-                            toMap("nnn-test-key-1", "nnn-test-key-value-1"), null)
-            );
-            assertTrue(dataService.batchUpdateProperties(deletePropertyCommand));
-        }
-        { // check that new property does not exist
-            List<Property> properties = dataService.retrieveProperties(createGetNewPropCommand());
-            assertEquals(0, properties.size());
-        }
-        { // create new property
-            assertTrue(dataService.insertProperties(new Property(NNN_TYPE, NNN_ENTITY,
-                    toMap("nnn-test-key-1", "nnn-test-key-value-1"),
-                    toMap("nnn-name", "nnn-value"))));
-        }
-        { // delete property using matcher
-            BatchPropertyCommand deletePropertyCommand = BatchPropertyCommand.createDeleteMatchCommand(
-                    new PropertyMatcher(NNN_TYPE, NNN_ENTITY, Long.MAX_VALUE, "nnn-test-key-1", "nnn-test-key-value-1")
-            );
-            assertTrue(dataService.batchUpdateProperties(deletePropertyCommand));
-        }
-        { // check that new property does not exist
-            List<Property> properties = dataService.retrieveProperties(createGetNewPropCommand());
-            assertEquals(0, properties.size());
-        }
-    }
-
-    @Ignore //todo use retrieveMessages to complete test
-    @Test
-    public void testInsertMessages() throws Exception {
-        final Message m1 = new Message(NNN_ENTITY, "message 1");
-        m1.setSeverity(Severity.UNKNOWN);
-        final Message m2 = new Message(NNN_ENTITY, "message 2");
-        m2.setSeverity(Severity.MINOR);
-        final Message m3 = new Message(NNN_ENTITY, "message 3");
-        m3.setSeverity(Severity.CRITICAL);
-        dataService.insertMessages(m1, m2, m3);
-    }
 
 
-    @Test
-    public void testRetrieveAlerts() throws Exception {
-        PlainCommand plainCommand = createFireAlertSeriesCommand();
-        // fire alert
-        dataService.sendPlainCommand(plainCommand);
-        System.out.println("command = " + plainCommand.compose());
-        Thread.sleep(WAIT_TIME);
-        {
-            List<String> metrics = Arrays.asList(TTT_METRIC);
-            List<String> entities = Arrays.asList(TTT_ENTITY);
-            List<Alert> alerts = dataService.retrieveAlerts(metrics, entities, null, null, null, TimeFormat.MILLISECONDS);
-            assertNotNull(alerts);
-        }
-        {
-            {
-                List<Alert> alerts = dataService.retrieveAlerts(null, Collections.singletonList("ttt-entity"), null, null, null, TimeFormat.MILLISECONDS);
-                assertNotNull(alerts);
-                assertTrue(alerts.size() > 0);
-            }
-
-            List<Alert> alerts;
-            {
-                alerts = dataService.retrieveAlerts(null, Collections.singletonList("ttt-entity"), null, null, null, TimeFormat.ISO);
-                assertNotNull(alerts);
-                assertTrue(alerts.size() > 0);
-                Alert alert = alerts.get(0);
-                assertTrue(StringUtils.isNoneBlank(alert.getOpenDate()));
-            }
-
-            // clean
-            String[] ids = toIds(alerts);
-            dataService.batchUpdateAlerts(BatchAlertCommand.createUpdateCommand(true, ids));
-        }
-    }
-
-    @Test
-    public void testUpdateAlerts() throws Exception {
-        GetAlertQuery query = new GetAlertQuery(
-                Arrays.asList(TTT_METRIC),
-                Arrays.asList(TTT_ENTITY),
-                Arrays.asList(TTT_RULE),
-                Collections.<Integer>emptyList(),
-                Severity.UNKNOWN.getId(),
-                TimeFormat.MILLISECONDS
-        );
-        query.setStartTime(0L);
-        query.setEndTime(System.currentTimeMillis() + 10000);
-
-        { // clean
-            List<Alert> alerts = dataService.retrieveAlerts(query);
-            String[] ids = toIds(alerts);
-            if (ids.length > 0) {
-                dataService.batchUpdateAlerts(BatchAlertCommand.createDeleteCommand(ids));
-            }
-        }
-
-        // fire alert
-        dataService.sendPlainCommand(createFireAlertSeriesCommand());
-        Thread.sleep(WAIT_TIME);
-
-
-        // check alert
-        List<Alert> alerts = dataService.retrieveAlerts(query);
-        assertTrue(alerts.size() > 0);
-        Alert alert = alerts.get(0);
-        assertFalse(alert.getAcknowledged());
-
-        // update alerts
-        String[] ids = toIds(alerts);
-        dataService.batchUpdateAlerts(BatchAlertCommand.createUpdateCommand(true, ids));
-
-        Thread.sleep(WAIT_TIME);
-
-        // check updated alert
-        alerts = dataService.retrieveAlerts(query);
-        assertTrue(alerts.get(0).getAcknowledged());
-
-        // delete alerts
-        dataService.batchUpdateAlerts(BatchAlertCommand.createDeleteCommand(ids));
-
-        // check empty
-        assertTrue(dataService.retrieveAlerts(query).isEmpty());
-    }
-
-    @Test
-    public void testRetrieveAlertHistory() throws Exception {
-        GetAlertHistoryQuery getAlertHistoryQuery = new GetAlertHistoryQuery();
-        getAlertHistoryQuery.setStartTime(0L);
-        getAlertHistoryQuery.setEndTime(Long.MAX_VALUE);
-        getAlertHistoryQuery.setEntityName(TTT_ENTITY);
-        getAlertHistoryQuery.setMetricName(TTT_METRIC);
-
-        List<AlertHistory> alertHistoryList = dataService.retrieveAlertHistory(getAlertHistoryQuery);
-        assertTrue(alertHistoryList.get(0) instanceof AlertHistory);
-        assertTrue(alertHistoryList.size() > 0);
-    }
 
 
     @Test
@@ -458,7 +268,7 @@ public class DataServiceTest {
             threadPoolExecutor.execute(command);
         }
         try {
-            latch.await(10 + cnt * msgCnt * msgPause/1000, TimeUnit.SECONDS);
+            latch.await(10 + cnt * msgCnt * msgPause / 1000, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
             e.printStackTrace();
             fail();
@@ -514,8 +324,8 @@ public class DataServiceTest {
         long st = System.currentTimeMillis();
         final ArrayList<PlainCommand> commands = new ArrayList<PlainCommand>();
         commands.add(new InsertCommand(entityName, metricName, new Series(st, 1.0)));
-        commands.add(new InsertCommand(entityName, metricName, new Series(st+1, 2.0)));
-        commands.add(new InsertCommand(entityName, metricName, new Series(st+2, 3.0)));
+        commands.add(new InsertCommand(entityName, metricName, new Series(st + 1, 2.0)));
+        commands.add(new InsertCommand(entityName, metricName, new Series(st + 2, 3.0)));
         final boolean result = dataService.sendBatch(commands, false);
         assertTrue(result);
 
@@ -659,21 +469,8 @@ public class DataServiceTest {
         return resCnt;
     }
 
-    private PlainCommand createFireAlertSeriesCommand() {
-        return new PlainCommand() {
-            @Override
-            public String compose() {
-                return "series e:ttt-entity t:ttt-tag-1=ttt-tag-value-1 m:ttt-metric=35791.0";
-            }
-        };
-    }
 
-    private GetPropertiesQuery createGetNewPropCommand() {
-        GetPropertiesQuery getPropertiesQuery = new GetPropertiesQuery(NNN_TYPE, NNN_ENTITY);
-        getPropertiesQuery.setStartTime(0);
-        getPropertiesQuery.setEndTime(Long.MAX_VALUE);
-        return getPropertiesQuery;
-    }
+
 
     public GetSeriesQuery createTestGetTestCommand() {
         MultivaluedHashMap<String, String> tags = new MultivaluedHashMap<String, String>();
@@ -684,17 +481,12 @@ public class DataServiceTest {
         command.setAggregateMatcher(new SimpleAggregateMatcher(new Interval(20, IntervalUnit.SECOND),
                 Interpolate.NONE,
                 AggregateType.DETAIL));
-        command.setStartTime(System.currentTimeMillis() - 100000000L);
-        command.setEndTime(System.currentTimeMillis() + 100000000L);
+        command.setInterval(new Interval(20, IntervalUnit.DAY));
+//        command.setStartTime(System.currentTimeMillis() - 100000000L);
+//        command.setEndTime(System.currentTimeMillis() + 100000000L);
 
         return command;
     }
 
-    private String[] toIds(List<Alert> alerts) {
-        String[] ids = new String[alerts.size()];
-        for (int i = 0; i < alerts.size(); i++) {
-            ids[i] = "" + alerts.get(i).getId();
-        }
-        return ids;
-    }
+
 }

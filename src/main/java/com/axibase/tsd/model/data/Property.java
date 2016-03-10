@@ -53,48 +53,54 @@ public class Property {
         return type;
     }
 
-    public void setType(String type) {
+    public Property setType(String type) {
         this.type = type;
+        return this;
     }
 
     public String getEntityName() {
         return entityName;
     }
 
-    public void setEntityName(String entityName) {
+    public Property setEntityName(String entityName) {
         this.entityName = entityName;
+        return this;
     }
 
     public Map<String, String> getKey() {
         return key;
     }
 
-    public void setKey(Map<String, String> key) {
+    public Property setKey(Map<String, String> key) {
         this.key = key;
+        return this;
     }
 
     public Map<String, String> getTags() {
         return tags;
     }
 
-    public void setTags(Map<String, String> tags) {
+    public Property setTags(Map<String, String> tags) {
         this.tags = tags;
+        return this;
     }
 
     public Long getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Long timestamp) {
+    public Property setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
+        return this;
     }
 
     public String getDate() {
         return date;
     }
 
-    public void setDate(String date) {
+    public Property setDate(String date) {
         this.date = date;
+        return this;
     }
 
     @Override

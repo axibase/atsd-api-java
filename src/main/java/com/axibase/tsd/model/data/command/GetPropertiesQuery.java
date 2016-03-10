@@ -49,11 +49,11 @@ public class GetPropertiesQuery {
         return type;
     }
 
-    public long getStartTime() {
+    public Long getStartTime() {
         return startTime;
     }
 
-    public long getEndTime() {
+    public Long getEndTime() {
         return endTime;
     }
 

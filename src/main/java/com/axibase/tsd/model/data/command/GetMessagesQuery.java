@@ -51,15 +51,15 @@ public class GetMessagesQuery {
     private String source;
     private Map<String, String> tags;
 
-    public GetMessagesQuery(String entityName) {
+    public GetMessagesQuery(final String entityName) {
         this(entityName, null, null);
     }
 
-    public GetMessagesQuery(String[] entitesName) {
+    public GetMessagesQuery(final String[] entitesName) {
         this(null, Arrays.asList(entitesName), null);
     }
 
-    public GetMessagesQuery(List<EntityGroup> entityGroups) {
+    public GetMessagesQuery(final List<EntityGroup> entityGroups) {
         this(null, null, entityGroups);
     }
 

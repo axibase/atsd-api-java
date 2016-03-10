@@ -15,39 +15,28 @@
 package com.axibase.tsd;
 
 import com.axibase.tsd.client.ClientConfigurationFactory;
-import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
-import com.axibase.tsd.model.data.Property;
-import com.axibase.tsd.model.data.command.GetPropertiesQuery;
+import com.axibase.tsd.model.meta.DataType;
+import com.axibase.tsd.model.meta.Metric;
+import com.axibase.tsd.model.meta.TimePrecision;
 import com.axibase.tsd.model.system.ClientConfiguration;
-import com.axibase.tsd.plain.PropertyInsertCommand;
 import com.axibase.tsd.util.AtsdUtil;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
-import java.util.List;
-
-import static com.axibase.tsd.util.AtsdUtil.toMap;
 
 /**
  * @author Nikolay Malevanny.
  */
 public class TestUtil {
-    public static final String TTT_TYPE = "ttt-type";
     public static final String TTT_RULE = "ttt-rule";
-    public static final String NNN_TYPE = "java-nnn-type";
     public static final String TTT_ENTITY = "ttt-entity";
     public static final String SSS_ENTITY = "sss-entity";
-    public static final String NNN_ENTITY = "nnn-entity3";
     public static final String TTT_METRIC = "ttt-metric";
     public static final String SSS_METRIC = "sss-metric";
     public static final String SSS_TAG = "sss-tag";
-    public static final String UUU_TAG = "uuu-tag";
     public static final String YYY_METRIC = "yyy-metric";
-    public static final String NNN_METRIC = "java-nnn-metric";
-    public static final String TTT_ENTITY_GROUP = "ttt-entity-group";
-    public static final String NNN_ENTITY_GROUP = "nnn-entity-group";
 
     public static final int WAIT_TIME = 1800;
 
@@ -71,7 +60,7 @@ public class TestUtil {
     }
 
     public static MultivaluedMap<String, String> toMVM(String... tagNamesAndValues) {
-        return new MultivaluedHashMap<String, String>(AtsdUtil.toMap(tagNamesAndValues));
+        return new MultivaluedHashMap<>(AtsdUtil.toMap(tagNamesAndValues));
     }
 
     public static void waitWorkingServer(HttpClientManager httpClientManager) throws InterruptedException {
@@ -84,35 +73,33 @@ public class TestUtil {
         }
     }
 
-    public static List<Property> fixTestDataProperty(DataService ds) throws InterruptedException {
-        ds.insertProperties(new Property(TTT_TYPE+".t", TTT_ENTITY,
-                AtsdUtil.toMap("key1", "ttt.t-key-1", "key2", "ttt.t-key-2"),
-                AtsdUtil.toMap("val1", "ttt.t-key-value-1", "val2", "ttt.t-key-value-3")));
-        Thread.sleep(WAIT_TIME);
-
-        // "property type:ttt-type entity:ttt-entity time:111 key:key1=ttt-key-1 key2=ttt-key-2 " +
-        // "values: key1=ttt-key-value-1 key2=ttt-key-value-3"
-        PropertyInsertCommand command = new PropertyInsertCommand(
-                TTT_ENTITY, TTT_TYPE, System.currentTimeMillis() - 1000,
-                AtsdUtil.toMap("key1", "ttt-key-1", "key2", "ttt-key-2"),
-                AtsdUtil.toMap("val1", "ttt-key-value-1", "val2", "ttt-key-value-3")
-        );
-        System.out.println("command = " + command.compose());
-        ds.sendPlainCommand(command);
-        ds.sendPlainCommand(new PropertyInsertCommand(
-                TTT_ENTITY, TTT_TYPE+".t", System.currentTimeMillis() - 1000,
-                AtsdUtil.toMap("key1", "ttt.t-key-1", "key2", "ttt.t-key-2"),
-                AtsdUtil.toMap("val1", "ttt.t-key-value-1", "val2", "ttt.t-key-value-3")
-        ));
-        Thread.sleep(WAIT_TIME);
-        return ds.retrieveProperties(buildPropertiesQuery());
+    public static Metric createNewTestMetric(String metricName) {
+        return new Metric()
+                .setName(metricName)
+                .setDataType(DataType.INTEGER)
+                .setDescription("test")
+                .setEnabled(false)
+                .setMaxValue(1D)
+                .setMinValue(3D)
+                .buildTags(
+                        "nnn-tag-1", "nnn-tag-value-1",
+                        "nnn-tag-2", "nnn-tag-value-2"
+                )
+                .setTimePrecision(TimePrecision.SECONDS);
     }
 
-    public static GetPropertiesQuery buildPropertiesQuery() {
-        GetPropertiesQuery query = new GetPropertiesQuery(TTT_TYPE, TTT_ENTITY);
-        query.setStartTime(0);
-        query.setEndTime(Long.MAX_VALUE);
-        query.setKey(AtsdUtil.toMap("key1", "ttt-key-1"));
-        return query;
+    public static String getVariablePrefix() {
+        String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
+        StringBuilder prefix = new StringBuilder();
+        for(int i = 0; i < methodName.length(); i++) {
+            Character ch = methodName.charAt(i);
+            if(Character.isUpperCase(ch)) {
+                prefix.append("-");
+            }
+            prefix.append(Character.toLowerCase(ch));
+        }
+        prefix.append("-");
+        return prefix.toString();
     }
+
 }
