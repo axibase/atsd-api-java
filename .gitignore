@@ -4,3 +4,4 @@ deploy.config
 deploy.sh
 settings.xml
 local.*
+atsd-api-java.iml
