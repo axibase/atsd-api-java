@@ -28,14 +28,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static com.axibase.tsd.TestUtil.WAIT_TIME;
-import static com.axibase.tsd.TestUtil.getVariablePrefix;
-import static com.axibase.tsd.TestUtil.waitWorkingServer;
+import static com.axibase.tsd.TestUtil.*;
 import static junit.framework.Assert.*;
 
 public class MessageTest {
@@ -60,7 +57,7 @@ public class MessageTest {
 
     @Test
     public void testInsertMessages() throws Exception {
-        final String entityName = getVariablePrefix() + "entity";
+        final String entityName = buildVariablePrefix() + "entity";
         final String messageTextUnknown = "message txt 1";
         final String messageTextMinor = "message text 2";
         final String messageTextCritical = "message text 3";
@@ -105,13 +102,14 @@ public class MessageTest {
 
     @Test
     public void testRetrieveMessagesByEntityName() throws Exception {
-        final String entityName = getVariablePrefix() + "entity";
+        final String entityName = buildVariablePrefix() + "entity";
         final String messageTextUnknown = "message txt 1";
-        final long timestamp = 1456489150000L;
+        final long timestamp = MOCK_TIMESTAMP;
+        final long delta = 1L;
 
-        GetMessagesQuery getMessagesQuery = new GetMessagesQuery(entityName).setStartTime(timestamp).setEndTime(timestamp);
+        GetMessagesQuery getMessagesQuery = new GetMessagesQuery(entityName).setStartTime(timestamp - delta).setEndTime(timestamp + delta);
 
-        if(dataService.retrieveMessages(getMessagesQuery).isEmpty()) {
+        if (dataService.retrieveMessages(getMessagesQuery).isEmpty()) {
             Message message = new Message(entityName, messageTextUnknown).setSeverity(Severity.UNKNOWN).setTimestamp(timestamp);
             assertTrue(dataService.insertMessages(message));
         }
@@ -125,13 +123,13 @@ public class MessageTest {
     @Test
     public void testRetrieveMessagesByEntitiesName() throws Exception {
         final String messageTextUnknown = "message txt 1";
-        final long timestamp = 1456489150000L;
-        getVariablePrefix();
-        final List<String> entitiesName = Arrays.asList(getVariablePrefix() + "entity-first", getVariablePrefix() + "entity-second");
+        final long timestamp = MOCK_TIMESTAMP;
+        buildVariablePrefix();
+        final List<String> entitiesName = Arrays.asList(buildVariablePrefix() + "entity-first", buildVariablePrefix() + "entity-second");
 
         GetMessagesQuery getMessagesQuery = new GetMessagesQuery((String[]) entitiesName.toArray()).setStartTime(timestamp);
-        if(dataService.retrieveMessages(getMessagesQuery).size() < 2) {
-            for(String entityName: entitiesName) {
+        if (dataService.retrieveMessages(getMessagesQuery).size() < 2) {
+            for (String entityName : entitiesName) {
                 Message message = new Message(entityName, messageTextUnknown).setSeverity(Severity.UNKNOWN).setTimestamp(timestamp);
                 assertTrue(dataService.insertMessages(message));
             }
@@ -145,7 +143,7 @@ public class MessageTest {
         assertFalse(messages.isEmpty());
 
         final List<String> recivedEntitiesName = new ArrayList<>();
-        for(Message msg: messages) {
+        for (Message msg : messages) {
             recivedEntitiesName.add(msg.getEntityName());
         }
         assertTrue(recivedEntitiesName.containsAll(entitiesName));

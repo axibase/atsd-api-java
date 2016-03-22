@@ -34,7 +34,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.axibase.tsd.TestUtil.getVariablePrefix;
+import static com.axibase.tsd.TestUtil.MOCK_TIMESTAMP;
+import static com.axibase.tsd.TestUtil.buildVariablePrefix;
 import static com.axibase.tsd.TestUtil.waitWorkingServer;
 import static junit.framework.Assert.*;
 
@@ -67,15 +68,16 @@ public class EntityAndTagsTest {
 
     @Test
     public void testRetrieveEntityAndTagsByMetric() throws Exception {
-        final String entityName = getVariablePrefix() + "entity";
-        final String metricName = getVariablePrefix() + "metric";
+        final String entityName = buildVariablePrefix() + "entity";
+        final String metricName = buildVariablePrefix() + "metric";
+        final Long timestamp = MOCK_TIMESTAMP;
         Map<String, String> tags = new HashMap<>();
         tags.put("test-tag1", "test-tag1-val");
         tags.put("test-tag2", "test-tag2-val");
 
-        if(metaDataService.retrieveEntity(entityName) == null) {
+        if (metaDataService.retrieveEntity(entityName) == null) {
             AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName, "test-tag1", "test-tag1-val", "test-tag2", "test-tag2-val");
-            addSeriesCommand.addSeries(new Series(1456489150000L, 1));
+            addSeriesCommand.addSeries(new Series(timestamp, 1));
             assertTrue(dataService.addSeries(addSeriesCommand));
         }
 
@@ -87,21 +89,21 @@ public class EntityAndTagsTest {
         assertEquals(((EntityAndTags) entityAndTagsList.get(0)).getTags(), tags);
 
 
-
-
     }
 
     @Test
     public void testRetrieveEntityAndTagsByMetricAndEntity() throws Exception {
-        final String entityName = getVariablePrefix() + "entity";
-        final String metricName = getVariablePrefix() + "metric";
+        final String entityName = buildVariablePrefix() + "entity";
+        final String metricName = buildVariablePrefix() + "metric";
+        final Long timestamp = MOCK_TIMESTAMP;
+
         Map<String, String> tags = new HashMap<>();
         tags.put("test-tag1", "test-tag1-val");
         tags.put("test-tag2", "test-tag2-val");
 
-        if(metaDataService.retrieveEntity(entityName) == null) {
+        if (metaDataService.retrieveEntity(entityName) == null) {
             AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName, "test-tag1", "test-tag1-val", "test-tag2", "test-tag2-val");
-            addSeriesCommand.addSeries(new Series(1456489150000L, 1));
+            addSeriesCommand.addSeries(new Series(timestamp, 1));
             assertTrue(dataService.addSeries(addSeriesCommand));
         }
 

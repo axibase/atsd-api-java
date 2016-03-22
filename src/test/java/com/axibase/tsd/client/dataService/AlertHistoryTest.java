@@ -21,15 +21,15 @@ import com.axibase.tsd.TestUtil;
 import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
 import com.axibase.tsd.model.data.AlertHistory;
+import com.axibase.tsd.model.data.command.AddSeriesCommand;
 import com.axibase.tsd.model.data.command.GetAlertHistoryQuery;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import com.axibase.tsd.model.data.series.Series;
+import org.junit.*;
 
 import java.util.List;
 
 import static com.axibase.tsd.TestUtil.*;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 
 public class AlertHistoryTest {
@@ -51,17 +51,43 @@ public class AlertHistoryTest {
         waitWorkingServer(httpClientManager);
     }
 
+    @Ignore
     @Test
-    public void testRetrieveAlertHistory() throws Exception {
-        GetAlertHistoryQuery getAlertHistoryQuery = new GetAlertHistoryQuery();
-        getAlertHistoryQuery.setStartTime(0L);
-        getAlertHistoryQuery.setEndTime(Long.MAX_VALUE);
-        getAlertHistoryQuery.setEntityName(TTT_ENTITY);
-        getAlertHistoryQuery.setMetricName(TTT_METRIC);
-
-        List<AlertHistory> alertHistoryList = dataService.retrieveAlertHistory(getAlertHistoryQuery);
+    public void testRetrieveAlertHistoryByMetricAndTimes() throws Exception {
+        final String entityName = buildVariablePrefix();
+        final String metricName = ALERTS_METRIC;
+        final Long timestamp = System.currentTimeMillis(); //required to activate alerts
+        final Long delta = 50L;
+        GetAlertHistoryQuery getAlertHistoryQuery = new GetAlertHistoryQuery()
+                .setMetricName(metricName)
+                .setStartTime(timestamp - delta)
+                .setEndTime(timestamp + delta);
+        if (dataService.retrieveAlertHistory(getAlertHistoryQuery).isEmpty()) {
+            AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName);
+            addSeriesCommand.addSeries(new Series(timestamp, 1));
+            dataService.addSeries(addSeriesCommand);
+        }
+        List alertHistoryList = dataService.retrieveAlertHistory(getAlertHistoryQuery);
+        assertFalse(alertHistoryList.isEmpty());
         assertTrue(alertHistoryList.get(0) instanceof AlertHistory);
-        assertTrue(alertHistoryList.size() > 0);
+    }
+
+
+    @Test
+    public void testRetrieveAlertHistoryByMetric() throws Exception {
+        final String entityName = buildVariablePrefix();
+        final String metricName = ALERTS_METRIC;
+        final Long timestamp = System.currentTimeMillis(); //required to activate alerts
+        GetAlertHistoryQuery getAlertHistoryQuery = new GetAlertHistoryQuery()
+                .setMetricName(metricName);
+        if (dataService.retrieveAlertHistory(getAlertHistoryQuery).isEmpty()) {
+            AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName);
+            addSeriesCommand.addSeries(new Series(timestamp, 1));
+            dataService.addSeries(addSeriesCommand);
+        }
+        List alertHistoryList = dataService.retrieveAlertHistory(getAlertHistoryQuery);
+        assertFalse(alertHistoryList.isEmpty());
+        assertTrue(alertHistoryList.get(0) instanceof AlertHistory);
     }
 
 

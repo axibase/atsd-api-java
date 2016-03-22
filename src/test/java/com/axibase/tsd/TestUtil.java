@@ -30,13 +30,10 @@ import javax.ws.rs.core.MultivaluedMap;
  * @author Nikolay Malevanny.
  */
 public class TestUtil {
-    public static final String TTT_RULE = "ttt-rule";
-    public static final String TTT_ENTITY = "ttt-entity";
-    public static final String SSS_ENTITY = "sss-entity";
-    public static final String TTT_METRIC = "ttt-metric";
-    public static final String SSS_METRIC = "sss-metric";
-    public static final String SSS_TAG = "sss-tag";
-    public static final String YYY_METRIC = "yyy-metric";
+    public static final String ALERTS_METRIC = "alerts-metric";
+    public static final Long MOCK_TIMESTAMP = 1456489150000L;
+    public static final Long MOCK_TIMESTAMP_DELTA = 60L;
+    public static final Double MOCK_SERIE_VALUE = 1d;
 
     public static final int WAIT_TIME = 1800;
 
@@ -64,7 +61,7 @@ public class TestUtil {
     }
 
     public static void waitWorkingServer(HttpClientManager httpClientManager) throws InterruptedException {
-        for (int i = 0; i < MAX_PING_TRIES; i ++) {
+        for (int i = 0; i < MAX_PING_TRIES; i++) {
             if (httpClientManager.canSendPlainCommand()) {
                 return;
             } else {
@@ -88,12 +85,12 @@ public class TestUtil {
                 .setTimePrecision(TimePrecision.SECONDS);
     }
 
-    public static String getVariablePrefix() {
+    public static String buildVariablePrefix() {
         String methodName = Thread.currentThread().getStackTrace()[2].getMethodName();
         StringBuilder prefix = new StringBuilder();
-        for(int i = 0; i < methodName.length(); i++) {
+        for (int i = 0; i < methodName.length(); i++) {
             Character ch = methodName.charAt(i);
-            if(Character.isUpperCase(ch)) {
+            if (Character.isUpperCase(ch)) {
                 prefix.append("-");
             }
             prefix.append(Character.toLowerCase(ch));

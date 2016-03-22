@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.axibase.tsd.TestUtil.getVariablePrefix;
+import static com.axibase.tsd.TestUtil.buildVariablePrefix;
 import static com.axibase.tsd.TestUtil.waitWorkingServer;
 import static junit.framework.Assert.*;
 
@@ -63,8 +63,8 @@ public class EntityTest {
 
     @Test
     public void testRetrieveEntity() throws Exception {
-        final String entityName = "test-retrieve-entity";
-        if(metaDataService.retrieveEntity(entityName) == null) {
+        final String entityName = buildVariablePrefix();
+        if (metaDataService.retrieveEntity(entityName) == null) {
             assertTrue(metaDataService.createOrReplaceEntity(new Entity(entityName)));
         }
         assertEquals(entityName, metaDataService.retrieveEntity(entityName).getName());
@@ -72,8 +72,8 @@ public class EntityTest {
 
     @Test
     public void testRetrieveEntities() throws Exception {
-        final String entityName = "test-retrieve-entities";
-        if(metaDataService.retrieveEntity(entityName) == null) {
+        final String entityName = buildVariablePrefix();
+        if (metaDataService.retrieveEntity(entityName) == null) {
             assertTrue(metaDataService.createOrReplaceEntity(new Entity(entityName)));
         }
 
@@ -93,8 +93,8 @@ public class EntityTest {
     }
 
     @Test
-    public void testCreateOrReplaceEntityWithoutTags() throws  Exception {
-        final String entityName = "test-create-or-replace-entity-without-tags";
+    public void testCreateOrReplaceEntityWithoutTags() throws Exception {
+        final String entityName = buildVariablePrefix();
         if (metaDataService.retrieveEntity(entityName) != null) {
             metaDataService.deleteEntity(new Entity(entityName));
         }
@@ -108,7 +108,7 @@ public class EntityTest {
 
     @Test
     public void testCreateOrReplaceEntityWithTags() throws Exception {
-        final String entityName = "test-create-or-replace-entity-with-tags";
+        final String entityName = buildVariablePrefix();
         if (metaDataService.retrieveEntity(entityName) != null) {
             metaDataService.deleteEntity(new Entity(entityName));
         }
@@ -140,7 +140,7 @@ public class EntityTest {
     }
 
     @Test
-    public void testCreateOrReplaceInvalidEntityWithoutTags() throws  Exception {
+    public void testCreateOrReplaceInvalidEntityWithoutTags() throws Exception {
         final String entityName = "te_____st-cre ate-invalid-^%entityƒџќѕ∆-w\"ith''ou't-tags";
 
         if (metaDataService.retrieveEntity(entityName) != null) {
@@ -155,13 +155,12 @@ public class EntityTest {
 
     @Test
     public void testCreateOrReplaceEntityWithInvalidTags() throws Exception {
-        final String entityName = getVariablePrefix();
+        final String entityName = buildVariablePrefix();
 
         if (metaDataService.retrieveEntity(entityName) != null) {
             metaDataService.deleteEntity(new Entity(entityName));
         }
         assertNull(metaDataService.retrieveEntity(entityName));
-
         Entity entity = new Entity(entityName);
         entity.buildTags("test- t__\\\'\" onclick=alert(1) 'g1", "test-__-  tag1-val", "test-tag2", "test-tag2-val");
         Assert.assertFalse(metaDataService.createOrReplaceEntity(entity));
@@ -170,7 +169,7 @@ public class EntityTest {
 
     @Test
     public void testCreateAndDeleteEntity() throws Exception {
-        final String entityName = getVariablePrefix();
+        final String entityName = buildVariablePrefix();
         if (metaDataService.retrieveEntity(entityName) != null) {
             metaDataService.deleteEntity(new Entity(entityName));
         }

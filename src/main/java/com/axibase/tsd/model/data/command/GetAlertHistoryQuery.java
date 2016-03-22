@@ -38,56 +38,63 @@ public class GetAlertHistoryQuery {
         return startTime;
     }
 
-    public void setStartTime(Long startTime) {
+    public GetAlertHistoryQuery setStartTime(Long startTime) {
         this.startTime = startTime;
+        return this;
     }
 
     public Long getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Long endTime) {
+    public GetAlertHistoryQuery setEndTime(Long endTime) {
         this.endTime = endTime;
+        return this;
     }
 
     public String getMetricName() {
         return metricName;
     }
 
-    public void setMetricName(String metricName) {
+    public GetAlertHistoryQuery setMetricName(String metricName) {
         this.metricName = metricName;
+        return this;
     }
 
     public String getEntityName() {
         return entityName;
     }
 
-    public void setEntityName(String entityName) {
+    public GetAlertHistoryQuery setEntityName(String entityName) {
         this.entityName = entityName;
+        return this;
     }
 
     public String getEntityGroupName() {
         return entityGroupName;
     }
 
-    public void setEntityGroupName(String entityGroupName) {
+    public GetAlertHistoryQuery setEntityGroupName(String entityGroupName) {
         this.entityGroupName = entityGroupName;
+        return this;
     }
 
     public String getRuleName() {
         return ruleName;
     }
 
-    public void setRuleName(String ruleName) {
+    public GetAlertHistoryQuery setRuleName(String ruleName) {
         this.ruleName = ruleName;
+        return this;
     }
 
     public Integer getLimit() {
         return limit;
     }
 
-    public void setLimit(Integer limit) {
+    public GetAlertHistoryQuery setLimit(Integer limit) {
         this.limit = limit;
+        return this;
     }
 
     @Override

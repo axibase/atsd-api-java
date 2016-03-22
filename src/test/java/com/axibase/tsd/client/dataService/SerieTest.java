@@ -16,6 +16,7 @@ package com.axibase.tsd.client.dataService;
 
 import com.axibase.tsd.RerunRule;
 import com.axibase.tsd.TestUtil;
+import com.axibase.tsd.client.AtsdServerException;
 import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
 import com.axibase.tsd.client.SeriesCommandPreparer;
@@ -35,6 +36,7 @@ import org.junit.*;
 import javax.ws.rs.core.MultivaluedHashMap;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -68,117 +70,142 @@ public class SerieTest {
 
     @Test
     public void testRetrieveSeries() throws Exception {
-        GetSeriesQuery c1 = createTestGetTestCommand();
-        List<GetSeriesResult> seriesList = dataService.retrieveSeries(c1);
+        final String entityName = buildVariablePrefix() + "entity";
+        final String metricName = buildVariablePrefix() + "metric";
+        final int intervalSize = 20;
 
-        assertTrue(seriesList.get(0) instanceof GetSeriesResult);
-        assertTrue(seriesList.size() > 0);
+        GetSeriesQuery getSeriesQuery = new GetSeriesQuery(entityName, metricName);
+//        getSeriesQuery.setAggregateMatcher(new SimpleAggregateMatcher(new Interval(intervalSize, IntervalUnit.SECOND),
+//                Interpolate.NONE,
+//                AggregateType.DETAIL));
+        getSeriesQuery.setInterval(new Interval(intervalSize, IntervalUnit.DAY));
+
+        List getSeriesResultList = dataService.retrieveSeries(getSeriesQuery);
+
+        if(getSeriesResultList.isEmpty() || ((GetSeriesResult)getSeriesResultList.get(0)).getData().isEmpty()) {
+            AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName);
+            addSeriesCommand.addSeries(new Series(System.currentTimeMillis(), MOCK_SERIE_VALUE));
+            assertTrue(dataService.addSeries(addSeriesCommand));
+        }
+
+        getSeriesResultList = dataService.retrieveSeries(getSeriesQuery);
+        assertEquals(1, getSeriesResultList.size());
+        assertTrue(getSeriesResultList.get(0) instanceof GetSeriesResult);
+        assertEquals(1, ((GetSeriesResult) getSeriesResultList.get(0)).getData().size());
+    }
+
+    @Test
+    public void testRetrieveSeriesWithoutDate() throws Exception {
+        final String entityName = buildVariablePrefix() + "entity";
+        final String metricName = buildVariablePrefix() + "metric";
+        final int intervalSize = 20;
+
+        GetSeriesQuery getSeriesQuery = new GetSeriesQuery(entityName, metricName);
+        getSeriesQuery.setAggregateMatcher(new SimpleAggregateMatcher(new Interval(intervalSize, IntervalUnit.SECOND),
+                Interpolate.NONE,
+                AggregateType.DETAIL));
+
+        try {
+            dataService.retrieveSeries(getSeriesQuery);
+            fail();
+        } catch (AtsdServerException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
     public void testRetrieveSeriesWithDate() throws Exception {
-        GetSeriesQuery c1 = createTestGetTestCommand();
-        c1.setTimeFormat(TimeFormat.ISO);
-        c1.setStartTime(0L);
-        c1.setEndTime(System.currentTimeMillis() + 100);
-        List<GetSeriesResult> seriesList = dataService.retrieveSeries(c1);
+        final String entityName = buildVariablePrefix() + "entity";
+        final String metricName = buildVariablePrefix() + "metric";
+        final Long timestamp = MOCK_TIMESTAMP;
+        final Double serieValue = MOCK_SERIE_VALUE;
+        AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName);
+        addSeriesCommand.addSeries(new Series(timestamp, serieValue));
+        assertTrue(dataService.addSeries(addSeriesCommand));
 
-        GetSeriesResult getSeriesResult = seriesList.get(0);
-        assertTrue(getSeriesResult instanceof GetSeriesResult);
-        assertTrue(seriesList.size() > 0);
-        Series s = getSeriesResult.getData().get(0);
+        GetSeriesQuery getSeriesQuery = new GetSeriesQuery(entityName, metricName)
+                .setTimeFormat(TimeFormat.ISO)
+                .setStartTime(0L)
+                .setEndTime(timestamp + MOCK_TIMESTAMP_DELTA);
+
+
+
+        List getSeriesResults = dataService.retrieveSeries(getSeriesQuery);
+        assertFalse(getSeriesResults.isEmpty());
+        assertTrue(getSeriesResults.get(0) instanceof GetSeriesResult);
+
+        List<Series> seriesList = ((GetSeriesResult)getSeriesResults.get(0)).getData();
+        assertFalse(seriesList.isEmpty());
+
+        Series s = seriesList.get(0);
         assertNull(s.getTimeMillis());
         assertTrue(StringUtils.isNoneBlank(s.getDate()));
     }
 
     @Test
-    public void testRetrieveSeriesWithEndtime() throws Exception {
-        GetSeriesQuery c1 = createTestGetTestCommand();
-        c1.setStartTime(null);
-        c1.setEndTime(null);
+    public void testRetrieveSeriesWithoutTimes() throws Exception {
+        final String entityName = buildVariablePrefix() + "entity";
+        final String metricName = buildVariablePrefix() + "metric";
+        final Long timestamp = MOCK_TIMESTAMP;
+        final Double serieValue = MOCK_SERIE_VALUE;
+        AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName);
+        addSeriesCommand.addSeries(new Series(timestamp, serieValue));
+        assertTrue(dataService.addSeries(addSeriesCommand));
 
-        List<GetSeriesResult> seriesList = null;
-        try {
-            seriesList = dataService.retrieveSeries(c1);
-            fail();
-        } catch (Exception e) {
+        {
+            GetSeriesQuery getSeriesQuery = new GetSeriesQuery(entityName, metricName);
+            try {
+                dataService.retrieveSeries(getSeriesQuery);
+                fail();
+            } catch (AtsdServerException e) {
+                e.printStackTrace();
+            }
         }
 
-        c1.setEndDate("current_hour + 1 * hour");
-        c1.setStartDate("current_hour - 5 * year");
-        seriesList = dataService.retrieveSeries(c1);
 
-        assertTrue(seriesList.get(0) instanceof GetSeriesResult);
-        assertTrue(seriesList.size() > 0);
-
-        c1.setStartDate(null);
-        try {
-            seriesList = dataService.retrieveSeries(c1);
-            fail();
-        } catch (Exception e) {
-        }
-
-        c1.setInterval(new Interval(5, IntervalUnit.YEAR));
-        seriesList = dataService.retrieveSeries(c1);
-
-        assertTrue(seriesList.get(0) instanceof GetSeriesResult);
-        assertTrue(seriesList.size() > 0);
     }
+
+    //TODO add tests to check start\end\interval behavior if anyone does not exist
 
     @Test
     public void testInsertSeries() throws Exception {
-        final long st = System.currentTimeMillis();
-        AddSeriesCommand c1 = new AddSeriesCommand(TTT_ENTITY, TTT_METRIC, "ttt-tag-1", "ttt-tag-value-1");
-        int testCnt = 10;
-        for (int i = 0; i < testCnt; i++) {
-            c1.addSeries(
-                    new Series(st + i, i)
-            );
+        final String entityName = buildVariablePrefix() + "entity";
+        final String metricName = buildVariablePrefix() + "metric";
+        final long timestamp = System.currentTimeMillis();
+        final int testSerieCount = 10;
+
+        AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName);
+
+        for (int i = 0; i < testSerieCount; i++) {
+            addSeriesCommand.addSeries(new Series(timestamp + i, i));
         }
-        AddSeriesCommand c2 = new AddSeriesCommand(TTT_ENTITY, TTT_METRIC
-                , "ttt-tag-1", "ttt-tag-value-1"
-                , "ttt-tag-2", "ttt-tag-value-2"
-        );
-        for (int i = 0; i < testCnt; i++) {
-            c2.addSeries(
-                    new Series(st + i, i * i)
-            );
-        }
-        dataService.addSeries(c1, c2);
+
+        dataService.addSeries(addSeriesCommand);
 
         Thread.sleep(3000);
 
-        List<GetSeriesResult> getSeriesResults = dataService.retrieveSeries(
-                new SeriesCommandPreparer() {
-                    @Override
-                    public void prepare(GetSeriesQuery command) {
-//                        command.setAggregateMatcher(new AggregateMatcher(new Interval(20, IntervalUnit.SECOND), Interpolate.NONE, AggregateType.DETAIL));
-                        command.setLimit(10);
-                        command.setStartTime(st - 100);
-                        command.setEndTime(st + 100);
-                    }
-                },
-                new GetSeriesQuery(TTT_ENTITY, TTT_METRIC, TestUtil.toMVM("ttt-tag-1", "ttt-tag-value-1")),
-                new GetSeriesQuery(TTT_ENTITY, TTT_METRIC, TestUtil.toMVM(
-                        "ttt-tag-1", "ttt-tag-value-1"
-                        , "ttt-tag-2", "ttt-tag-value-2"))
-        );
-        assertEquals(3, getSeriesResults.size());
-        assertEquals(10, getSeriesResults.get(0).getData().size());
-        assertEquals(10, getSeriesResults.get(1).getData().size());
-        assertEquals(10, getSeriesResults.get(2).getData().size());
+        {
+            GetSeriesQuery getSeriesQuery = new GetSeriesQuery(entityName, metricName).setStartTime(timestamp).setEndTime(timestamp + testSerieCount);
+            List getSeriesResultList = dataService.retrieveSeries(getSeriesQuery);
+            assertFalse(getSeriesResultList.isEmpty());
+            assertTrue(getSeriesResultList.get(0) instanceof GetSeriesResult);
+            assertEquals(1, getSeriesResultList.size());
+            assertEquals(10, ((GetSeriesResult)getSeriesResultList.get(0)).getData().size());
+        }
     }
 
     @Test
     public void testInsertSeriesCsv() throws Exception {
-        final long st = System.currentTimeMillis();
-        StringBuilder sb = new StringBuilder("time, ").append(TTT_METRIC).append('\n');
+        final String entityName = buildVariablePrefix() + "entity";
+        final String metricName = buildVariablePrefix() + "metric";
+        final long timestamp = System.currentTimeMillis();
+        StringBuilder sBuilder = new StringBuilder("time, ").append(metricName).append('\n');
         final int testCnt = 10;
         for (int i = 0; i < testCnt; i++) {
-            sb.append(st + i).append(",").append(i * i * i).append('\n');
+            sBuilder.append(timestamp + i).append(",").append(i * i * i).append('\n');
         }
 
-        dataService.addSeriesCsv(TTT_ENTITY, sb.toString(), "ttt-tag-1", "ttt-tag-value-1");
+        dataService.addSeriesCsv(entityName, sBuilder.toString(), "ttt-tag-1", "ttt-tag-value-1");
 
         Thread.sleep(3000);
 
@@ -187,11 +214,11 @@ public class SerieTest {
                     @Override
                     public void prepare(GetSeriesQuery command) {
                         command.setLimit(10);
-                        command.setStartTime(st - 100);
-                        command.setEndTime(st + testCnt + 100);
+                        command.setStartTime(timestamp - 100);
+                        command.setEndTime(timestamp + testCnt + 100);
                     }
                 },
-                new GetSeriesQuery(TTT_ENTITY, TTT_METRIC, TestUtil.toMVM("ttt-tag-1", "ttt-tag-value-1"))
+                new GetSeriesQuery(entityName, metricName, TestUtil.toMVM("ttt-tag-1", "ttt-tag-value-1"))
         );
         assertEquals(1, getSeriesResults.size());
         assertEquals(10, getSeriesResults.get(0).getData().size());
@@ -199,30 +226,31 @@ public class SerieTest {
 
     @Test
     public void testQuerySeriesCsv() throws Exception {
-        final long st = System.currentTimeMillis();
-        StringBuilder sb = new StringBuilder("time, ").append(TTT_METRIC).append('\n');
+        final String entityName = buildVariablePrefix() + "entity";
+        final String metricName = buildVariablePrefix() + "metric";
+        final long timestamp = System.currentTimeMillis();
+        StringBuilder sBuilder = new StringBuilder("time, ").append(metricName).append('\n');
         final int testCnt = 10;
         for (int i = 0; i < testCnt; i++) {
-            sb.append(st + i).append(",").append(i * i * i).append('\n');
+            sBuilder.append(timestamp + i).append(",").append(i * i * i).append('\n');
         }
 
-        dataService.addSeriesCsv(TTT_ENTITY, sb.toString(), "ttt-tag-1", "ttt-tag-value-1");
+        dataService.addSeriesCsv(entityName, sBuilder.toString());
 
-        Thread.sleep(3000);
+        Thread.sleep(2000);
 
-        Map<String, String> tags = AtsdUtil.toMap("ttt-tag-1", "ttt-tag-value-1");
-        long startTime = st - 100;
-        long endTime = st + testCnt + 100;
+        Map<String, String> tags = new HashMap<>();
+        long startTime = timestamp;
+        long endTime = timestamp + testCnt;
         String period = null;
         Integer limit = 10;
         boolean last = false;
-//        String entity = TTT_ENTITY;
-        String entity = "ttt*";
+        String entityPattern = buildVariablePrefix() + "*";
         String columns = "entity, metric, time, value";
 
         InputStream inputStream = null;
         try {
-            inputStream = dataService.querySeriesPack(Format.CSV, entity, TTT_METRIC, tags, startTime, endTime, period,
+            inputStream = dataService.querySeriesPack(Format.CSV, entityPattern, metricName, tags, startTime, endTime, period,
                     AggregateType.DETAIL, limit, last, columns);
             List<String> lines = IOUtils.readLines(inputStream);
             assertEquals("entity,metric,time,value", lines.get(0));
@@ -234,20 +262,40 @@ public class SerieTest {
 
     @Test
     public void testRetrieveLastSeries() throws Exception {
-        GetSeriesQuery c1 = createTestGetTestCommand();
-        c1.setAggregateMatcher(null);
-        List seriesList = dataService.retrieveLastSeries(c1);
+        final String entityName = buildVariablePrefix() + "entity";
+        final String metricName = buildVariablePrefix() + "metric";
+        final Long timestamp = System.currentTimeMillis();
 
-        assertTrue(seriesList.get(0) instanceof GetSeriesResult);
-        assertEquals(1, seriesList.size());
+        {
+            AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName)
+                    .addSeries(new Series(timestamp, MOCK_SERIE_VALUE));
+
+            assertTrue(dataService.addSeries(addSeriesCommand));
+        }
+
+        Thread.sleep(WAIT_TIME);
+
+        {
+            GetSeriesQuery getSeriesQuery = new GetSeriesQuery(entityName, metricName)
+                    .setStartTime(0L)
+                    .setEndTime(timestamp);
+            List seriesList = dataService.retrieveLastSeries(getSeriesQuery);
+
+            assertFalse(seriesList.isEmpty());
+
+            assertTrue(seriesList.get(0) instanceof GetSeriesResult);
+            assertEquals(1, ((GetSeriesResult) seriesList.get(0)).getData().size());
+            assertEquals(timestamp, ((GetSeriesResult) seriesList.get(0)).getData().get(0).getTimeMillis());
+            assertEquals(MOCK_SERIE_VALUE, ((GetSeriesResult) seriesList.get(0)).getData().get(0).getValue());
+        }
+
     }
-
-
-
 
 
     @Test
     public void testMultiThreadStreamingCommands() throws Exception {
+        final String entityName = buildVariablePrefix() + "entity";
+        final String metricName = buildVariablePrefix() + "metric";
 //        final int cnt = 50;
         final int cnt = 5;
         final int msgCnt = 100;
@@ -259,12 +307,15 @@ public class SerieTest {
                 new ArrayBlockingQueue<Runnable>(cnt));
         long start = System.currentTimeMillis();
         CountDownLatch latch = new CountDownLatch(cnt);
-        String tagValue = "multi-thread";
+        String tagName = buildVariablePrefix() +"multi-thread-tag-name";
+
+        String tagValue = buildVariablePrefix() + "multi-thread-tag-value";
         for (int i = 0; i < cnt; i++) {
             Thread.sleep(pauseMs);
-            final SimpleSeriesSender command = new SimpleSeriesSender(start, dataService, latch, tagValue);
+            final SimpleSeriesSender command = new SimpleSeriesSender(start, dataService, latch);
             command.cnt = msgCnt;
             command.sleep = msgPause;
+            command.setSeriesParameters(entityName, metricName, tagName, tagValue);
             threadPoolExecutor.execute(command);
         }
         try {
@@ -278,15 +329,18 @@ public class SerieTest {
 
         MultivaluedHashMap<String, String> tags = new MultivaluedHashMap<String, String>();
 //        for (int i = 0; i < size; i++) {
-        tags.add(SSS_TAG, tagValue);
+        tags.add(tagName, tagValue);
 //        }
-        int resCnt = countSssSeries(start, tags);
+        int resCnt = countSeries(start, entityName, metricName, tags);
         assertEquals(cnt, resCnt);
     }
 
     @Test
     public void testStreamingCommands() throws Exception {
-        String tagValue = "streaming";
+        final String entityName = buildVariablePrefix() + "entity";
+        final String metricName = buildVariablePrefix() + "metric";
+        final String tagName = buildVariablePrefix() + "streaming-tag-name";
+        final String tagValue = buildVariablePrefix() +"streaming-tag-value";
         final int size = 5;
         final int cnt = 30;
 //        final int cnt = 30000;
@@ -298,7 +352,7 @@ public class SerieTest {
             if (pauseMs > 0) {
                 Thread.sleep(pauseMs);
             }
-            new SimpleSeriesSender(start, dataService, latch, tagValue).run();
+            new SimpleSeriesSender(start, dataService, latch).setSeriesParameters(entityName, metricName, tagName, tagValue).run();
         }
 
         try {
@@ -312,15 +366,15 @@ public class SerieTest {
         Thread.sleep(WAIT_TIME * (1 + cnt / 1000));
 
         MultivaluedHashMap<String, String> tags = new MultivaluedHashMap<String, String>();
-        tags.add(SSS_TAG, tagValue);
-        int resCnt = countSssSeries(start, tags);
+        tags.add(tagName, tagValue);
+        int resCnt = countSeries(start, entityName, metricName, tags);
         assertEquals(cnt, resCnt);
     }
 
     @Test
     public void testSendBatch() throws Exception {
-        final String entityName = "bbb-entity";
-        final String metricName = "bbb-metric";
+        final String entityName = buildVariablePrefix() + "entity";
+        final String metricName = buildVariablePrefix() + "metric";
         long st = System.currentTimeMillis();
         final ArrayList<PlainCommand> commands = new ArrayList<PlainCommand>();
         commands.add(new InsertCommand(entityName, metricName, new Series(st, 1.0)));
@@ -341,6 +395,8 @@ public class SerieTest {
     @Ignore
     @Test
     public void testStreamingCommandsUnstableNetwork() throws Exception {
+        final String entityName = buildVariablePrefix() + "entity";
+        final String metricName = buildVariablePrefix() + "metric";
         final int cnt = 1200;
         int pauseMs = 1000;
         long start = System.currentTimeMillis();
@@ -350,7 +406,7 @@ public class SerieTest {
             Thread.sleep(pauseMs);
 
             Series series = new Series(start + i * pauseMs, i);
-            AbstractInsertCommand plainCommand = new InsertCommand(SSS_ENTITY, SSS_METRIC, series,
+            AbstractInsertCommand plainCommand = new InsertCommand(entityName, metricName, series,
                     "thread", Thread.currentThread().getName());
             if (dataService.canSendPlainCommand()) {
                 dataService.sendPlainCommand(plainCommand);
@@ -376,28 +432,31 @@ public class SerieTest {
 
         MultivaluedHashMap<String, String> tags = new MultivaluedHashMap<String, String>();
         tags.add("thread", "main");
-        int resCnt = countSssSeries(start, tags);
+        int resCnt = countSeries(start, entityName, metricName, tags);
         assertEquals(cnt, resCnt);
     }
 
     @Test
     public void testMultipleSeriesStreamingCommands() throws Exception {
-        MultipleInsertCommand plainCommand = new MultipleInsertCommand(SSS_ENTITY, System.currentTimeMillis(),
+        final String entityName = buildVariablePrefix() + "entity";
+        final String metricNameFirst = buildVariablePrefix() + "metricFirst";
+        final String metricNameSecond = buildVariablePrefix() + "metricSecond";
+        MultipleInsertCommand plainCommand = new MultipleInsertCommand(entityName, System.currentTimeMillis(),
                 toMap("thread", "current"),
-                AtsdUtil.toValuesMap(SSS_METRIC, 1.0, YYY_METRIC, 2.0)
+                AtsdUtil.toValuesMap(metricNameSecond, 1.0, metricNameFirst, 2.0)
         );
         System.out.println("plainCommand = " + plainCommand.compose());
         dataService.sendPlainCommand(plainCommand);
 
-        Thread.sleep(3000);
+        Thread.sleep(WAIT_TIME);
 
         MultivaluedHashMap<String, String> tags = new MultivaluedHashMap<String, String>();
         tags.add("thread", "current");
-        GetSeriesQuery seriesQuery = new GetSeriesQuery(SSS_ENTITY, SSS_METRIC);
+        GetSeriesQuery seriesQuery = new GetSeriesQuery(entityName, metricNameSecond);
         seriesQuery.setStartTime(System.currentTimeMillis() - 10000);
         seriesQuery.setEndTime(System.currentTimeMillis() + 1000);
         seriesQuery.setTags(tags);
-        GetSeriesQuery seriesQuery2 = new GetSeriesQuery(SSS_ENTITY, YYY_METRIC);
+        GetSeriesQuery seriesQuery2 = new GetSeriesQuery(entityName, metricNameFirst);
         seriesQuery2.setStartTime(System.currentTimeMillis() - 10000);
         seriesQuery2.setEndTime(System.currentTimeMillis() + 1000);
         seriesQuery2.setTags(tags);
@@ -412,7 +471,6 @@ public class SerieTest {
     }
 
     private static class SimpleSeriesSender implements Runnable {
-
         private static AtomicInteger counter = new AtomicInteger(0);
 
         private long startMs;
@@ -421,22 +479,32 @@ public class SerieTest {
 
         private CountDownLatch latch;
 
-        private final String tagValue;
         private int cnt = 1;
         private long sleep = 0;
+        private String entityName;
+        private String metricName;
+        private String tagName;
+        private String tagValue;
 
-        public SimpleSeriesSender(long startMs, DataService dataService, CountDownLatch latch, String tagValue) {
+        public SimpleSeriesSender(long startMs, DataService dataService, CountDownLatch latch) {
             this.startMs = startMs;
             this.dataService = dataService;
             this.latch = latch;
+        }
+
+        public SimpleSeriesSender setSeriesParameters(String entityName, String metricName, String tagName, String tagValue) {
+            this.entityName = entityName;
+            this.metricName = metricName;
+            this.tagName = tagName;
             this.tagValue = tagValue;
+            return this;
         }
 
         @Override
         public void run() {
             Series series = new Series(startMs + counter.incrementAndGet(), Math.random());
-            AbstractInsertCommand plainCommand = new InsertCommand(SSS_ENTITY, SSS_METRIC, series,
-                    SSS_TAG, tagValue);
+            AbstractInsertCommand plainCommand = new InsertCommand(entityName, metricName, series,
+                    tagName, tagValue);
 //            System.out.println(plainCommand.compose());
             for (int i = 0; i < cnt; i++) {
                 if (dataService.canSendPlainCommand()) {
@@ -455,8 +523,8 @@ public class SerieTest {
 
     }
 
-    private int countSssSeries(long start, MultivaluedHashMap<String, String> tags) {
-        GetSeriesQuery seriesQuery = new GetSeriesQuery(SSS_ENTITY, SSS_METRIC);
+    private int countSeries(long start, String entityName, String metricName, MultivaluedHashMap<String, String> tags) {
+        GetSeriesQuery seriesQuery = new GetSeriesQuery(entityName, metricName);
         seriesQuery.setStartTime(start - 1);
         seriesQuery.setEndTime(System.currentTimeMillis());
         seriesQuery.setTags(tags);
@@ -467,25 +535,6 @@ public class SerieTest {
             resCnt += result.getData().size();
         }
         return resCnt;
-    }
-
-
-
-
-    public GetSeriesQuery createTestGetTestCommand() {
-        MultivaluedHashMap<String, String> tags = new MultivaluedHashMap<String, String>();
-        tags.add("ttt-tag-1", "ttt-tag-value-1");
-        tags.add("ttt-tag-2", "ttt-tag-value-2");
-        GetSeriesQuery command = new GetSeriesQuery(TTT_ENTITY, TTT_METRIC);
-        command.setTags(tags);
-        command.setAggregateMatcher(new SimpleAggregateMatcher(new Interval(20, IntervalUnit.SECOND),
-                Interpolate.NONE,
-                AggregateType.DETAIL));
-        command.setInterval(new Interval(20, IntervalUnit.DAY));
-//        command.setStartTime(System.currentTimeMillis() - 100000000L);
-//        command.setEndTime(System.currentTimeMillis() + 100000000L);
-
-        return command;
     }
 
 

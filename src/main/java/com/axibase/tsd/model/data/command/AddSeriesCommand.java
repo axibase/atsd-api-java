@@ -67,17 +67,34 @@ public class AddSeriesCommand {
         return data;
     }
 
-    public void addSeries(Series series) {
+    public AddSeriesCommand addSeries(Series series) {
         if (data == null) {
             data = new ArrayList<Series>();
         }
         data.add(series);
+        return this;
     }
 
-    public void addSeries(Series... series) {
+    public AddSeriesCommand addSeries(Series... series) {
         if (data == null) {
             data = new ArrayList<Series>();
         }
         data.addAll(Arrays.asList(series));
+        return this;
+    }
+
+    public AddSeriesCommand setTags(Map<String, String> tags) {
+        this.tags = tags;
+        return this;
+    }
+
+    public AddSeriesCommand setEntityName(String entityName) {
+        this.entityName = entityName;
+        return this;
+    }
+
+    public AddSeriesCommand setMetricName(String metricName) {
+        this.metricName = metricName;
+        return this;
     }
 }

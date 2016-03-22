@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import static com.axibase.tsd.TestUtil.getVariablePrefix;
+import static com.axibase.tsd.TestUtil.buildVariablePrefix;
 import static com.axibase.tsd.TestUtil.waitWorkingServer;
 import static junit.framework.Assert.*;
 
@@ -65,9 +65,9 @@ public class PropertyTypeTest {
 
     @Test
     public void testRetrievePropertyTypes() throws Exception {
-        final String typeNameFirst = getVariablePrefix() + "type-first";
-        final String typeNameSecond = getVariablePrefix() + "type-second";
-        final String entityName = getVariablePrefix() + "entity";
+        final String typeNameFirst = buildVariablePrefix() + "type-first";
+        final String typeNameSecond = buildVariablePrefix() + "type-second";
+        final String entityName = buildVariablePrefix() + "entity";
         final Long timestart = 0L;
         Map<String, String> key = new HashMap<>();
         key.put("key1", "key1-val");
@@ -75,7 +75,7 @@ public class PropertyTypeTest {
         Map<String, String> tags = new HashMap<>();
         tags.put("tag-key", "tag-value");
 
-        if(metaDataService.retrievePropertyTypes(entityName, timestart).size() < 2) {
+        if (metaDataService.retrievePropertyTypes(entityName, timestart).size() < 2) {
             assertTrue(dataService.insertProperties(
                             new Property(typeNameFirst, entityName, key, tags),
                             new Property(typeNameSecond, entityName, key, tags)

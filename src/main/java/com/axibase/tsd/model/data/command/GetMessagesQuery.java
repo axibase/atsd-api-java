@@ -67,12 +67,12 @@ public class GetMessagesQuery {
     protected GetMessagesQuery(String entityName, List<String> entitiesName, List<EntityGroup> entityGroups) {
         this.entityName = entityName;
         this.entitiesName = entitiesName;
-        if(null == entityGroups) {
+        if (null == entityGroups) {
             this.entityGroupsName = null;
             return;
         }
         List<String> entityGroupsName = new ArrayList<>();
-        for(EntityGroup entityGroup: entityGroups) {
+        for (EntityGroup entityGroup : entityGroups) {
             entityGroupsName.add(entityGroup.getName());
         }
         this.entityGroupsName = entityGroupsName;
@@ -181,7 +181,7 @@ public class GetMessagesQuery {
     }
 
     @Override
-    public String  toString() {
+    public String toString() {
         return "GetMessagesQuery{" +
                 "entityName='" + entityName + '\'' +
                 ", entitiesName=" + entitiesName +

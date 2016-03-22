@@ -31,9 +31,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static com.axibase.tsd.TestUtil.createNewTestMetric;
-import static com.axibase.tsd.TestUtil.getVariablePrefix;
-import static com.axibase.tsd.TestUtil.waitWorkingServer;
+import static com.axibase.tsd.TestUtil.*;
 import static junit.framework.Assert.*;
 
 /**
@@ -65,7 +63,7 @@ public class EntityGroupTest {
 
     @Test
     public void testRetrieveAllEntityGroups() throws Exception {
-        final String entityGroupName = "test-retrieve-all-entity-groups";
+        final String entityGroupName = buildVariablePrefix();
         if (metaDataService.retrieveEntityGroup(entityGroupName) == null) {
             assertTrue(metaDataService.createOrReplaceEntityGroup(new EntityGroup(entityGroupName)));
         }
@@ -83,7 +81,7 @@ public class EntityGroupTest {
 
     @Test
     public void testRetrieveEntityGroupByName() throws Exception {
-        final String entityGroupName = "test-retrieve-entity-group-by-name";
+        final String entityGroupName = buildVariablePrefix();
         if (metaDataService.retrieveEntityGroup(entityGroupName) == null) {
             assertTrue(metaDataService.createOrReplaceEntityGroup(new EntityGroup(entityGroupName)));
         }
@@ -94,7 +92,7 @@ public class EntityGroupTest {
 
     @Test
     public void testCreateOrReplaceEntityGroupWithTags() throws Exception {
-        final String entityGroupName = "test-create-or-replace-entity-group-with-tags";
+        final String entityGroupName = buildVariablePrefix();
         if (metaDataService.retrieveEntityGroup(entityGroupName) != null) {
             metaDataService.deleteEntityGroup(new EntityGroup(entityGroupName));
         }
@@ -127,7 +125,7 @@ public class EntityGroupTest {
 
     @Test
     public void testCreateAndDeleteEntityGroupWithoutTags() throws Exception {
-        final String entityGroupName = "test-create-and-delete-entity-group";
+        final String entityGroupName = buildVariablePrefix();
         if (metaDataService.retrieveEntityGroup(entityGroupName) != null) {
             assertTrue(metaDataService.deleteEntityGroup(new EntityGroup(entityGroupName)));
         }
@@ -145,7 +143,7 @@ public class EntityGroupTest {
 
     @Test
     public void testUpdateEntityGroup() throws Exception {
-        final String entityGroupName = "test-update-entity-group";
+        final String entityGroupName = buildVariablePrefix();
         if (metaDataService.retrieveMetric(entityGroupName) != null) {
             assertTrue(metaDataService.deleteMetric(createNewTestMetric(entityGroupName)));
         }
@@ -190,10 +188,10 @@ public class EntityGroupTest {
 
     @Test
     public void testRetrieveGroupEntitiesByGroupName() throws Exception {
-        final String entityGroupName = "test-retrieve-group-entities-by-group-name-group";
-        final String entityNameFrist = "test-retrieve-group-entities-by-group-name-first";
-        final String entityNameSeconds = "test-retrieve-group-entities-by-group-name-second";
-        if(metaDataService.retrieveGroupEntities(entityGroupName).size() < 2) {
+        final String entityGroupName = buildVariablePrefix() + "group";
+        final String entityNameFrist = buildVariablePrefix() + "first";
+        final String entityNameSeconds = buildVariablePrefix() + "second";
+        if (metaDataService.retrieveGroupEntities(entityGroupName).size() < 2) {
             EntityGroup entityGroup = new EntityGroup(entityGroupName);
             assertTrue(metaDataService.createOrReplaceEntityGroup(entityGroup));
             assertTrue(metaDataService.addGroupEntities(entityGroupName, true, new Entity(entityNameFrist), new Entity(entityNameSeconds)));
@@ -207,7 +205,7 @@ public class EntityGroupTest {
 
     @Test
     public void testManageGroupEntities() throws Exception {
-        final String entityGroupName = getVariablePrefix() + "group";
+        final String entityGroupName = buildVariablePrefix() + "group";
         if (metaDataService.retrieveEntityGroup(entityGroupName) == null) {
             assertTrue(metaDataService.createOrReplaceEntityGroup(new EntityGroup(entityGroupName)));
         }
@@ -218,7 +216,7 @@ public class EntityGroupTest {
         assertTrue(metaDataService.retrieveGroupEntities(entityGroupName).isEmpty());
 
         {
-            final String oldEntityName = getVariablePrefix() + "old-entity";
+            final String oldEntityName = buildVariablePrefix() + "old-entity";
             assertTrue(metaDataService.addGroupEntities(entityGroupName, true, new Entity(oldEntityName)));
             List entity = metaDataService.retrieveGroupEntities(entityGroupName);
             assertEquals(1, entity.size());
@@ -227,8 +225,8 @@ public class EntityGroupTest {
         }
 
 
-        final String newEntityNameFirst = getVariablePrefix() + "new-entity-first";
-        final String newEntityNameSecond = getVariablePrefix() + "new-entity-second";
+        final String newEntityNameFirst = buildVariablePrefix() + "new-entity-first";
+        final String newEntityNameSecond = buildVariablePrefix() + "new-entity-second";
         {
             assertTrue(metaDataService.replaceGroupEntities(entityGroupName, true, new Entity(newEntityNameFirst), new Entity(newEntityNameSecond)));
             List entity = metaDataService.retrieveGroupEntities(entityGroupName);

@@ -159,86 +159,98 @@ public class GetSeriesQuery {
     /**
      * @param startTime start of the selection interval. Unix milliseconds.
      */
-    public void setStartTime(Long startTime) {
+    public GetSeriesQuery setStartTime(Long startTime) {
         this.startTime = startTime;
+        return this;
     }
 
     /**
      * @param endTime end of the selection interval. Unix milliseconds.
      */
-    public void setEndTime(Long endTime) {
+    public GetSeriesQuery setEndTime(Long endTime) {
         this.endTime = endTime;
+        return this;
     }
 
     /**
      * @param startDate start of the selection interval. Specified in ISO format or using endtime syntax.
      */
-    public void setStartDate(String startDate) {
+    public GetSeriesQuery setStartDate(String startDate) {
         this.startDate = startDate;
+        return this;
     }
 
     /**
      * @param endDate end of the selection interval. Specified in ISO format or using endtime syntax.
      */
-    public void setEndDate(String endDate) {
+    public GetSeriesQuery setEndDate(String endDate) {
         this.endDate = endDate;
+        return this;
     }
 
     /**
      * @param interval Duration of the selection interval, specified as <code>count-timeunit</code>, for example, 1-hour
      */
-    public void setInterval(Interval interval) {
+    public GetSeriesQuery setInterval(Interval interval) {
         this.interval = interval;
+        return this;
     }
 
     /**
      * @param limit maximum number of data samples returned.
      */
-    public void setLimit(Integer limit) {
+    public GetSeriesQuery setLimit(Integer limit) {
         this.limit = limit;
+        return this;
     }
 
     /**
      * @param last if true: Performs GET instead of scan. Retrieves only 1 most recent value.
      */
-    public void setLast(Boolean last) {
+    public GetSeriesQuery setLast(Boolean last) {
         this.last = last;
+        return this;
     }
 
     /**
      * @param tags Object key is a tag name and a value is an array of possible tag values.
      *             User defined values ( keys: case insensitive, values: case sensitive )
      */
-    public void setTags(MultivaluedMap<String, String> tags) {
+    public GetSeriesQuery setTags(MultivaluedMap<String, String> tags) {
         this.tags = tags;
+        return this;
     }
 
     /**
      * @param type specifies source for underlying data
      */
-    public void setType(SeriesType type) {
+    public GetSeriesQuery setType(SeriesType type) {
         this.type = type;
+        return this;
     }
 
     /**
      * @param join Merges multiple time series into one serie.
      */
-    public void setJoin(Join join) {
+    public GetSeriesQuery setJoin(Join join) {
         this.join = join;
+        return this;
     }
 
     /**
      * @param rate Computes difference between consecutive samples per unit of time (rate interval).
      */
-    public void setRate(Rate rate) {
+    public GetSeriesQuery setRate(Rate rate) {
         this.rate = rate;
+        return this;
     }
 
     /**
      * @param aggregateMatcher Computes statistics for the specified time intervals.
      */
-    public void setAggregateMatcher(SimpleAggregateMatcher aggregateMatcher) {
+    public GetSeriesQuery setAggregateMatcher(SimpleAggregateMatcher aggregateMatcher) {
         this.aggregateMatcher = aggregateMatcher;
+        return this;
     }
 
     /**
@@ -250,12 +262,14 @@ public class GetSeriesQuery {
      * @param requestId Optional identifier used to associate 'series' object in request with 'series'
      *                  objects in response. Any string (case sensitive).
      */
-    public void setRequestId(String requestId) {
+    public GetSeriesQuery setRequestId(String requestId) {
         this.requestId = requestId;
+        return this;
     }
 
-    public void setTimeFormat(TimeFormat timeFormat) {
+    public GetSeriesQuery setTimeFormat(TimeFormat timeFormat) {
         this.timeFormat = timeFormat;
+        return this;
     }
 
     @Override

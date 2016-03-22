@@ -20,8 +20,8 @@ import com.axibase.tsd.util.AtsdUtil;
 import java.util.UUID;
 
 /**
-* @author Nikolay Malevanny.
-*/
+ * @author Nikolay Malevanny.
+ */
 public class MarkerCommand implements PlainCommand {
     private final String marker;
 

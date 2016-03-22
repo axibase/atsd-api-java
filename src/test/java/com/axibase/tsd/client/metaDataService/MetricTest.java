@@ -33,9 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.axibase.tsd.TestUtil.createNewTestMetric;
-import static com.axibase.tsd.TestUtil.getVariablePrefix;
-import static com.axibase.tsd.TestUtil.waitWorkingServer;
+import static com.axibase.tsd.TestUtil.*;
 import static junit.framework.Assert.*;
 
 /**
@@ -68,8 +66,8 @@ public class MetricTest {
     @Test
     public void testRetrieveMetricsByPattern() throws Exception {
         final String metricQuery = "name like '*'";
-        final String metricName = getVariablePrefix();
-        if(metaDataService.retrieveMetrics(true, "name like '*'", TagAppender.ALL, 1).size() < 1) {
+        final String metricName = buildVariablePrefix();
+        if (metaDataService.retrieveMetrics(true, "name like '*'", TagAppender.ALL, 1).size() < 1) {
             assertTrue(metaDataService.createOrReplaceMetric(createNewTestMetric(metricName)));
         }
 
@@ -80,8 +78,8 @@ public class MetricTest {
 
     @Test
     public void testRetrieveMetricByName() throws Exception {
-        final String metricName = getVariablePrefix();
-        if(metaDataService.retrieveMetric(metricName) == null) {
+        final String metricName = buildVariablePrefix();
+        if (metaDataService.retrieveMetric(metricName) == null) {
             assertTrue(metaDataService.createOrReplaceMetric(createNewTestMetric(metricName)));
         }
 
@@ -92,8 +90,8 @@ public class MetricTest {
 
     @Test
     public void testCreateOrReplaceMetric() throws Exception {
-        final String metricName = getVariablePrefix();
-        if(metaDataService.retrieveMetric(metricName) != null) {
+        final String metricName = buildVariablePrefix();
+        if (metaDataService.retrieveMetric(metricName) != null) {
             assertTrue(metaDataService.createOrReplaceMetric(createNewTestMetric(metricName)));
         }
 
@@ -102,7 +100,7 @@ public class MetricTest {
             metric.setDataType(DataType.DOUBLE);
             Assert.assertTrue(metaDataService.createOrReplaceMetric(metric));
             metric = metaDataService.retrieveMetric(metricName);
-            assertEquals(metric.getName(),metricName);
+            assertEquals(metric.getName(), metricName);
             assertEquals(metric.getDataType(), DataType.DOUBLE);
         }
 
@@ -117,10 +115,10 @@ public class MetricTest {
 
     @Test
     public void testCreateAndDeleteMetric() throws Exception {
-        final String metricName = getVariablePrefix();
+        final String metricName = buildVariablePrefix();
         Metric metric = createNewTestMetric(metricName);
 
-        if(metaDataService.retrieveMetric(metricName) != null) {
+        if (metaDataService.retrieveMetric(metricName) != null) {
             assertTrue(metaDataService.deleteMetric(metric));
         }
         assertNull(metaDataService.retrieveMetric(metricName));
@@ -138,8 +136,8 @@ public class MetricTest {
 
     @Test
     public void testUpdateMetric() throws Exception {
-        final String metricName = getVariablePrefix();
-        if(metaDataService.retrieveMetric(metricName) != null) {
+        final String metricName = buildVariablePrefix();
+        if (metaDataService.retrieveMetric(metricName) != null) {
             assertTrue(metaDataService.deleteMetric(createNewTestMetric(metricName)));
         }
         assertNull(metaDataService.retrieveMetric(metricName));
@@ -152,7 +150,6 @@ public class MetricTest {
             defaultTags.put("test-tag2", "test-tag2-val");
             metric.setTags(defaultTags);
             assertTrue(metaDataService.createOrReplaceMetric(metric));
-
 
 
             metric = metaDataService.retrieveMetric(metricName);
@@ -182,15 +179,14 @@ public class MetricTest {
         }
 
 
-
     }
 
     @Test
     public void testRetrieveMetricsByEntity() throws Exception {
-        final String metricName = getVariablePrefix() + "metric";
-        final String entityName = getVariablePrefix() + "entity";
-        final Long timestamp = 1456489150000L;
-        if(metaDataService.retrieveMetrics(entityName, null, "name like '*'", null, 1).isEmpty()) {
+        final String metricName = buildVariablePrefix() + "metric";
+        final String entityName = buildVariablePrefix() + "entity";
+        final Long timestamp = MOCK_TIMESTAMP;
+        if (metaDataService.retrieveMetrics(entityName, null, "name like '*'", null, 1).isEmpty()) {
             AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName, "test-tag1", "test-tag1-val", "test-tag2", "test-tag2-val");
             addSeriesCommand.addSeries(new Series(timestamp, 1));
             assertTrue(dataService.addSeries(addSeriesCommand));
