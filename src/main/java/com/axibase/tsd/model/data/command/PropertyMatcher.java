@@ -14,7 +14,6 @@
  */
 package com.axibase.tsd.model.data.command;
 
-import com.axibase.tsd.model.data.TimeFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -31,7 +30,6 @@ public class PropertyMatcher {
     private Map<String, String> key;
     private Long createdBeforeTime;
     private String createdBeforeDate;
-    private TimeFormat timeFormat;
 
     public PropertyMatcher() {
     }
@@ -90,14 +88,6 @@ public class PropertyMatcher {
 
     public void setCreatedBeforeDate(String createdBeforeDate) {
         this.createdBeforeDate = createdBeforeDate;
-    }
-
-    public TimeFormat getTimeFormat() {
-        return timeFormat;
-    }
-
-    public void setTimeFormat(TimeFormat timeFormat) {
-        this.timeFormat = timeFormat;
     }
 
     @Override

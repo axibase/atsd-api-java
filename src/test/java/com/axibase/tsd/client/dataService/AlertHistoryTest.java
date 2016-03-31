@@ -51,7 +51,6 @@ public class AlertHistoryTest {
         waitWorkingServer(httpClientManager);
     }
 
-    @Ignore
     @Test
     public void testRetrieveAlertHistoryByMetricAndTimes() throws Exception {
         final String entityName = buildVariablePrefix();
@@ -65,6 +64,9 @@ public class AlertHistoryTest {
         if (dataService.retrieveAlertHistory(getAlertHistoryQuery).isEmpty()) {
             AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName);
             addSeriesCommand.addSeries(new Series(timestamp, 1));
+            dataService.addSeries(addSeriesCommand);
+            addSeriesCommand = new AddSeriesCommand(entityName, metricName);
+            addSeriesCommand.addSeries(new Series(timestamp+1, -1));
             dataService.addSeries(addSeriesCommand);
         }
         List alertHistoryList = dataService.retrieveAlertHistory(getAlertHistoryQuery);
@@ -83,6 +85,9 @@ public class AlertHistoryTest {
         if (dataService.retrieveAlertHistory(getAlertHistoryQuery).isEmpty()) {
             AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName);
             addSeriesCommand.addSeries(new Series(timestamp, 1));
+            dataService.addSeries(addSeriesCommand);
+            addSeriesCommand = new AddSeriesCommand(entityName, metricName);
+            addSeriesCommand.addSeries(new Series(timestamp+1, -1));
             dataService.addSeries(addSeriesCommand);
         }
         List alertHistoryList = dataService.retrieveAlertHistory(getAlertHistoryQuery);
