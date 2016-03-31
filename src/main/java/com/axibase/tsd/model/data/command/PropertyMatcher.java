@@ -14,7 +14,7 @@
  */
 package com.axibase.tsd.model.data.command;
 
-import com.axibase.tsd.util.AtsdUtil;
+import com.axibase.tsd.model.data.TimeFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -30,15 +30,24 @@ public class PropertyMatcher {
     private String entityName;
     private Map<String, String> key;
     private Long createdBeforeTime;
+    private String createdBeforeDate;
+    private TimeFormat timeFormat;
 
     public PropertyMatcher() {
     }
 
-    public PropertyMatcher(String type, String entityName, Long createdBeforeTime, String... keyNamesAnaValues) {
+    public PropertyMatcher(String type) {
+        this(type, null, null);
+    }
+
+    public PropertyMatcher(String type, String entityName) {
+        this(type, entityName, null);
+    }
+
+    public PropertyMatcher(String type, String entityName, Map<String, String> key) {
         this.type = type;
         this.entityName = entityName;
-        this.createdBeforeTime = createdBeforeTime;
-        this.key = AtsdUtil.toMap(keyNamesAnaValues);
+        this.key = key;
     }
 
     public String getType() {
@@ -72,6 +81,23 @@ public class PropertyMatcher {
 
     public void setCreatedBeforeTime(Long createdBeforeTime) {
         this.createdBeforeTime = createdBeforeTime;
+    }
+
+
+    public String getCreatedBeforeDate() {
+        return createdBeforeDate;
+    }
+
+    public void setCreatedBeforeDate(String createdBeforeDate) {
+        this.createdBeforeDate = createdBeforeDate;
+    }
+
+    public TimeFormat getTimeFormat() {
+        return timeFormat;
+    }
+
+    public void setTimeFormat(TimeFormat timeFormat) {
+        this.timeFormat = timeFormat;
     }
 
     @Override

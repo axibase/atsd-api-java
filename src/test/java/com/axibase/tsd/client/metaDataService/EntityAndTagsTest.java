@@ -34,9 +34,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.axibase.tsd.TestUtil.MOCK_TIMESTAMP;
-import static com.axibase.tsd.TestUtil.buildVariablePrefix;
-import static com.axibase.tsd.TestUtil.waitWorkingServer;
+import static com.axibase.tsd.TestUtil.*;
 import static junit.framework.Assert.*;
 
 /**

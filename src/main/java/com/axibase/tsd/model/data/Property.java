@@ -25,7 +25,7 @@ import java.util.Map;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class Property {
+public class Property  {
     private String type;
     @JsonProperty("entity")
     private String entityName;
@@ -34,7 +34,13 @@ public class Property {
     private Long timestamp;
     private String date;
 
+
     public Property() {
+
+    }
+
+    public Property(String type, String entityName, Map<String, String> key) {
+        this(type, entityName, key, null, null);
     }
 
     public Property(String type, String entityName, Map<String, String> key, Map<String, String> tags) {
@@ -53,54 +59,48 @@ public class Property {
         return type;
     }
 
-    public Property setType(String type) {
+    public void setType(String type) {
         this.type = type;
-        return this;
     }
 
     public String getEntityName() {
         return entityName;
     }
 
-    public Property setEntityName(String entityName) {
+    public void setEntityName(String entityName) {
         this.entityName = entityName;
-        return this;
     }
 
     public Map<String, String> getKey() {
         return key;
     }
 
-    public Property setKey(Map<String, String> key) {
+    public void setKey(Map<String, String> key) {
         this.key = key;
-        return this;
     }
 
     public Map<String, String> getTags() {
         return tags;
     }
 
-    public Property setTags(Map<String, String> tags) {
+    public void setTags(Map<String, String> tags) {
         this.tags = tags;
-        return this;
     }
 
     public Long getTimestamp() {
         return timestamp;
     }
 
-    public Property setTimestamp(Long timestamp) {
+    public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
-        return this;
     }
 
     public String getDate() {
         return date;
     }
 
-    public Property setDate(String date) {
+    public void setDate(String date) {
         this.date = date;
-        return this;
     }
 
     @Override

@@ -24,11 +24,9 @@ import com.axibase.tsd.model.data.Property;
 import com.axibase.tsd.model.data.command.BatchPropertyCommand;
 import com.axibase.tsd.model.data.command.GetPropertiesQuery;
 import com.axibase.tsd.model.data.command.PropertyMatcher;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -85,27 +83,12 @@ public class PropertyTest {
         List properties = dataService.retrieveProperties(getPropertiesQuery);
         assertFalse(properties.isEmpty());
         assertTrue(properties.get(0) instanceof Property);
-
+        System.out.println(properties);
         assertEquals(entityName, ((Property) properties.get(0)).getEntityName());
         assertEquals(propertyTypeName, ((Property) properties.get(0)).getType());
         assertEquals(key, ((Property) properties.get(0)).getKey());
     }
 
-
-//    @Test
-//    public void testRetrievePropertiesWithDate() throws Exception {
-//        getPropertiesQuery.setTimeFormat(TimeFormat.ISO);
-//        List<Property> properties = dataService.retrieveProperties(getPropertiesQuery);
-//        if (properties.size() == 0) {
-//        }
-//
-//        for (Property property : properties) {
-//            System.out.println("property = " + property);
-//        }
-//        Property property = properties.get(0);
-//        assertEquals(1, properties.size());
-//        assertTrue(StringUtils.isNoneBlank(property.getDate()));
-//    }
 
     @Test
     public void testRetrievePropertiesByEntityNameAndPropertyTypeName() throws Exception {
@@ -126,6 +109,8 @@ public class PropertyTest {
         assertTrue(!properties.isEmpty());
         assertTrue(properties.get(0) instanceof Property);
         assertEquals(1, properties.size());
+
+
         assertEquals(entityName, ((Property) properties.get(0)).getEntityName());
         assertEquals(propertyTypeName, ((Property) properties.get(0)).getType());
     }
@@ -140,10 +125,10 @@ public class PropertyTest {
         Map<String, String> tags = new HashMap<>();
         tags.put("tag1", "tag1-val");
         tags.put("tag2", "tag2-val");
-        Property property = new Property(propertyTypeName, entityName, key, null);
+        Property property = new Property(propertyTypeName, entityName, key, tags);
 
         if (!dataService.retrieveProperties(entityName, propertyTypeName).isEmpty()) {
-            assertTrue(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(property)));
+            assertTrue(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(new PropertyMatcher(propertyTypeName))));
         }
         assertTrue(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
 
@@ -151,9 +136,13 @@ public class PropertyTest {
         assertTrue(dataService.insertProperties(property));
 
         List properties = dataService.retrieveProperties(entityName, propertyTypeName);
-        assertTrue(!properties.isEmpty());
+
+        assertFalse(properties.isEmpty());
         assertEquals(1, properties.size());
         assertTrue(properties.get(0) instanceof Property);
+        System.out.println("debug start");
+        System.out.println(properties);
+        System.out.println("debug end");
         assertEquals(key, ((Property) properties.get(0)).getKey());
         assertEquals(tags, ((Property) properties.get(0)).getTags());
     }
@@ -168,7 +157,7 @@ public class PropertyTest {
         Property property = new Property(propertyTypeName, entityName, key, null);
 
         if (!dataService.retrieveProperties(entityName, propertyTypeName).isEmpty()) {
-            assertTrue(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(property)));
+            assertTrue(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(new PropertyMatcher(propertyTypeName))));
         }
         assertTrue(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
         assertFalse(dataService.insertProperties(property));
@@ -186,7 +175,7 @@ public class PropertyTest {
         tags.put("tag2", "tag2-val");
         Property property = new Property(propertyTypeName, null, key, tags);
         if (!dataService.retrieveProperties(new GetPropertiesQuery(propertyTypeName, null)).isEmpty()) {
-            assertTrue(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(property)));
+            assertTrue(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(new PropertyMatcher(propertyTypeName))));
         }
         assertTrue(dataService.retrieveProperties(new GetPropertiesQuery(propertyTypeName, null)).isEmpty());
         try {
@@ -208,8 +197,14 @@ public class PropertyTest {
         tags.put("tag1", "tag1-val");
         tags.put("tag2", "tag2-val");
         Property property = new Property(null, entityName, key, tags);
-        if (!dataService.retrieveProperties(new GetPropertiesQuery(null, entityName)).isEmpty()) {
-            assertTrue(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(property)));
+
+        List<Property> oldProperties =  dataService.retrieveProperties(new GetPropertiesQuery(null, entityName));
+        if (!oldProperties.isEmpty()) {
+            List<BatchPropertyCommand> batchPropertyCommands = new ArrayList<>();
+            for(Property prop: oldProperties) {
+                batchPropertyCommands.add(BatchPropertyCommand.createDeleteCommand(new PropertyMatcher(prop.getType(), prop.getEntityName())));
+            }
+            assertTrue(dataService.batchUpdateProperties(batchPropertyCommands.toArray(new BatchPropertyCommand[batchPropertyCommands.size()])));
         }
         assertTrue(dataService.retrieveProperties(new GetPropertiesQuery(null, entityName)).isEmpty());
         try {
@@ -223,7 +218,7 @@ public class PropertyTest {
 
 
     @Test
-    public void testDeletePropertiesByMatcher() throws Exception {
+    public void testBatchDeletePropertiesNoTime() throws Exception {
         final String propertyTypeName = buildVariablePrefix() + "property-type";
         final String entityName = buildVariablePrefix() + "entity";
         Map<String, String> key = new HashMap<>();
@@ -240,14 +235,14 @@ public class PropertyTest {
         }
         assertFalse(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
 
-        PropertyMatcher propertyMatcher = new PropertyMatcher(propertyTypeName, entityName, Long.MAX_VALUE).setKey(key);
+        PropertyMatcher propertyMatcher = new PropertyMatcher(propertyTypeName, entityName, key);
 
-        assertTrue(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteMatchCommand(propertyMatcher)));
+        assertTrue(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(propertyMatcher)));
         assertTrue(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
     }
 
     @Test
-    public void testDeletePropertiesByPropertyWithTags() throws Exception {
+    public void testBatchDeletePropertiesTimestamp() throws Exception {
         final String propertyTypeName = buildVariablePrefix() + "property-type";
         final String entityName = buildVariablePrefix() + "entity";
         Map<String, String> key = new HashMap<>();
@@ -264,40 +259,15 @@ public class PropertyTest {
         }
         assertFalse(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
 
+        PropertyMatcher propertyMatcher = new PropertyMatcher(propertyTypeName, entityName, key);
+        propertyMatcher.setCreatedBeforeTime(Long.MAX_VALUE);
 
-
-        assertFalse(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(property)));
-        assertFalse(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
-    }
-
-    @Test
-    public void testDeletePropertiesByPropertyWithWrongTags() throws Exception {
-        final String propertyTypeName = buildVariablePrefix() + "property-type";
-        final String entityName = buildVariablePrefix() + "entity";
-        Map<String, String> key = new HashMap<>();
-        key.put("key1", "key1-val");
-        key.put("key2", "key2-val");
-        Map<String, String> tags = new HashMap<>();
-        tags.put("tag1", "tag1-val");
-        tags.put("tag2", "tag2-val");
-        Property property = new Property(propertyTypeName, entityName, key, tags);
-
-
-        if (dataService.retrieveProperties(entityName, propertyTypeName).isEmpty()) {
-            assertTrue(dataService.insertProperties(property));
-        }
-        assertFalse(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
-
-        Map<String, String> wrongTags = new HashMap<>();
-        tags.put("tag3", "tag3-val");
-        tags.put("tag4", "tag4-val");
-
-        assertTrue(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(property.setTags(wrongTags))));
+        assertTrue(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(propertyMatcher)));
         assertTrue(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
     }
 
     @Test
-    public void testDeletePropertiesByPropertyWithoutTags() throws Exception {
+    public void testBatchDeletePropertiesDate() throws Exception {
         final String propertyTypeName = buildVariablePrefix() + "property-type";
         final String entityName = buildVariablePrefix() + "entity";
         Map<String, String> key = new HashMap<>();
@@ -314,10 +284,64 @@ public class PropertyTest {
         }
         assertFalse(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
 
-        property.setTags(null);
-        assertTrue(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(property)));
+        PropertyMatcher propertyMatcher = new PropertyMatcher(propertyTypeName, entityName, key);
+
+        propertyMatcher.setCreatedBeforeDate("3016-03-25T00:00:00.000Z");
+
+        assertTrue(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(propertyMatcher)));
         assertTrue(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
     }
+
+
+
+    @Ignore //not available to test it by client now
+    @Test
+    public void testBatchDeletePropertiesByPropertyWithTags() throws Exception {
+        final String propertyTypeName = buildVariablePrefix() + "property-type";
+        final String entityName = buildVariablePrefix() + "entity";
+        Map<String, String> key = new HashMap<>();
+        key.put("key1", "key1-val");
+        key.put("key2", "key2-val");
+        Map<String, String> tags = new HashMap<>();
+        tags.put("tag1", "tag1-val");
+        tags.put("tag2", "tag2-val");
+        Property property = new Property(propertyTypeName, entityName, key, tags);
+
+
+        if (dataService.retrieveProperties(entityName, propertyTypeName).isEmpty()) {
+            assertTrue(dataService.insertProperties(property));
+        }
+        assertFalse(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
+
+
+
+//        assertFalse(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(property)));
+        assertFalse(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
+    }
+
+
+//    @Test
+//    public void testDeletePropertiesByPropertyWithoutTags() throws Exception {
+//        final String propertyTypeName = buildVariablePrefix() + "property-type";
+//        final String entityName = buildVariablePrefix() + "entity";
+//        Map<String, String> key = new HashMap<>();
+//        key.put("key1", "key1-val");
+//        key.put("key2", "key2-val");
+//        Map<String, String> tags = new HashMap<>();
+//        tags.put("tag1", "tag1-val");
+//        tags.put("tag2", "tag2-val");
+//        Property property = new Property(propertyTypeName, entityName, key, tags);
+//
+//
+//        if (dataService.retrieveProperties(entityName, propertyTypeName).isEmpty()) {
+//            assertTrue(dataService.insertProperties(property));
+//        }
+//        assertFalse(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
+//
+//        property.setTags(null);
+//        assertTrue(dataService.batchUpdateProperties(BatchPropertyCommand.createDeleteCommand(property)));
+//        assertTrue(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
+//    }
 
 
 }
