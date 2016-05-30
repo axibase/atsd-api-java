@@ -228,8 +228,8 @@ Usage
 ```
 
 [atsd]:https://axibase.com/products/axibase-time-series-database/
-[atsd-api]:https://axibase.com/atsd/api/
+[atsd-api]:https://github.com/axibase/atsd-docs/blob/master/api/README.md
 [atsd-zip]:https://github.com/axibase/atsd-api-java/releases/download/v.0.4.3/atsd-api-java-0.4.3-bin.zip
-[atsd-issues]:https://www.axibase.com/support.htm
+[atsd-issues]:https://axibase.com/customer-support/
 [atsd-read-example]:https://github.com/axibase/atsd-api-java/blob/master/src/main/java/com/axibase/tsd/example/AtsdClientReadExample.java
 [atsd-write-example]:https://github.com/axibase/atsd-api-java/blob/master/src/main/java/com/axibase/tsd/example/AtsdClientWriteExample.java
