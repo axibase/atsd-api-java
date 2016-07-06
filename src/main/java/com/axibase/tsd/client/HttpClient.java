@@ -80,8 +80,7 @@ class HttpClient {
     private final Client client;
 
     HttpClient(ClientConfiguration clientConfiguration) {
-        Client builtClient = buildClient(clientConfiguration);
-        client = builtClient;
+        client = buildClient(clientConfiguration);
 
 
         this.clientConfiguration = clientConfiguration;
@@ -103,8 +102,7 @@ class HttpClient {
 
         configureHttps(clientConfiguration, clientConfig);
 
-        ConnectorProvider connectorProvider = new ApacheConnectorProvider();
-        clientConfig.connectorProvider(connectorProvider);
+        clientConfig.connectorProvider(new ApacheConnectorProvider());
 
         Client builtClient = ClientBuilder.newBuilder().withConfig(clientConfig).build();
         builtClient.property(ClientProperties.CONNECT_TIMEOUT, clientConfiguration.getConnectTimeoutMillis());

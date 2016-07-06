@@ -54,7 +54,7 @@ class PlainStreamingSender extends AbstractHttpEntity implements Runnable {
     private CountDownLatch latch = new CountDownLatch(1);
     private CloseableHttpClient httpClient;
     private BlockingQueue<String> messages;
-    private ConcurrentMap<String, List<String>> markerToMessages = new ConcurrentHashMap<String, List<String>>();
+    private ConcurrentMap<String, List<String>> markerToMessages = new ConcurrentHashMap<>();
     private volatile SenderState state = SenderState.NEW;
     private final long pingTimeoutMillis;
     private long lastMessageTime;

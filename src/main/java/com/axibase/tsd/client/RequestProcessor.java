@@ -47,18 +47,18 @@ class RequestProcessor<T> {
     }
 
     public static <T> RequestProcessor<T> post(T command) {
-        return new RequestProcessor<T>(Type.POST, command);
+        return new RequestProcessor<>(Type.POST, command);
     }
 
     public static <T> RequestProcessor<T> put(T command) {
-        return new RequestProcessor<T>(Type.PUT, command);
+        return new RequestProcessor<>(Type.PUT, command);
     }
 
     public static <T> RequestProcessor<T> patch(T command) {
-        return new RequestProcessor<T>(Type.PATCH, command);
+        return new RequestProcessor<>(Type.PATCH, command);
     }
 
     public static <T> RequestProcessor<T> delete() {
-        return new RequestProcessor<T>(Type.DELETE, null);
+        return new RequestProcessor<>(Type.DELETE, null);
     }
 }
