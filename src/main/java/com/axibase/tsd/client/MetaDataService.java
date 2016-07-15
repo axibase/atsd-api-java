@@ -281,9 +281,9 @@ public class MetaDataService {
 
     /**
      * Create an entity group with specified properties and tags or replace an existing entity group.
-     * <p/>
+     * <p>
      * This method creates a new entity group or replaces an existing entity group.
-     * <p/>
+     * </p>
      * If only a subset of fields is provided for an existing entity group, the remaining properties
      * and tags will be deleted.
      *
@@ -300,9 +300,9 @@ public class MetaDataService {
 
     /**
      * Update specified properties and tags for the given entity group.
-     * <p/>
+     * <p>
      * This method updates specified properties and tags for an existing entity group.
-     * <p/>
+     * </p>
      * Properties and tags that are not specified are left unchanged.
      *
      * @param entityGroup the entity group to update
