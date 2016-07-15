@@ -15,13 +15,13 @@
 package com.axibase.tsd.client;
 
 import com.axibase.tsd.model.meta.*;
-import com.axibase.tsd.model.meta.command.AddEntitiesCommand;
-import com.axibase.tsd.model.meta.command.DeleteEntitiesCommand;
-import com.axibase.tsd.model.meta.command.SimpleCommand;
 import com.axibase.tsd.query.Query;
 import com.axibase.tsd.query.QueryPart;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static com.axibase.tsd.client.RequestProcessor.*;
 import static com.axibase.tsd.util.AtsdUtil.*;
@@ -34,9 +34,18 @@ import static com.axibase.tsd.util.AtsdUtil.*;
 public class MetaDataService {
     private HttpClientManager httpClientManager;
 
+    /**
+     * constructor
+     */
     public MetaDataService() {
+        //
     }
 
+    /**
+     * constructor
+     *
+     * @param httpClientManager
+     */
     public MetaDataService(HttpClientManager httpClientManager) {
         this.httpClientManager = httpClientManager;
     }
@@ -52,8 +61,8 @@ public class MetaDataService {
      * @param tagAppender Specify metric tags to be included in the response.
      * @param limit       Limit response to first N metrics, ordered by name.
      * @return List of metrics.
-     * @throws AtsdClientException
-     * @throws AtsdServerException
+     * @throws AtsdClientException raised  raised
+     * @throws AtsdServerException raised  raised
      */
     public List<Metric> retrieveMetrics(Boolean active,
                                         String expression,
@@ -77,8 +86,8 @@ public class MetaDataService {
      * @param tagAppender Specify metric tags to be included in the response.
      * @param limit       Limit response to first N metrics, ordered by name.
      * @return List of metrics.
-     * @throws AtsdClientException
-     * @throws AtsdServerException
+     * @throws AtsdClientException raised
+     * @throws AtsdServerException raised
      */
     public List<Metric> retrieveMetrics(String entityName,
                                         Boolean active,
@@ -100,8 +109,8 @@ public class MetaDataService {
     /**
      * @param metricName Metric name.
      * @return Metric.
-     * @throws AtsdClientException
-     * @throws AtsdServerException
+     * @throws AtsdClientException raised
+     * @throws AtsdServerException raised
      */
     public Metric retrieveMetric(String metricName)
             throws AtsdClientException, AtsdServerException {
@@ -141,8 +150,8 @@ public class MetaDataService {
      * @param tagAppender Specify entity tags to be included in the response.
      * @param limit       Limit response to first N entities, ordered by name.
      * @return List of entities.
-     * @throws AtsdClientException
-     * @throws AtsdServerException
+     * @throws AtsdClientException raised
+     * @throws AtsdServerException raised
      */
     public List<Entity> retrieveEntities(Boolean active,
                                          String expression,
@@ -161,8 +170,8 @@ public class MetaDataService {
     /**
      * @param entityName Entity name.
      * @return Entity
-     * @throws AtsdClientException
-     * @throws AtsdServerException
+     * @throws AtsdClientException raised
+     * @throws AtsdServerException raised
      */
     public Entity retrieveEntity(String entityName)
             throws AtsdClientException, AtsdServerException {
@@ -214,8 +223,8 @@ public class MetaDataService {
      * @param metricName Metric name.
      * @param entityName Filter entities by entity name.
      * @return List of entities and tags for metric.
-     * @throws AtsdClientException
-     * @throws AtsdServerException
+     * @throws AtsdClientException raised
+     * @throws AtsdServerException raised
      */
     public List<EntityAndTags> retrieveEntityAndTags(String metricName, String entityName)
             throws AtsdClientException, AtsdServerException {
@@ -229,8 +238,8 @@ public class MetaDataService {
 
     /**
      * @return List of entity groups.
-     * @throws AtsdClientException
-     * @throws AtsdServerException
+     * @throws AtsdClientException raised
+     * @throws AtsdServerException raised
      */
     public List<EntityGroup> retrieveEntityGroups() throws AtsdClientException, AtsdServerException {
         return httpClientManager.requestMetaDataList(EntityGroup.class, new Query<EntityGroup>("entity-groups"));
@@ -239,8 +248,8 @@ public class MetaDataService {
     /**
      * @param entityGroupName Entity group name.
      * @return List of entity groups.
-     * @throws AtsdClientException
-     * @throws AtsdServerException
+     * @throws AtsdClientException raised
+     * @throws AtsdServerException raised
      */
     public EntityGroup retrieveEntityGroup(String entityGroupName) throws AtsdClientException, AtsdServerException {
         checkEntityGroupIsEmpty(entityGroupName);
@@ -259,8 +268,8 @@ public class MetaDataService {
      *
      * @param entityGroup the entity group to create or replace
      * @return {@code true} if entity group is created or updated.
-     * @throws AtsdClientException
-     * @throws AtsdServerException
+     * @throws AtsdClientException raised
+     * @throws AtsdServerException raised
      */
     public boolean createOrReplaceEntityGroup(EntityGroup entityGroup) throws AtsdClientException, AtsdServerException {
         String entityGroupName = entityGroup.getName();
@@ -279,8 +288,8 @@ public class MetaDataService {
      *
      * @param entityGroup the entity group to update
      * @return {@code true} if entity group is updated.
-     * @throws AtsdClientException
-     * @throws AtsdServerException
+     * @throws AtsdClientException raised
+     * @throws AtsdServerException raised
      */
     public boolean updateEntityGroup(EntityGroup entityGroup) throws AtsdClientException, AtsdServerException {
         String entityGroupName = entityGroup.getName();
@@ -305,8 +314,8 @@ public class MetaDataService {
      * @param expression      Specify EL expression.
      * @param tagAppender     Specify entity tags to be included in the response.
      * @return List of entities for an entity group.
-     * @throws AtsdClientException
-     * @throws AtsdServerException
+     * @throws AtsdClientException raised
+     * @throws AtsdServerException raised
      */
     public List<Entity> retrieveGroupEntities(String entityGroupName,
                                               Boolean active,
@@ -329,8 +338,8 @@ public class MetaDataService {
     /**
      * @param entityGroupName Entity group name.
      * @return List of entities for an entity group.
-     * @throws AtsdClientException
-     * @throws AtsdServerException
+     * @throws AtsdClientException raised
+     * @throws AtsdServerException raised
      */
     public List<Entity> retrieveGroupEntities(String entityGroupName)
             throws AtsdClientException, AtsdServerException {
@@ -349,8 +358,8 @@ public class MetaDataService {
      * @param createEntities  Automatically create new entities from the submitted list if such entities don't already exist.
      * @param entities        Entities to create.
      * @return {@code true} if entities added.
-     * @throws AtsdClientException if there is any client problem
-     * @throws AtsdServerException if there is any server problem
+     * @throws AtsdClientException raised if there is any client problem
+     * @throws AtsdServerException raised if there is any server problem
      */
     public boolean addGroupEntities(String entityGroupName, Boolean createEntities, Entity... entities) {
         checkEntityGroupIsEmpty(entityGroupName);
@@ -374,8 +383,8 @@ public class MetaDataService {
      * @param createEntities  Automatically create new entities from the submitted list if such entities don't already exist.
      * @param entities        Entities to replace.
      * @return {@code true} if entities replaced.
-     * @throws AtsdClientException if there is any client problem
-     * @throws AtsdServerException if there is any server problem
+     * @throws AtsdClientException raised if there is any client problem
+     * @throws AtsdServerException raised if there is any server problem
      */
     public boolean replaceGroupEntities(String entityGroupName, Boolean createEntities, Entity... entities) {
         checkEntityGroupIsEmpty(entityGroupName);
@@ -395,8 +404,9 @@ public class MetaDataService {
      *
      * @param entityGroupName Entity group name.
      * @param entities        Entities to replace.  @return {@code true} if entities added.
-     * @throws AtsdClientException if there is any client problem
-     * @throws AtsdServerException if there is any server problem
+     * @return is success
+     * @throws AtsdClientException raised if there is any client problem
+     * @throws AtsdServerException raised if there is any server problem
      */
     public boolean deleteGroupEntities(String entityGroupName, Entity... entities) {
         checkEntityGroupIsEmpty(entityGroupName);
@@ -414,8 +424,9 @@ public class MetaDataService {
      * Delete all entities from entity group.
      *
      * @param entityGroupName Entity group name.
-     * @throws AtsdClientException if there is any client problem
-     * @throws AtsdServerException if there is any server problem
+     * @return is success
+     * @throws AtsdClientException raised if there is any client problem
+     * @throws AtsdServerException raised if there is any server problem
      */
     public boolean deleteAllGroupEntities(String entityGroupName) {
         return replaceGroupEntities(entityGroupName, true);

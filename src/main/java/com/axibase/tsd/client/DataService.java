@@ -17,7 +17,6 @@ package com.axibase.tsd.client;
 import com.axibase.tsd.model.data.*;
 import com.axibase.tsd.model.data.command.*;
 import com.axibase.tsd.model.data.filters.DeletePropertyFilter;
-import com.axibase.tsd.model.data.series.GetSeriesBatchResult;
 import com.axibase.tsd.model.data.series.Series;
 import com.axibase.tsd.model.data.series.aggregate.AggregateType;
 import com.axibase.tsd.model.system.Format;
@@ -38,7 +37,7 @@ import static com.axibase.tsd.util.AtsdUtil.*;
  * @author Nikolay Malevanny.
  */
 public class DataService {
-    public static final SeriesCommandPreparer LAST_PREPARER = new LastPreparer();
+    private static final SeriesCommandPreparer LAST_PREPARER = new LastPreparer();
 
     private HttpClientManager httpClientManager;
 
@@ -240,7 +239,7 @@ public class DataService {
      * @param ruleNames     rule filter, multiple values allowed
      * @param severityIds   severity filter, multiple values allowed
      * @param minSeverityId minimal severity filter
-     * @param timeFormat
+     * @param timeFormat  time format
      * @return list of {@code Alert}
      */
     public List<Alert> retrieveAlerts(
@@ -264,6 +263,7 @@ public class DataService {
 
     /**
      * @param getAlertHistoryQuery command with alert history selection details
+     * @param getAlertHistoryQueries alerts history queries
      * @return list of  {@code AlertHistory}
      */
     public List<AlertHistory> retrieveAlertHistory(GetAlertHistoryQuery getAlertHistoryQuery,
