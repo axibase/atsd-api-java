@@ -42,7 +42,7 @@ public class GetSeriesQuery {
     private final String entityName;
     @JsonProperty("metric")
     private final String metricName;
-    private MultivaluedMap<String, String> tags = new MultivaluedHashMap<String, String>();
+    private MultivaluedMap<String, String> tags = new MultivaluedHashMap<>();
     private SeriesType type;
     private Join join;
     private Rate rate;
@@ -158,6 +158,7 @@ public class GetSeriesQuery {
 
     /**
      * @param startTime start of the selection interval. Unix milliseconds.
+     * @return instance of method
      */
     public GetSeriesQuery setStartTime(Long startTime) {
         this.startTime = startTime;
@@ -166,6 +167,7 @@ public class GetSeriesQuery {
 
     /**
      * @param endTime end of the selection interval. Unix milliseconds.
+     * @return instance of method
      */
     public GetSeriesQuery setEndTime(Long endTime) {
         this.endTime = endTime;
@@ -174,6 +176,7 @@ public class GetSeriesQuery {
 
     /**
      * @param startDate start of the selection interval. Specified in ISO format or using endtime syntax.
+     * @return instance of method
      */
     public GetSeriesQuery setStartDate(String startDate) {
         this.startDate = startDate;
@@ -182,6 +185,7 @@ public class GetSeriesQuery {
 
     /**
      * @param endDate end of the selection interval. Specified in ISO format or using endtime syntax.
+     * @return instance of method
      */
     public GetSeriesQuery setEndDate(String endDate) {
         this.endDate = endDate;
@@ -189,7 +193,8 @@ public class GetSeriesQuery {
     }
 
     /**
-     * @param interval Duration of the selection interval, specified as <code>count-timeunit</code>, for example, 1-hour
+     * @param interval Duration of the selection interval, specified as {@code count-timeunit}, for example, 1-hour
+     * @return instance of method
      */
     public GetSeriesQuery setInterval(Interval interval) {
         this.interval = interval;
@@ -198,6 +203,7 @@ public class GetSeriesQuery {
 
     /**
      * @param limit maximum number of data samples returned.
+     * @return instance of method
      */
     public GetSeriesQuery setLimit(Integer limit) {
         this.limit = limit;
@@ -206,6 +212,7 @@ public class GetSeriesQuery {
 
     /**
      * @param last if true: Performs GET instead of scan. Retrieves only 1 most recent value.
+     * @return instance of method
      */
     public GetSeriesQuery setLast(Boolean last) {
         this.last = last;
@@ -215,6 +222,7 @@ public class GetSeriesQuery {
     /**
      * @param tags Object key is a tag name and a value is an array of possible tag values.
      *             User defined values ( keys: case insensitive, values: case sensitive )
+     * @return instance of method
      */
     public GetSeriesQuery setTags(MultivaluedMap<String, String> tags) {
         this.tags = tags;
@@ -223,6 +231,7 @@ public class GetSeriesQuery {
 
     /**
      * @param type specifies source for underlying data
+     * @return instance of method
      */
     public GetSeriesQuery setType(SeriesType type) {
         this.type = type;
@@ -231,6 +240,7 @@ public class GetSeriesQuery {
 
     /**
      * @param join Merges multiple time series into one serie.
+     * @return instance of method
      */
     public GetSeriesQuery setJoin(Join join) {
         this.join = join;
@@ -239,6 +249,7 @@ public class GetSeriesQuery {
 
     /**
      * @param rate Computes difference between consecutive samples per unit of time (rate interval).
+     * @return instance of method
      */
     public GetSeriesQuery setRate(Rate rate) {
         this.rate = rate;
@@ -247,6 +258,7 @@ public class GetSeriesQuery {
 
     /**
      * @param aggregateMatcher Computes statistics for the specified time intervals.
+     * @return instance of method
      */
     public GetSeriesQuery setAggregateMatcher(SimpleAggregateMatcher aggregateMatcher) {
         this.aggregateMatcher = aggregateMatcher;
@@ -261,6 +273,7 @@ public class GetSeriesQuery {
      *
      * @param requestId Optional identifier used to associate 'series' object in request with 'series'
      *                  objects in response. Any string (case sensitive).
+     * @return instance of method
      */
     public GetSeriesQuery setRequestId(String requestId) {
         this.requestId = requestId;

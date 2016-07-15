@@ -51,25 +51,17 @@ public class SimpleAggregateMatcher {
         init(interval, interpolate, type, types);
     }
 
-    /**
-     * An array of statistical functions DETAIL,COUNT, MIN, MAX, AVG, SUM, PERCENTILE_999, PERCENTILE_995,
-     * PERCENTILE_99, PERCENTILE_95, PERCENTILE_90, PERCENTILE_75, PERCENTILE_50, STANDARD_DEVIATION, FIRST,
-     * LAST, DELTA, WAVG, WTAVG, THRESHOLD_COUNT, THRESHOLD_DURATION, THRESHOLD_PERCENT
-     */
+
     public List<AggregateType> getTypes() {
         return types;
     }
 
-    /**
-     * interval for computing statistics.
-     */
+
     public Interval getInterval() {
         return interval;
     }
 
-    /**
-     * Generates missing aggregation intervals using interpolation if enabled: NONE, LINEAR, STEP
-     */
+
     public Interpolate getInterpolate() {
         return interpolate;
     }
