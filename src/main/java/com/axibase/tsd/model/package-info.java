@@ -14,6 +14,6 @@
  */
 /**
  * Defines parameters, return values and system objects in the
- * Axibase Time-Series Database.
+ * Axibase Time-Sample Database.
  **/
 package com.axibase.tsd.model;

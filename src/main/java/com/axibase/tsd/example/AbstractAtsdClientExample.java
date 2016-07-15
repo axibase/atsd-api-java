@@ -18,11 +18,13 @@ import com.axibase.tsd.client.ClientConfigurationFactory;
 import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
 import com.axibase.tsd.client.MetaDataService;
-import com.axibase.tsd.model.data.series.GetSeriesResult;
+import com.axibase.tsd.model.data.series.Sample;
 import com.axibase.tsd.model.data.series.Series;
 import com.axibase.tsd.model.system.ClientConfiguration;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -35,6 +37,7 @@ import java.util.List;
  * @author Nikolay Malevanny.
  */
 public abstract class AbstractAtsdClientExample {
+    Logger logger = LoggerFactory.getLogger(AbstractAtsdClientExample.class);
     protected DataService dataService;
     protected MetaDataService metaDataService;
 
@@ -52,9 +55,9 @@ public abstract class AbstractAtsdClientExample {
 
     // Client Configuration -- way 1
     protected void configure() {
-        System.out.println("Getting Started with Axibase TSD");
+        logger.info("Getting Started with Axibase TSD");
         ClientConfiguration clientConfiguration = ClientConfigurationFactory.createInstance().createClientConfiguration();
-        System.out.println("Connecting to ATSD: " + clientConfiguration.getMetadataUrl());
+        logger.info("Connecting to ATSD: " + clientConfiguration.getMetadataUrl());
         HttpClientManager httpClientManager = new HttpClientManager(clientConfiguration);
         dataService = new DataService(httpClientManager);
         metaDataService = new MetaDataService(httpClientManager);
@@ -73,7 +76,7 @@ public abstract class AbstractAtsdClientExample {
                 false // skipStreamingControl
         );
         ClientConfiguration clientConfiguration = configurationFactory.createClientConfiguration();
-        System.out.println("Connecting to ATSD: " + clientConfiguration.getMetadataUrl());
+        logger.info("Connecting to ATSD: " + clientConfiguration.getMetadataUrl());
         HttpClientManager httpClientManager = new HttpClientManager(clientConfiguration);
 
         GenericObjectPoolConfig objectPoolConfig = new GenericObjectPoolConfig();
@@ -107,12 +110,12 @@ public abstract class AbstractAtsdClientExample {
         return getDateFormat().format(new Date(time));
     }
 
-    protected void print(GetSeriesResult getSeriesResult) {
-        System.out.println("Time Series Key: " + getSeriesResult.getTimeSeriesKey());
-        List<Series> data = getSeriesResult.getData();
-        for (Series series : data) {
-            long ts = series.getTimeMillis();
-            System.out.println(toISODate(ts) + "\t" + series.getValue());
+    protected void print(Series series) {
+        logger.info("Time Sample Key: " + series.getTimeSeriesKey());
+        List<Sample> data = series.getData();
+        for (Sample sample : data) {
+            long ts = sample.getTimeMillis();
+            logger.info(toISODate(ts) + "\t" + sample.getValue());
         }
     }
 }

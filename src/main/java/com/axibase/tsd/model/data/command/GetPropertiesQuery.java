@@ -15,10 +15,16 @@
 package com.axibase.tsd.model.data.command;
 
 import com.axibase.tsd.model.data.TimeFormat;
+import com.axibase.tsd.util.AtsdUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.Date;
 import java.util.Map;
+
+import static com.axibase.tsd.util.AtsdUtil.DateTime.MAX_QUERIED_DATE_TIME;
+import static com.axibase.tsd.util.AtsdUtil.DateTime.MIN_QUERIED_DATE_TIME;
+import static com.axibase.tsd.util.AtsdUtil.DateTime.parseDate;
 
 /**
  * @author Nikolay Malevanny.
@@ -36,9 +42,17 @@ public class GetPropertiesQuery {
     private String keyExpression;
     private TimeFormat timeFormat;
 
-    public GetPropertiesQuery(String type, String entityName) {
+
+    public GetPropertiesQuery(String type, String entityName, Date startDateTime, Date endDateTime) {
         this.entityName = entityName;
         this.type = type;
+        setStartTime(startDateTime.getTime());
+        setEndTime(endDateTime.getTime());
+    }
+
+
+    public GetPropertiesQuery(String type, String entityName) {
+        this(type, entityName, parseDate(MIN_QUERIED_DATE_TIME), parseDate(MAX_QUERIED_DATE_TIME));
     }
 
     public String getEntityName() {

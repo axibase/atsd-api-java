@@ -30,6 +30,7 @@ import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import static com.axibase.tsd.TestUtil.*;
@@ -63,14 +64,23 @@ public class MessageTest {
         final String messageTextCritical = "message text 3";
         final long timestamp = System.currentTimeMillis();
 
-        final Message m1 = new Message(entityName, messageTextUnknown).setSeverity(Severity.UNKNOWN).setTimestamp(timestamp);
-        final Message m2 = new Message(entityName, messageTextMinor).setSeverity(Severity.MINOR).setTimestamp(timestamp);
-        final Message m3 = new Message(entityName, messageTextCritical).setSeverity(Severity.CRITICAL).setTimestamp(timestamp);
+        final Message m1 = new Message(entityName, messageTextUnknown)
+                .setSeverity(Severity.UNKNOWN)
+                .setTimestamp(timestamp);
+
+        final Message m2 = new Message(entityName, messageTextMinor)
+                .setSeverity(Severity.MINOR)
+                .setTimestamp(timestamp);
+
+        final Message m3 = new Message(entityName, messageTextCritical)
+                .setSeverity(Severity.CRITICAL)
+                .setTimestamp(timestamp);
         assertTrue(dataService.insertMessages(m1, m2, m3));
 
         Thread.sleep(WAIT_TIME);
 
-        GetMessagesQuery getMessagesQuery = new GetMessagesQuery(new String[]{entityName}).setStartTime(timestamp - 1).setEndTime(timestamp + 1);
+        GetMessagesQuery getMessagesQuery = new GetMessagesQuery(Arrays.asList(entityName))
+                .setStartDate(new Date(timestamp - 1)).setEndDate(new Date(timestamp + 1));
 
         List<Message> messages = dataService.retrieveMessages(getMessagesQuery);
         assertNotNull(messages);
@@ -107,7 +117,7 @@ public class MessageTest {
         final long timestamp = MOCK_TIMESTAMP;
         final long delta = 1L;
 
-        GetMessagesQuery getMessagesQuery = new GetMessagesQuery(entityName).setStartTime(timestamp - delta).setEndTime(timestamp + delta);
+        GetMessagesQuery getMessagesQuery = new GetMessagesQuery(entityName).setStartDate(new Date(timestamp - delta)).setEndDate(new Date(timestamp + delta));
 
         if (dataService.retrieveMessages(getMessagesQuery).isEmpty()) {
             Message message = new Message(entityName, messageTextUnknown).setSeverity(Severity.UNKNOWN).setTimestamp(timestamp);
@@ -127,7 +137,7 @@ public class MessageTest {
         buildVariablePrefix();
         final List<String> entitiesName = Arrays.asList(buildVariablePrefix() + "entity-first", buildVariablePrefix() + "entity-second");
 
-        GetMessagesQuery getMessagesQuery = new GetMessagesQuery((String[]) entitiesName.toArray()).setStartTime(timestamp);
+        GetMessagesQuery getMessagesQuery = new GetMessagesQuery(entitiesName).setStartDate(new Date(timestamp));
         if (dataService.retrieveMessages(getMessagesQuery).size() < 2) {
             for (String entityName : entitiesName) {
                 Message message = new Message(entityName, messageTextUnknown).setSeverity(Severity.UNKNOWN).setTimestamp(timestamp);

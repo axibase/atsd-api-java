@@ -17,105 +17,46 @@
 package com.axibase.tsd.model.data.command;
 
 import com.axibase.tsd.model.data.Severity;
-import com.axibase.tsd.model.data.TimeFormat;
 import com.axibase.tsd.model.data.series.Interval;
-import com.axibase.tsd.model.meta.EntityGroup;
+import com.axibase.tsd.util.AtsdUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static com.axibase.tsd.util.AtsdUtil.DateTime.*;
 
 /**
  * @author Korchagin Dmitry.
  */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetMessagesQuery {
-    @JsonProperty(value = "entity")
-    private final String entityName;
-    @JsonProperty(value = "entities")
-    private final List<String> entitiesName;
-    @JsonProperty(value = "entityGroups")
-    private final List<String> entityGroupsName;
-    @JsonProperty(value = "excludeGroups")
-    private List<String> excludeGroupsName;
-    private Long startTime = null;
-    private Long endTime = null;
+    //TODO: entity and date filter
     private Interval interval;
-    private TimeFormat timeFormat;
-    private Integer limit;
-    private Severity severity;
+    private Date startDate;
+    private Date endDate;
     private String type;
     private String source;
     private Map<String, String> tags;
+    private Severity severity;
+    private List<Severity> severities;
+    private Severity minSeverity;
+    private String entity;
+    private List<String> entities;
+    private String entityGroup;
+    private String entityExpression;
 
-    public GetMessagesQuery(final String entityName) {
-        this(entityName, null, null);
+    public GetMessagesQuery(String entity) {
+        setEntity(entity);
+        setStartDate(parseDate(MIN_QUERIED_DATE_TIME));
+        setEndDate(parseDate(MAX_QUERIED_DATE_TIME));
     }
 
-    public GetMessagesQuery(final String[] entitesName) {
-        this(null, Arrays.asList(entitesName), null);
+    public GetMessagesQuery(List<String> entities) {
+        setEntities(entities);
+        setStartDate(parseDate(MIN_QUERIED_DATE_TIME));
+        setEndDate(parseDate(MAX_QUERIED_DATE_TIME));
     }
 
-    public GetMessagesQuery(final List<EntityGroup> entityGroups) {
-        this(null, null, entityGroups);
-    }
-
-
-    protected GetMessagesQuery(String entityName, List<String> entitiesName, List<EntityGroup> entityGroups) {
-        this.entityName = entityName;
-        this.entitiesName = entitiesName;
-        if (null == entityGroups) {
-            this.entityGroupsName = null;
-            return;
-        }
-        List<String> entityGroupsName = new ArrayList<>();
-        for (EntityGroup entityGroup : entityGroups) {
-            entityGroupsName.add(entityGroup.getName());
-        }
-        this.entityGroupsName = entityGroupsName;
-    }
-
-    public String getEntityName() {
-        return entityName;
-    }
-
-    public List<String> getEntitiesName() {
-        return entitiesName;
-    }
-
-    public List<String> getEntityGroupsName() {
-        return entityGroupsName;
-    }
-
-    public List<String> getExcludeGroupsName() {
-        return excludeGroupsName;
-    }
-
-    public GetMessagesQuery setExcludeGroupsName(List<String> excludeGroupsName) {
-        this.excludeGroupsName = excludeGroupsName;
-        return this;
-    }
-
-    public Long getStartTime() {
-        return startTime;
-    }
-
-    public GetMessagesQuery setStartTime(Long startTime) {
-        this.startTime = startTime;
-        return this;
-    }
-
-    public Long getEndTime() {
-        return endTime;
-    }
-
-    public GetMessagesQuery setEndTime(Long endTime) {
-        this.endTime = endTime;
-        return this;
-    }
 
     public Interval getInterval() {
         return interval;
@@ -126,30 +67,21 @@ public class GetMessagesQuery {
         return this;
     }
 
-    public TimeFormat getTimeFormat() {
-        return timeFormat;
+    public String getStartDate() {
+        return ISOFormat(startDate);
     }
 
-    public GetMessagesQuery setTimeFormat(TimeFormat timeFormat) {
-        this.timeFormat = timeFormat;
+    public GetMessagesQuery setStartDate(Date startDate) {
+        this.startDate = startDate;
         return this;
     }
 
-    public Integer getLimit() {
-        return limit;
+    public String getEndDate() {
+        return ISOFormat(endDate);
     }
 
-    public GetMessagesQuery setLimit(Integer limit) {
-        this.limit = limit;
-        return this;
-    }
-
-    public Severity getSeverity() {
-        return severity;
-    }
-
-    public GetMessagesQuery setSeverity(Severity severity) {
-        this.severity = severity;
+    public GetMessagesQuery setEndDate(Date endDate) {
+        this.endDate = endDate;
         return this;
     }
 
@@ -180,22 +112,68 @@ public class GetMessagesQuery {
         return this;
     }
 
-    @Override
-    public String toString() {
-        return "GetMessagesQuery{" +
-                "entityName='" + entityName + '\'' +
-                ", entitiesName=" + entitiesName +
-                ", entityGroupsName=" + entityGroupsName +
-                ", excludeGroupsName=" + excludeGroupsName +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", interval=" + interval +
-                ", timeFormat=" + timeFormat +
-                ", limit=" + limit +
-                ", severity=" + severity +
-                ", type='" + type + '\'' +
-                ", source='" + source + '\'' +
-                ", tags=" + tags +
-                '}';
+    public Severity getSeverity() {
+        return severity;
     }
+
+    public GetMessagesQuery setSeverity(Severity severity) {
+        this.severity = severity;
+        return this;
+    }
+
+    public List<Severity> getSeverities() {
+        return severities;
+    }
+
+    public GetMessagesQuery setSeverities(List<Severity> severities) {
+        this.severities = severities;
+        return this;
+    }
+
+    public Severity getMinSeverity() {
+        return minSeverity;
+    }
+
+    public GetMessagesQuery setMinSeverity(Severity minSeverity) {
+        this.minSeverity = minSeverity;
+        return this;
+    }
+
+    public String getEntity() {
+        return entity;
+    }
+
+    public GetMessagesQuery setEntity(String entity) {
+        this.entity = entity;
+        return this;
+    }
+
+    public List<String> getEntities() {
+        return entities;
+    }
+
+    public GetMessagesQuery setEntities(List<String> entities) {
+        this.entities = entities;
+        return this;
+    }
+
+    public String getEntityGroup() {
+        return entityGroup;
+    }
+
+    public GetMessagesQuery setEntityGroup(String entityGroup) {
+        this.entityGroup = entityGroup;
+        return this;
+    }
+
+    public String getEntityExpression() {
+        return entityExpression;
+    }
+
+    public GetMessagesQuery setEntityExpression(String entityExpression) {
+        this.entityExpression = entityExpression;
+        return this;
+    }
+
+
 }

@@ -19,9 +19,7 @@ package com.axibase.tsd.client.metaDataService;
 
 import com.axibase.tsd.RerunRule;
 import com.axibase.tsd.TestUtil;
-import com.axibase.tsd.client.DataService;
-import com.axibase.tsd.client.HttpClientManager;
-import com.axibase.tsd.client.MetaDataService;
+import com.axibase.tsd.client.*;
 import com.axibase.tsd.model.meta.Entity;
 import com.axibase.tsd.model.meta.TagAppender;
 import org.junit.*;
@@ -52,7 +50,6 @@ public class EntityTest {
         metaDataService.setHttpClientManager(httpClientManager);
         dataService = new DataService();
         dataService.setHttpClientManager(httpClientManager);
-
         waitWorkingServer(httpClientManager);
     }
 
@@ -139,7 +136,7 @@ public class EntityTest {
         }
     }
 
-    @Test
+    @Test(expected = AtsdServerException.class)
     public void testCreateOrReplaceInvalidEntityWithoutTags() throws Exception {
         final String entityName = "te_____st-cre ate-invalid-^%entityƒџќѕ∆-w\"ith''ou't-tags";
 

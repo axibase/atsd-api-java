@@ -191,12 +191,13 @@ public class EntityGroupTest {
         final String entityGroupName = buildVariablePrefix() + "group";
         final String entityNameFrist = buildVariablePrefix() + "first";
         final String entityNameSeconds = buildVariablePrefix() + "second";
-        if (metaDataService.retrieveGroupEntities(entityGroupName).size() < 2) {
+        List<Entity> entities = metaDataService.retrieveGroupEntities(entityGroupName);
+        if (entities.size() < 2) {
             EntityGroup entityGroup = new EntityGroup(entityGroupName);
             assertTrue(metaDataService.createOrReplaceEntityGroup(entityGroup));
             assertTrue(metaDataService.addGroupEntities(entityGroupName, true, new Entity(entityNameFrist), new Entity(entityNameSeconds)));
         }
-        List entities = metaDataService.retrieveGroupEntities(entityGroupName);
+        entities = metaDataService.retrieveGroupEntities(entityGroupName);
         assertEquals(2, entities.size());
         assertTrue(entities.get(0) instanceof Entity);
         assertTrue((entityNameFrist.concat(entityNameSeconds)).contains(((Entity) entities.get(0)).getName()));

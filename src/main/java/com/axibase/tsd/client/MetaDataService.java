@@ -21,10 +21,7 @@ import com.axibase.tsd.model.meta.command.SimpleCommand;
 import com.axibase.tsd.query.Query;
 import com.axibase.tsd.query.QueryPart;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.axibase.tsd.client.RequestProcessor.*;
 import static com.axibase.tsd.util.AtsdUtil.*;
@@ -224,9 +221,9 @@ public class MetaDataService {
             throws AtsdClientException, AtsdServerException {
         checkMetricIsEmpty(metricName);
         return httpClientManager.requestMetaDataList(EntityAndTags.class, new Query<EntityAndTags>("metrics")
-                        .path(metricName)
-                        .path("entity-and-tags")
-                        .param("entity", entityName)
+                .path(metricName)
+                .path("entity-and-tags")
+                .param("entity", entityName)
         );
     }
 
@@ -357,12 +354,15 @@ public class MetaDataService {
      */
     public boolean addGroupEntities(String entityGroupName, Boolean createEntities, Entity... entities) {
         checkEntityGroupIsEmpty(entityGroupName);
-        QueryPart<Entity> query = new Query<Entity>("entity-groups")
+        List<String> entitiesNames = new ArrayList<>();
+        for (Entity entity : entities) {
+            entitiesNames.add(entity.getName());
+        }
+        QueryPart<EntityGroup> query = new Query<EntityGroup>("entity-groups")
                 .path(entityGroupName)
-                .path("entities")
+                .path("entities/add")
                 .param("createEntities", createEntities);
-        AddEntitiesCommand addEntitiesCommand = new AddEntitiesCommand(createEntities, Arrays.asList(entities));
-        return httpClientManager.updateMetaData(query, patch(Arrays.asList(addEntitiesCommand)));
+        return httpClientManager.updateData(query, post(entitiesNames));
     }
 
     /**
@@ -379,11 +379,15 @@ public class MetaDataService {
      */
     public boolean replaceGroupEntities(String entityGroupName, Boolean createEntities, Entity... entities) {
         checkEntityGroupIsEmpty(entityGroupName);
+        List<String> entitiesNames = new ArrayList<>();
+        for (Entity entity : entities) {
+            entitiesNames.add(entity.getName());
+        }
         QueryPart<Entity> query = new Query<Entity>("entity-groups")
                 .path(entityGroupName)
-                .path("entities")
+                .path("entities/set")
                 .param("createEntities", createEntities);
-        return httpClientManager.updateMetaData(query, put(Arrays.asList(entities)));
+        return httpClientManager.updateMetaData(query, post(entitiesNames));
     }
 
     /**
@@ -396,11 +400,14 @@ public class MetaDataService {
      */
     public boolean deleteGroupEntities(String entityGroupName, Entity... entities) {
         checkEntityGroupIsEmpty(entityGroupName);
+        List<String> entitiesNames = new ArrayList<>();
+        for (Entity entity : entities) {
+            entitiesNames.add(entity.getName());
+        }
         QueryPart<Entity> query = new Query<Entity>("entity-groups")
                 .path(entityGroupName)
-                .path("entities");
-        DeleteEntitiesCommand deleteEntitiesCommand = new DeleteEntitiesCommand(Arrays.asList(entities));
-        return httpClientManager.updateMetaData(query, patch(Arrays.asList(deleteEntitiesCommand)));
+                .path("entities/delete");
+        return httpClientManager.updateMetaData(query, post(entitiesNames));
     }
 
     /**
@@ -411,10 +418,6 @@ public class MetaDataService {
      * @throws AtsdServerException if there is any server problem
      */
     public boolean deleteAllGroupEntities(String entityGroupName) {
-        checkEntityGroupIsEmpty(entityGroupName);
-        QueryPart<Entity> query = new Query<Entity>("entity-groups")
-                .path(entityGroupName)
-                .path("entities");
-        return httpClientManager.updateMetaData(query, patch(Arrays.asList(new SimpleCommand("delete-all"))));
+        return replaceGroupEntities(entityGroupName, true);
     }
 }

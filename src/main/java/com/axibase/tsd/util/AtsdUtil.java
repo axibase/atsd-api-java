@@ -14,12 +14,14 @@
  */
 package com.axibase.tsd.util;
 
+import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.core.MediaType;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * @author Nikolay Malevanny.
@@ -83,6 +85,36 @@ public class AtsdUtil {
 
     public static void checkMetricIsEmpty(String metricName) {
         check(metricName, "Metric name is empty");
+    }
+
+    public static class DateTime {
+        public static final String MIN_QUERIED_DATE_TIME = "1000-01-01T00:00:00.000Z";
+        public static final String MAX_QUERIED_DATE_TIME = "9999-12-31T23:59:59.999Z";
+
+        public static Date parseDate(String date) {
+            Date d = null;
+            try {
+                d = ISO8601Utils.parse(date, new ParsePosition(0));
+            } catch (ParseException e) {
+                throw new RuntimeException(e);
+            }
+            return d;
+        }
+
+        public static String ISOFormat(Date date) {
+            return ISOFormat(date, "GMT");
+        }
+
+        public static String ISOFormat(Date date, String timeZoneName) {
+            return ISOFormat(date, true, timeZoneName);
+        }
+
+        public static String ISOFormat(Date date, boolean withMillis, String timeZoneName) {
+            String pattern = (withMillis) ? "yyyy-MM-dd'T'HH:mm:ss.SSSXXX" : "yyyy-MM-dd'T'HH:mm:ssXXX";
+            SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+            dateFormat.setTimeZone(TimeZone.getTimeZone(timeZoneName));
+            return dateFormat.format(date);
+        }
     }
 
 }
