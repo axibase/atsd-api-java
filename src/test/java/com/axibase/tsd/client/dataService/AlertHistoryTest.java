@@ -13,7 +13,8 @@
  *  * express or implied. See the License for the specific language governing
  *  * permissions and limitations under the License.
  *
- */
+ *//*
+
 package com.axibase.tsd.client.dataService;
 
 import com.axibase.tsd.RerunRule;
@@ -23,7 +24,7 @@ import com.axibase.tsd.client.HttpClientManager;
 import com.axibase.tsd.model.data.AlertHistory;
 import com.axibase.tsd.model.data.command.AddSeriesCommand;
 import com.axibase.tsd.model.data.command.GetAlertHistoryQuery;
-import com.axibase.tsd.model.data.series.Series;
+import com.axibase.tsd.model.data.series.Sample;
 import org.junit.*;
 
 import java.util.List;
@@ -63,10 +64,10 @@ public class AlertHistoryTest {
                 .setEndTime(timestamp + delta);
         if (dataService.retrieveAlertHistory(getAlertHistoryQuery).isEmpty()) {
             AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName);
-            addSeriesCommand.addSeries(new Series(timestamp, 1));
+            addSeriesCommand.addSeries(new Sample(timestamp, 1));
             dataService.addSeries(addSeriesCommand);
             addSeriesCommand = new AddSeriesCommand(entityName, metricName);
-            addSeriesCommand.addSeries(new Series(timestamp+1, -1));
+            addSeriesCommand.addSeries(new Sample(timestamp+1, -1));
             dataService.addSeries(addSeriesCommand);
         }
         List alertHistoryList = dataService.retrieveAlertHistory(getAlertHistoryQuery);
@@ -84,10 +85,10 @@ public class AlertHistoryTest {
                 .setMetricName(metricName);
         if (dataService.retrieveAlertHistory(getAlertHistoryQuery).isEmpty()) {
             AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName);
-            addSeriesCommand.addSeries(new Series(timestamp, 1));
+            addSeriesCommand.addSeries(new Sample(timestamp, 1));
             dataService.addSeries(addSeriesCommand);
             addSeriesCommand = new AddSeriesCommand(entityName, metricName);
-            addSeriesCommand.addSeries(new Series(timestamp+1, -1));
+            addSeriesCommand.addSeries(new Sample(timestamp+1, -1));
             dataService.addSeries(addSeriesCommand);
         }
         List alertHistoryList = dataService.retrieveAlertHistory(getAlertHistoryQuery);
@@ -101,4 +102,4 @@ public class AlertHistoryTest {
         httpClientManager.close();
     }
 
-}
+}*/

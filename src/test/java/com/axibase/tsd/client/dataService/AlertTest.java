@@ -13,7 +13,8 @@
  *  * express or implied. See the License for the specific language governing
  *  * permissions and limitations under the License.
  *
- */
+ *//*
+
 package com.axibase.tsd.client.dataService;
 
 import com.axibase.tsd.RerunRule;
@@ -28,6 +29,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +39,7 @@ import static com.axibase.tsd.TestUtil.*;
 import static junit.framework.Assert.*;
 
 public class AlertTest {
-
+    private Logger logger = LoggerFactory.getLogger(AlertTest.class);
     private DataService dataService;
     private HttpClientManager httpClientManager;
 
@@ -69,11 +72,10 @@ public class AlertTest {
         PlainCommand plainCommand = insertSeriesCommandToCreateAlert(entityName, metricName, timestamp);
         // fire alert
         dataService.sendPlainCommand(plainCommand);
-        System.out.println("command = " + plainCommand.compose());
+        logger.info("command = {}", plainCommand.compose());
         Thread.sleep(WAIT_TIME);
-        GetAlertQuery getAlertQuery = new GetAlertQuery();
-        getAlertQuery.setEntityNames(Arrays.asList(entityName));
-        getAlertQuery.setMetricNames(Arrays.asList(metricName));
+        GetAlertQuery getAlertQuery = new GetAlertQuery(entityName)
+                .setMetricNames(Arrays.asList(metricName));
         List alerts = dataService.retrieveAlerts(getAlertQuery);
         assertNotNull(alerts);
         assertFalse(alerts.isEmpty());
@@ -97,8 +99,7 @@ public class AlertTest {
         final String metricName = ALERTS_METRIC;
         final Long timestamp = System.currentTimeMillis(); //required to activate alerts
 
-        GetAlertQuery getAlertQuery = new GetAlertQuery();
-        getAlertQuery.setEntityNames(Arrays.asList(entityName));
+        GetAlertQuery getAlertQuery = new GetAlertQuery(entityName);
         getAlertQuery.setMetricNames(Arrays.asList(metricName));
 
         { // clean
@@ -118,7 +119,7 @@ public class AlertTest {
 
         // check alert
         List<Alert> alerts = dataService.retrieveAlerts(getAlertQuery);
-        assertTrue(alerts.size() > 0);
+            assertTrue(alerts.size() > 0);
         Alert alert = alerts.get(0);
         assertFalse(alert.getAcknowledged());
 
@@ -158,4 +159,4 @@ public class AlertTest {
     }
 
 
-}
+}*/

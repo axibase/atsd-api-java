@@ -13,7 +13,7 @@
  * permissions and limitations under the License.
  */
 /**
- * Provides classes that implement all the major Axibase Time-Series Database operations.  The actual classes used
+ * Provides classes that implement all the major Axibase Time-Sample Database operations.  The actual classes used
  * as return values or parameters are defined in the com.axibase.tsd.model package.
  *
  * <ul>

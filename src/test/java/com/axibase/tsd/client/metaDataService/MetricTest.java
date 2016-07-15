@@ -23,7 +23,7 @@ import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
 import com.axibase.tsd.client.MetaDataService;
 import com.axibase.tsd.model.data.command.AddSeriesCommand;
-import com.axibase.tsd.model.data.series.Series;
+import com.axibase.tsd.model.data.series.Sample;
 import com.axibase.tsd.model.meta.DataType;
 import com.axibase.tsd.model.meta.Metric;
 import com.axibase.tsd.model.meta.TagAppender;
@@ -188,7 +188,7 @@ public class MetricTest {
         final Long timestamp = MOCK_TIMESTAMP;
         if (metaDataService.retrieveMetrics(entityName, null, "name like '*'", null, 1).isEmpty()) {
             AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName, "test-tag1", "test-tag1-val", "test-tag2", "test-tag2-val");
-            addSeriesCommand.addSeries(new Series(timestamp, 1));
+            addSeriesCommand.addSeries(new Sample(timestamp, 1));
             assertTrue(dataService.addSeries(addSeriesCommand));
         }
         List metrics = metaDataService.retrieveMetrics(entityName, null, "name like '*'", null, 1);

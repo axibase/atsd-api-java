@@ -15,7 +15,7 @@
 
 package com.axibase.tsd.network;
 
-import com.axibase.tsd.model.data.series.Series;
+import com.axibase.tsd.model.data.series.Sample;
 import com.axibase.tsd.util.AtsdUtil;
 
 import java.util.Collections;
@@ -29,26 +29,26 @@ import static com.axibase.tsd.util.AtsdUtil.checkMetricIsEmpty;
 public class InsertCommand extends AbstractInsertCommand {
     public static final String SERIES_COMMAND = "series";
     private final String metricName;
-    private final Series series;
+    private final Sample sample;
 
-    public InsertCommand(String entityName, String metricName, Series series, Map<String, String> tags) {
-        super(SERIES_COMMAND, entityName, series.getTimeMillis(), tags);
+    public InsertCommand(String entityName, String metricName, Sample sample, Map<String, String> tags) {
+        super(SERIES_COMMAND, entityName, sample.getTimeMillis(), tags);
         checkMetricIsEmpty(metricName);
         this.metricName = metricName;
-        this.series = series;
+        this.sample = sample;
     }
 
-    public InsertCommand(String entityName, String metricName, Series series) {
-        this(entityName, metricName, series, Collections.<String, String>emptyMap());
+    public InsertCommand(String entityName, String metricName, Sample sample) {
+        this(entityName, metricName, sample, Collections.<String, String>emptyMap());
     }
 
-    public InsertCommand(String entityName, String metricName, Series series, String... tagNamesAndValues) {
-        this(entityName, metricName, series, AtsdUtil.toMap(tagNamesAndValues));
+    public InsertCommand(String entityName, String metricName, Sample sample, String... tagNamesAndValues) {
+        this(entityName, metricName, sample, AtsdUtil.toMap(tagNamesAndValues));
     }
 
     @Override
     protected void appendValues(StringBuilder sb) {
-        sb.append(" m:").append(metricName).append('=').append(series.getValue());
+        sb.append(" m:").append(metricName).append('=').append(sample.getValue());
     }
 
 }

@@ -16,8 +16,9 @@ package com.axibase.tsd.client;
 
 import com.axibase.tsd.model.data.*;
 import com.axibase.tsd.model.data.command.*;
+import com.axibase.tsd.model.data.filters.DeletePropertyFilter;
 import com.axibase.tsd.model.data.series.GetSeriesBatchResult;
-import com.axibase.tsd.model.data.series.GetSeriesResult;
+import com.axibase.tsd.model.data.series.Series;
 import com.axibase.tsd.model.data.series.aggregate.AggregateType;
 import com.axibase.tsd.model.system.Format;
 import com.axibase.tsd.network.PlainCommand;
@@ -54,16 +55,15 @@ public class DataService {
 
     /**
      * @param seriesQueries queries with details, each query property overrides common one in the request parameters
-     * @return list of {@code GetSeriesResult}
+     * @return list of {@code Series}
      */
-    public List<GetSeriesResult> retrieveSeries(GetSeriesQuery... seriesQueries) {
-        QueryPart<GetSeriesBatchResult> query = new Query<>("series");
-        GetSeriesBatchResult seriesBatchResult = httpClientManager.requestData(GetSeriesBatchResult.class, query,
-                post(new BatchQuery<GetSeriesQuery>(Arrays.asList(seriesQueries))));
-        return seriesBatchResult == null ? Collections.<GetSeriesResult>emptyList() : seriesBatchResult.getSeriesResults();
+    public List<Series> retrieveSeries(GetSeriesQuery... seriesQueries) {
+        QueryPart<Series> query = new Query<>("series/query");
+        return httpClientManager.requestDataList(Series.class, query,
+                post(Arrays.asList(seriesQueries)));
     }
 
-    public List<GetSeriesResult> retrieveSeries(SeriesCommandPreparer preparer, GetSeriesQuery... seriesQueries) {
+    public List<Series> retrieveSeries(SeriesCommandPreparer preparer, GetSeriesQuery... seriesQueries) {
         if (preparer != null) {
             for (GetSeriesQuery seriesQuery : seriesQueries) {
                 preparer.prepare(seriesQuery);
@@ -81,7 +81,7 @@ public class DataService {
             checkEntityIsEmpty(addSeriesCommand.getEntityName());
             checkMetricIsEmpty(addSeriesCommand.getMetricName());
         }
-        QueryPart<GetSeriesResult> query = new Query<GetSeriesResult>("series")
+        QueryPart<Series> query = new Query<Series>("series")
                 .path("insert");
         return httpClientManager.updateData(query,
                 post(Arrays.asList(addSeriesCommands)));
@@ -96,7 +96,7 @@ public class DataService {
     public boolean addSeriesCsv(String entityName, String data, String... tagNamesAndValues) {
         checkEntityIsEmpty(entityName);
         check(data, "Data is empty");
-        QueryPart<GetSeriesResult> query = new Query<GetSeriesResult>("series")
+        QueryPart<Series> query = new Query<Series>("series")
                 .path("csv")
                 .path(entityName);
         if (tagNamesAndValues != null) {
@@ -112,9 +112,9 @@ public class DataService {
 
     /**
      * @param seriesQueries queries with details
-     * @return list of {@code GetSeriesResult}
+     * @return list of {@code Series}
      */
-    public List<GetSeriesResult> retrieveLastSeries(GetSeriesQuery... seriesQueries) {
+    public List<Series> retrieveLastSeries(GetSeriesQuery... seriesQueries) {
         return retrieveSeries(LAST_PREPARER, seriesQueries);
     }
 
@@ -132,7 +132,7 @@ public class DataService {
      * @param last          Performs GET instead of scan. Retrieves only 1 most recent value. Boolean. Default value: false
      * @param columns       Specify which columns must be included. Possible values: time, date (time in ISO), entity, metric,
      *                      t:{name}, value. Default: time, entity, metric, requested tag names, value
-     * @return Series in specified format as InputStream.
+     * @return Sample in specified format as InputStream.
      */
     public InputStream querySeriesPack(Format format,
                                        String entityName,
@@ -164,13 +164,17 @@ public class DataService {
     }
 
     /**
-     * @param getPropertiesQuery command with property filter parameters
+     * @param getPropertiesQueries args of queries
      * @return list of {@code Property}
      */
-    public List<Property> retrieveProperties(GetPropertiesQuery getPropertiesQuery, GetPropertiesQuery... getPropertiesQueries) {
-        QueryPart<Property> query = new Query<Property>("properties");
+    public List<Property> retrieveProperties(GetPropertiesQuery... getPropertiesQueries) {
+        List<GetPropertiesQuery> queriesList = new ArrayList<>();
+        for (GetPropertiesQuery query : getPropertiesQueries) {
+            queriesList.add(query);
+        }
+        QueryPart<Property> query = new Query<Property>("properties/query");
         return httpClientManager.requestDataList(Property.class, query,
-                post(new BatchQuery<GetPropertiesQuery>(getPropertiesQuery, getPropertiesQueries)));
+                post(queriesList));
     }
 
     /**
@@ -200,10 +204,10 @@ public class DataService {
         return httpClientManager.updateData(query, post(Arrays.asList(properties)));
     }
 
-    public List<Message> retrieveMessages(GetMessagesQuery getMessagesQuery, GetMessagesQuery... getMessagesQueries) {
-        QueryPart<Message> query = new Query<>("messages");
+    public List<Message> retrieveMessages(GetMessagesQuery... getMessagesQueries) {
+        QueryPart<Message> query = new Query<>("messages/query");
         return httpClientManager.requestDataList(Message.class, query,
-                post(new BatchQuery<GetMessagesQuery>(getMessagesQuery, getMessagesQueries)));
+                post(Arrays.asList(getMessagesQueries)));
     }
 
 
@@ -220,13 +224,14 @@ public class DataService {
         return httpClientManager.updateData(query, post(Arrays.asList(messages)));
     }
 
-    /**
-     * @param batchPropertyCommands list of batch commands to mass update properties
-     * @return true if success
-     */
-    public boolean batchUpdateProperties(BatchPropertyCommand... batchPropertyCommands) {
-        QueryPart query = new Query("properties");
-        return httpClientManager.updateData(query, patch(batchPropertyCommands));
+
+    public boolean deleteProperties(List<DeletePropertyFilter> deletePropertyFilters) {
+        QueryPart<Property> query = new Query<>("properties/delete");
+        return httpClientManager.updateData(query, post(deletePropertyFilters));
+    }
+
+    public boolean deleteProperties(DeletePropertyFilter... deletePropertyFilters) {
+        return deleteProperties(Arrays.asList(deletePropertyFilters));
     }
 
     /**
@@ -252,10 +257,9 @@ public class DataService {
         return retrieveAlerts(alertQuery);
     }
 
-    public List<Alert> retrieveAlerts(GetAlertQuery alertQuery, GetAlertQuery... alertQueries) {
-        QueryPart<Alert> query = new Query<Alert>("/alerts");
-        BatchQuery<GetAlertQuery> batchQuery = new BatchQuery<GetAlertQuery>(alertQuery, alertQueries);
-        return httpClientManager.requestDataList(Alert.class, query, post(batchQuery));
+    public List<Alert> retrieveAlerts(GetAlertQuery... alertQueries) {
+        QueryPart<Alert> query = new Query<Alert>("/alerts/query");
+        return httpClientManager.requestDataList(Alert.class, query, post(Arrays.asList(alertQueries)));
     }
 
     /**

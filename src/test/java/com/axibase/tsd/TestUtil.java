@@ -34,6 +34,8 @@ public class TestUtil {
     public static final Long MOCK_TIMESTAMP = 1456489150000L;
     public static final Long MOCK_TIMESTAMP_DELTA = 60L;
     public static final Double MOCK_SERIE_VALUE = 1d;
+    public static final String MIN_QUERIED_DATE_TIME = "1000-01-01T00:00:00.000Z";
+    public static final String MAX_QUERIED_DATE_TIME = "9999-12-31T23:59:59.999Z";
 
     public static final int WAIT_TIME = 1800;
 
