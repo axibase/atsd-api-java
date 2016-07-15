@@ -44,7 +44,7 @@ public class MetaDataService {
     /**
      * constructor
      *
-     * @param httpClientManager
+     * @param httpClientManager client
      */
     public MetaDataService(HttpClientManager httpClientManager) {
         this.httpClientManager = httpClientManager;
@@ -67,7 +67,7 @@ public class MetaDataService {
     public List<Metric> retrieveMetrics(Boolean active,
                                         String expression,
                                         TagAppender tagAppender,
-                                        Integer limit) throws AtsdClientException, AtsdServerException {
+                                        Integer limit) {
         QueryPart<Metric> query = new Query<Metric>("metrics")
                 .param("active", active)
                 .param("expression", expression)
@@ -86,14 +86,12 @@ public class MetaDataService {
      * @param tagAppender Specify metric tags to be included in the response.
      * @param limit       Limit response to first N metrics, ordered by name.
      * @return List of metrics.
-     * @throws AtsdClientException raised
-     * @throws AtsdServerException raised
      */
     public List<Metric> retrieveMetrics(String entityName,
                                         Boolean active,
                                         String expression,
                                         TagAppender tagAppender,
-                                        Integer limit) throws AtsdClientException, AtsdServerException {
+                                        Integer limit) {
         QueryPart<Metric> query = new Query<Metric>("entities")
                 .path(entityName)
                 .path("metrics")
