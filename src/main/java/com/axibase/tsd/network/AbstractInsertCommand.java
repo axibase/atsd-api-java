@@ -51,8 +51,18 @@ public abstract class AbstractInsertCommand implements PlainCommand {
 
     protected static void appendKeysAndValues(StringBuilder sb, String prefix, Map<String, String> map) {
         for (Map.Entry<String, String> tagNameAndValue : map.entrySet()) {
-            sb.append(prefix).append(tagNameAndValue.getKey())
-                    .append('=').append(tagNameAndValue.getValue());
+            sb.append(prefix)
+                    .append(tagNameAndValue.getKey())
+                    .append('=')
+                    .append(handleTagValue(tagNameAndValue.getValue()));
+        }
+    }
+
+    private static String handleTagValue(String value) {
+        if (value == null) {
+            return "null";
+        } else {
+            return '"' + value.replace("\"", "\"\"") + '"';
         }
     }
 
