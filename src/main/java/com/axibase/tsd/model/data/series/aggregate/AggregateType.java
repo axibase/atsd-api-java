@@ -18,6 +18,7 @@ package com.axibase.tsd.model.data.series.aggregate;
  * @author Nikolay Malevanny.
  */
 public enum AggregateType {
+    HISTORY,
     DETAIL,
     COUNT,
     MIN,

@@ -21,10 +21,16 @@ import com.axibase.tsd.model.meta.Metric;
 import com.axibase.tsd.model.meta.TimePrecision;
 import com.axibase.tsd.model.system.ClientConfiguration;
 import com.axibase.tsd.util.AtsdUtil;
+import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * @author Nikolay Malevanny.
@@ -101,4 +107,33 @@ public class TestUtil {
         return prefix.toString();
     }
 
+
+    public static String ISOFormat(Date date) {
+        return ISOFormat(date, true, "UTC");
+    }
+
+    public static String ISOFormat(long t) {
+        return ISOFormat(new Date(t));
+    }
+
+    public static String ISOFormat(long t, boolean withMillis, String timeZoneName) {
+        return ISOFormat(new Date(t), withMillis, timeZoneName);
+    }
+
+    public static String ISOFormat(Date date, boolean withMillis, String timeZoneName) {
+        String pattern = (withMillis) ? "yyyy-MM-dd'T'HH:mm:ss.SSSXXX" : "yyyy-MM-dd'T'HH:mm:ssXXX";
+        SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
+        dateFormat.setTimeZone(TimeZone.getTimeZone(timeZoneName));
+        return dateFormat.format(date);
+    }
+
+    public static Date parseDate(String date) {
+        Date d = null;
+        try {
+            d = ISO8601Utils.parse(date, new ParsePosition(0));
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
+        return d;
+    }
 }
