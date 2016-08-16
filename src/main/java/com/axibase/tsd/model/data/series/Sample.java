@@ -41,8 +41,8 @@ public class Sample {
     }
 
     public Sample(long timeMillis, double value) {
-        this.timeMillis = timeMillis;
-        this.value = value;
+        setTimeMillis(timeMillis);
+        setValue(value);
     }
 
     public Long getTimeMillis() {
@@ -73,6 +73,21 @@ public class Sample {
 
     public void setValue(double value) {
         this.value = value;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        final Sample other = (Sample) obj;
+        if (this.getValue() != other.getValue()) {
+            return false;
+
+        }
+
+        return true;
     }
 
     @Override
