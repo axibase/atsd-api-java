@@ -261,7 +261,7 @@ class PlainStreamingSender extends AbstractHttpEntity implements Runnable {
     }
 
     private String fullUrl() {
-        return url + "/commands/stream";
+        return url + "/command";
     }
 
     public boolean isWorking() {
