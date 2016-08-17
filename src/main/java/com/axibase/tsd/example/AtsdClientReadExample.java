@@ -11,7 +11,7 @@
  * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
- *//*
+ */
 
 package com.axibase.tsd.example;
 
@@ -28,10 +28,10 @@ import com.axibase.tsd.model.meta.Metric;
 import java.util.List;
 import java.util.Map;
 
-*/
+
 /**
  * @author Nikolay Malevanny.
- *//*
+ */
 
 public class AtsdClientReadExample extends AbstractAtsdClientExample {
 
@@ -77,4 +77,4 @@ public class AtsdClientReadExample extends AbstractAtsdClientExample {
 
 
 }
-*/
+
