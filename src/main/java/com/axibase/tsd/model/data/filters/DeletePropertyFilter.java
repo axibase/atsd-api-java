@@ -3,7 +3,6 @@ package com.axibase.tsd.model.data.filters;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.sun.istack.internal.NotNull;
 
 import java.util.Date;
 import java.util.Map;
@@ -20,10 +19,8 @@ public class DeletePropertyFilter {
     private Date endDate;
 
     @JsonProperty("type")
-    @NotNull
     private String typeName;
     @JsonProperty("entity")
-    @NotNull
     private String entityName;
 
     public DeletePropertyFilter(String typeName, String entityName) {

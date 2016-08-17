@@ -35,16 +35,11 @@ public class Interval implements ParamValue {
         this.unit = unit;
     }
 
-    /**
-     * Number of aggregation intervals
-     */
+
     public int getCount() {
         return count;
     }
 
-    /**
-     * Aggregation interval unit: SECOND, MINUTE, HOUR, DAY, WEEK, MONTH, QUARTER, YEAR
-     */
     public IntervalUnit getUnit() {
         return unit;
     }

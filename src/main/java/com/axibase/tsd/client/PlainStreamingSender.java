@@ -156,7 +156,7 @@ class PlainStreamingSender extends AbstractHttpEntity implements Runnable {
 
                     lastMessageTime = System.currentTimeMillis();
                 }
-            } catch (Throwable e) {
+            } catch (IOException e) {
                 log.error("Sender is broken, close it. Could not send message: {}", message, e);
                 messages.add(message);
                 close();
@@ -216,7 +216,7 @@ class PlainStreamingSender extends AbstractHttpEntity implements Runnable {
                     (clientConfiguration.getUsername() + ":" + clientConfiguration.getPassword()).getBytes()
             ));
             httpPost.setEntity(new BufferedHttpEntity(this));
-        } catch (Throwable e) {
+        } catch (IOException e) {
             log.error("Could not create http client: ", e);
             latch.countDown();
             close();
@@ -227,9 +227,7 @@ class PlainStreamingSender extends AbstractHttpEntity implements Runnable {
             state = SenderState.WORKING;
             latch.countDown();
             response = httpClient.execute(httpPost);
-        } catch (IllegalStateException e) {
-            log.info("HTTP POST has been interrupted: {}", e.getMessage());
-        } catch (Throwable e) {
+        } catch (IOException e) {
             log.error("Could not execute HTTP POST: {}", httpPost, e);
         } finally {
             log.info("Http post execution is finished, close sender");
@@ -263,7 +261,7 @@ class PlainStreamingSender extends AbstractHttpEntity implements Runnable {
     }
 
     private String fullUrl() {
-        return url + "/commands/stream";
+        return url + "/command";
     }
 
     public boolean isWorking() {
