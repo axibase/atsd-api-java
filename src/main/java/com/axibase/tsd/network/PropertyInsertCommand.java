@@ -20,9 +20,7 @@ import java.util.Map;
 
 import static com.axibase.tsd.util.AtsdUtil.checkPropertyTypeIsEmpty;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public class PropertyInsertCommand extends AbstractInsertCommand {
     public static final String PROPERTY_COMMAND = "property";
     private final String typeName;
@@ -32,7 +30,7 @@ public class PropertyInsertCommand extends AbstractInsertCommand {
     public PropertyInsertCommand(String entityName, String typeName, Long timeMillis, Map<String, String> keys,
                                  Map<String, String> values) {
         super(PROPERTY_COMMAND, entityName, timeMillis, Collections.<String, String>emptyMap());
-        checkPropertyTypeIsEmpty(typeName);
+        checkPropertyTypeIsEmpty(handleStringValue(typeName));
         this.typeName = typeName;
         this.keys = (keys == null) ? Collections.<String, String>emptyMap() : keys;
         this.values = (values == null) ? Collections.<String, String>emptyMap() : values;

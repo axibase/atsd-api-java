@@ -19,9 +19,7 @@ import javax.ws.rs.client.Invocation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 class RequestProcessor<T> {
     private Type type;
     private T command;

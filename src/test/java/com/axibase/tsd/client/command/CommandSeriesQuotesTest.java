@@ -27,7 +27,6 @@ public class CommandSeriesQuotesTest {
     private final static String TEST_ENTITY = TEST_PREFIX + "entity";
     private final static String TEST_METRIC = TEST_PREFIX + "metric";
     private static HttpClientManager httpClientManager = TestUtil.buildHttpClientManager();
-    private static DefaultStreamingManager manager = new DefaultStreamingManager(httpClientManager);
     private static DataService dataService = new DataService(httpClientManager);
     private static Series testSeries;
 

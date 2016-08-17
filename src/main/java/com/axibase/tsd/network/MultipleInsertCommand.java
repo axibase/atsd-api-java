@@ -17,9 +17,7 @@ package com.axibase.tsd.network;
 
 import java.util.Map;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public class MultipleInsertCommand extends AbstractInsertCommand {
     private final Map<String, Double> metricsAndValues;
 

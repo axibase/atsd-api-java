@@ -21,9 +21,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Map;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class EntityGroup {
     @JsonProperty

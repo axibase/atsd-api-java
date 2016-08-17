@@ -23,9 +23,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public class SeverityDeserializer extends JsonDeserializer<Severity> {
     private static Map<String, Severity> codeToSeverity = new HashMap<String, Severity>();
 

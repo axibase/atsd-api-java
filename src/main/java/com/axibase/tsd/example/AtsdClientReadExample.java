@@ -29,9 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 
-/**
- * @author Nikolay Malevanny.
- */
+
 
 public class AtsdClientReadExample extends AbstractAtsdClientExample {
 

@@ -22,9 +22,7 @@ import com.axibase.tsd.model.data.series.aggregate.Threshold;
 import com.axibase.tsd.model.data.series.aggregate.WorkingMinutes;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ThresholdAggregateMatcher extends SimpleAggregateMatcher {
     private WorkingMinutes workingMinutes;

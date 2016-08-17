@@ -23,9 +23,7 @@ import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 class RequestBodyLogger implements ClientRequestFilter {
     private static final Logger log = LoggerFactory.getLogger(RequestBodyLogger.class);
 

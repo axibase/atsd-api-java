@@ -27,9 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public class AtsdClientWriteExample extends AbstractAtsdClientExample {
     public static final long SECOND = 1000L;
     public static final int MB = 1024 * 1024;

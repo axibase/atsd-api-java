@@ -20,9 +20,7 @@ import java.util.Map;
 
 import static com.axibase.tsd.util.AtsdUtil.checkEntityIsEmpty;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public abstract class AbstractInsertCommand implements PlainCommand {
     private final String commandName;
     protected final String entityName;
@@ -40,7 +38,7 @@ public abstract class AbstractInsertCommand implements PlainCommand {
     @Override
     public final String compose() {
         StringBuilder sb = new StringBuilder(commandName)
-                .append(' ').append("e:").append(entityName);
+                .append(' ').append("e:").append(handleStringValue(entityName));
         if (timeMillis != null) {
             sb.append(' ').append("ms:").append(timeMillis);
         }
@@ -54,11 +52,11 @@ public abstract class AbstractInsertCommand implements PlainCommand {
             sb.append(prefix)
                     .append(tagNameAndValue.getKey())
                     .append('=')
-                    .append(handleTagValue(tagNameAndValue.getValue()));
+                    .append(handleStringValue(tagNameAndValue.getValue()));
         }
     }
 
-    private static String handleTagValue(String value) {
+    protected static String handleStringValue(String value) {
         if (value == null) {
             return "null";
         } else {

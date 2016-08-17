@@ -16,9 +16,7 @@ package com.axibase.tsd.query;
 
 import javax.ws.rs.client.WebTarget;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public interface QueryPart<T> {
     WebTarget fill(WebTarget target);
 

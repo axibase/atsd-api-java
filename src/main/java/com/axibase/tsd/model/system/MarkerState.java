@@ -15,9 +15,7 @@
 
 package com.axibase.tsd.model.system;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public class MarkerState {
     private String marker;
     private Integer count;

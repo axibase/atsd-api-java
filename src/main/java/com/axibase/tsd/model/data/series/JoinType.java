@@ -14,9 +14,7 @@
  */
 package com.axibase.tsd.model.data.series;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public enum JoinType {
     COUNT,
     MIN,

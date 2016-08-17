@@ -24,9 +24,7 @@ import java.util.Date;
 import static com.axibase.tsd.util.AtsdUtil.DateTime.ISOFormat;
 import static com.axibase.tsd.util.AtsdUtil.DateTime.parseDate;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Sample {

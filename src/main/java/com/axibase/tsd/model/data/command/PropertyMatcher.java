@@ -19,9 +19,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Map;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PropertyMatcher {
     private String type;

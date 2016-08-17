@@ -21,9 +21,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 import java.util.Map;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AlertHistory {
     private String alert;

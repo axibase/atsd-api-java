@@ -16,9 +16,7 @@ package com.axibase.tsd.query;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public abstract class AbstractQueryPart<T> implements QueryPart<T> {
     public QueryPart<T> param(String name, Object value) {
         if (value != null) {

@@ -18,9 +18,7 @@ package com.axibase.tsd.model.data;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public enum TimeFormat {
     MILLISECONDS,
     ISO;

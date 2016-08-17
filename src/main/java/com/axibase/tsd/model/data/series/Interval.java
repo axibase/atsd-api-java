@@ -18,9 +18,7 @@ import com.axibase.tsd.query.ParamValue;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Interval implements ParamValue {
     private int count;

@@ -26,9 +26,7 @@ import static com.axibase.tsd.util.AtsdUtil.DateTime.MAX_QUERIED_DATE_TIME;
 import static com.axibase.tsd.util.AtsdUtil.DateTime.MIN_QUERIED_DATE_TIME;
 import static com.axibase.tsd.util.AtsdUtil.DateTime.parseDate;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetPropertiesQuery {
     @JsonProperty(value = "entity")

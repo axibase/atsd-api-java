@@ -66,9 +66,7 @@ import java.util.List;
 
 import static com.axibase.tsd.util.AtsdUtil.JSON;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 class HttpClient {
     private static final Logger log = LoggerFactory.getLogger(HttpClient.class);
     private final static java.util.logging.Logger legacyLogger = java.util.logging.Logger.getLogger(HttpClient.class.getName());

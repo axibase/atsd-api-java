@@ -19,9 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.Map;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public class MessageInsertCommand extends AbstractInsertCommand {
     public static final String MESSAGE_COMMAND = "message";
     private final String messageText;
@@ -38,7 +36,7 @@ public class MessageInsertCommand extends AbstractInsertCommand {
     protected void appendValues(StringBuilder sb) {
         //message e:<entity> s:<timestamp> t:<key-1>=<value-2> t:<key-2>=<value-2> m:<message>
         if (StringUtils.isNoneBlank(messageText)) {
-            sb.append(" m:").append(messageText);
+            sb.append(" m:").append(handleStringValue(messageText));
         }
     }
 }

@@ -14,9 +14,7 @@
  */
 package com.axibase.tsd.model.meta;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public class TagValueFilter {
     private final String name;
     private final String value;

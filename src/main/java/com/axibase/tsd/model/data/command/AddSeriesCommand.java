@@ -24,9 +24,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AddSeriesCommand {
     @JsonProperty("entity")

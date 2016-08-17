@@ -23,9 +23,7 @@ import java.util.Map;
 
 import static com.axibase.tsd.util.AtsdUtil.checkMetricIsEmpty;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public class InsertCommand extends AbstractInsertCommand {
     public static final String SERIES_COMMAND = "series";
     private final String metricName;
