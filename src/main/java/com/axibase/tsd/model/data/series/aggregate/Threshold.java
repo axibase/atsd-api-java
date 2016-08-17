@@ -17,9 +17,7 @@ package com.axibase.tsd.model.data.series.aggregate;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 @JsonIgnoreProperties(ignoreUnknown = true)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Threshold {

@@ -15,9 +15,7 @@
 
 package com.axibase.tsd.network;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public interface PlainCommand {
     String compose();
 }

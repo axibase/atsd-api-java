@@ -23,9 +23,7 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public class AtsdUtil {
     public static final String JSON = MediaType.APPLICATION_JSON;
     public static final String ADD_COMMAND = "add";

@@ -18,9 +18,7 @@ import com.axibase.tsd.model.meta.Entity;
 
 import java.util.List;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public class AbstractEntitiesCommand extends SimpleCommand {
     protected List<Entity> entities;
 

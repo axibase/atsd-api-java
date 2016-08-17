@@ -32,9 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public class ExportCsvExample extends AbstractAtsdClientExample {
 
     public static void main(String[] args) throws Exception {

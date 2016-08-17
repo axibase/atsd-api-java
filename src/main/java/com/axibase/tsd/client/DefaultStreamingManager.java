@@ -33,9 +33,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public class DefaultStreamingManager implements StreamingManager {
     private static final Logger log = LoggerFactory.getLogger(DefaultStreamingManager.class);
     public static final String CHECK = "check";

@@ -20,9 +20,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class BatchPropertyCommand {
     private final String action;

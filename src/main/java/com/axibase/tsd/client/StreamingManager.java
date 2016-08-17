@@ -19,9 +19,7 @@ import com.axibase.tsd.network.PlainCommand;
 
 import java.util.List;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public interface StreamingManager {
     void setCheckPeriodMillis(long checkPeriodMillis);
 

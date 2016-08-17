@@ -43,9 +43,7 @@ import java.util.concurrent.*;
 
 import static com.axibase.tsd.util.AtsdUtil.MARKER_KEYWORD;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 class PlainStreamingSender extends AbstractHttpEntity implements Runnable {
     private static final Logger log = LoggerFactory.getLogger(PlainStreamingSender.class);
     private static final int SMALL = 64;

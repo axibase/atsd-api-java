@@ -15,9 +15,7 @@
 
 package com.axibase.tsd.model.system;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public enum Format {
     JSON,
     CSV

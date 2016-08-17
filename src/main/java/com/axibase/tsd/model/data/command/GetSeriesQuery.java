@@ -26,9 +26,7 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import java.util.Map;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetSeriesQuery {
     private Long startTime = null;

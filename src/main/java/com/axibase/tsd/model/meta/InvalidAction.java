@@ -14,9 +14,7 @@
  */
 package com.axibase.tsd.model.meta;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public enum InvalidAction {
     NONE,
     DISCARD,

@@ -18,9 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public class BatchQuery<T> {
     private final List<T> queries;
 

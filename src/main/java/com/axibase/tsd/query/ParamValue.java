@@ -14,9 +14,7 @@
  */
 package com.axibase.tsd.query;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public interface ParamValue {
     String toParamValue();
 }

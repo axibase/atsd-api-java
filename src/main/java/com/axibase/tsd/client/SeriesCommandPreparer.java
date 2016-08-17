@@ -16,9 +16,7 @@ package com.axibase.tsd.client;
 
 import com.axibase.tsd.model.data.command.GetSeriesQuery;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public interface SeriesCommandPreparer {
     void prepare(GetSeriesQuery command);
 }

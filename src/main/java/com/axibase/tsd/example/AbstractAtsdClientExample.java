@@ -33,9 +33,7 @@ import java.util.List;
 //import org.springframework.context.ApplicationContext;
 //import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public abstract class AbstractAtsdClientExample {
     Logger logger = LoggerFactory.getLogger(AbstractAtsdClientExample.class);
     protected DataService dataService;

@@ -16,9 +16,7 @@ package com.axibase.tsd.query;
 
 import javax.ws.rs.client.WebTarget;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public class QueryParam<T> extends AbstractQueryPart<T> {
     private final String name;
     private final Object value;

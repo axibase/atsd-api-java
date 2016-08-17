@@ -17,9 +17,7 @@ package com.axibase.tsd.model.data.command;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetAlertHistoryQuery {
     private Long startTime;

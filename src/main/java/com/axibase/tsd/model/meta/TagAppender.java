@@ -16,9 +16,7 @@ package com.axibase.tsd.model.meta;
 
 import org.apache.commons.lang3.StringUtils;
 
-/**
- * @author Nikolay Malevanny.
- */
+
 public class TagAppender {
     public static final TagAppender ALL = new TagAppender("*");
 
