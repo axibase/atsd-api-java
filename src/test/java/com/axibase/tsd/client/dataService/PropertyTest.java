@@ -22,7 +22,9 @@ import com.axibase.tsd.client.AtsdServerException;
 import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
 import com.axibase.tsd.model.data.Property;
+import com.axibase.tsd.model.data.command.BatchPropertyCommand;
 import com.axibase.tsd.model.data.command.GetPropertiesQuery;
+import com.axibase.tsd.model.data.command.PropertyMatcher;
 import com.axibase.tsd.model.data.filters.DeletePropertyFilter;
 import org.junit.After;
 import org.junit.Before;
@@ -52,6 +54,7 @@ public class PropertyTest {
     public void setUp() throws Exception {
         httpClientManager = TestUtil.buildHttpClientManager();
         httpClientManager.setCheckPeriodMillis(1000);
+//        httpClientManager.setCheckPeriodMillis(30); // to extreme tests
         dataService = new DataService();
         dataService.setHttpClientManager(httpClientManager);
 
@@ -80,7 +83,7 @@ public class PropertyTest {
         if (dataService.retrieveProperties(entityName, propertyTypeName).isEmpty()) {
             assertTrue(dataService.insertProperties(property));
         }
-        assertFalse(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
+        assertTrue(!dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
 
         GetPropertiesQuery getPropertiesQuery = new GetPropertiesQuery(propertyTypeName, entityName)
                 .setKey(key);
@@ -110,7 +113,7 @@ public class PropertyTest {
         }
 
         List properties = dataService.retrieveProperties(entityName, propertyTypeName);
-        assertFalse(properties.isEmpty());
+        assertTrue(!properties.isEmpty());
         assertTrue(properties.get(0) instanceof Property);
         assertEquals(1, properties.size());
 
@@ -239,8 +242,10 @@ public class PropertyTest {
         }
         assertFalse(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
 
-        DeletePropertyFilter filter = new DeletePropertyFilter(propertyTypeName, entityName);
-        filter.setKey(key);
+        DeletePropertyFilter filter = new DeletePropertyFilter(propertyTypeName, entityName) {{
+            setKey(key);
+        }};
+
         assertTrue(dataService.deleteProperties(filter));
         assertTrue(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
     }
