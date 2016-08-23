@@ -23,6 +23,8 @@ import com.axibase.tsd.model.system.Format;
 import com.axibase.tsd.network.PlainCommand;
 import com.axibase.tsd.query.Query;
 import com.axibase.tsd.query.QueryPart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.util.*;
@@ -37,6 +39,7 @@ import static com.axibase.tsd.util.AtsdUtil.*;
  * @author Nikolay Malevanny.
  */
 public class DataService {
+    private static final Logger logger = LoggerFactory.getLogger(DataService.class);
     private static final SeriesCommandPreparer LAST_PREPARER = new LastPreparer();
 
     private HttpClientManager httpClientManager;
@@ -239,7 +242,7 @@ public class DataService {
      * @param ruleNames     rule filter, multiple values allowed
      * @param severityIds   severity filter, multiple values allowed
      * @param minSeverityId minimal severity filter
-     * @param timeFormat  time format
+     * @param timeFormat    time format
      * @return list of {@code Alert}
      */
     public List<Alert> retrieveAlerts(
@@ -262,7 +265,7 @@ public class DataService {
     }
 
     /**
-     * @param getAlertHistoryQuery command with alert history selection details
+     * @param getAlertHistoryQuery   command with alert history selection details
      * @param getAlertHistoryQueries alerts history queries
      * @return list of  {@code AlertHistory}
      */
@@ -305,13 +308,18 @@ public class DataService {
             }
             return true;
         } else {
-            QueryPart<AlertHistory> query = new Query<AlertHistory>("commands")
-                    .path("batch");
+            QueryPart<CommandSendResult> query = new Query<CommandSendResult>("command");
+
             StringBuilder data = new StringBuilder();
             for (PlainCommand command : commands) {
                 data.append(command.compose());
             }
-            return httpClientManager.updateData(query, data.toString());
+
+            CommandSendResult result = httpClientManager.requestData(CommandSendResult.class, query, post(data));
+            if (result.getFail() > 0) {
+                logger.warn("Failed to insert all commands: {}", result);
+            }
+            return true;
         }
     }
 
