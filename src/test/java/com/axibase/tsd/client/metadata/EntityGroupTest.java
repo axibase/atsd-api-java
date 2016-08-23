@@ -15,16 +15,18 @@
  *
  */
 
-package com.axibase.tsd.client.metaDataService;
+package com.axibase.tsd.client.metadata;
 
 import com.axibase.tsd.RerunRule;
-import com.axibase.tsd.TestUtil;
 import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
 import com.axibase.tsd.client.MetaDataService;
 import com.axibase.tsd.model.meta.Entity;
 import com.axibase.tsd.model.meta.EntityGroup;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,7 +41,6 @@ import static junit.framework.Assert.*;
  */
 public class EntityGroupTest {
     private MetaDataService metaDataService;
-    private DataService dataService;
     private HttpClientManager httpClientManager;
 
     @Rule
@@ -47,10 +48,10 @@ public class EntityGroupTest {
 
     @Before
     public void setUp() throws Exception {
-        httpClientManager = TestUtil.buildHttpClientManager();
+        httpClientManager = buildHttpClientManager();
         metaDataService = new MetaDataService();
         metaDataService.setHttpClientManager(httpClientManager);
-        dataService = new DataService();
+        DataService dataService = new DataService();
         dataService.setHttpClientManager(httpClientManager);
 
         waitWorkingServer(httpClientManager);
@@ -105,7 +106,7 @@ public class EntityGroupTest {
             tags.put("test-tag1", "test-tag1-val");
             tags.put("test-tag2", "test-tag2-val1");
             entityGroup.setTags(tags);
-            Assert.assertTrue(metaDataService.createOrReplaceEntityGroup(entityGroup));
+            assertTrue(metaDataService.createOrReplaceEntityGroup(entityGroup));
             entityGroup = metaDataService.retrieveEntityGroup(entityGroupName);
             assertEquals(entityGroup.getName(), entityGroupName);
             assertEquals(entityGroup.getTags(), tags);
@@ -116,7 +117,7 @@ public class EntityGroupTest {
             tags.put("test-tag2", "test-tag2-val2");
             tags.put("test-tag3", "test-tag3-val");
             entityGroup.setTags(tags);
-            Assert.assertTrue(metaDataService.createOrReplaceEntityGroup(entityGroup));
+            assertTrue(metaDataService.createOrReplaceEntityGroup(entityGroup));
             entityGroup = metaDataService.retrieveEntityGroup(entityGroupName);
             assertEquals(entityGroup.getName(), entityGroupName);
             assertEquals(entityGroup.getTags(), tags);
@@ -200,8 +201,8 @@ public class EntityGroupTest {
         entities = metaDataService.retrieveGroupEntities(entityGroupName);
         assertEquals(2, entities.size());
         assertTrue(entities.get(0) instanceof Entity);
-        assertTrue((entityNameFrist.concat(entityNameSeconds)).contains(((Entity) entities.get(0)).getName()));
-        assertTrue((entityNameFrist.concat(entityNameSeconds)).contains(((Entity) entities.get(1)).getName()));
+        assertTrue((entityNameFrist.concat(entityNameSeconds)).contains(entities.get(0).getName()));
+        assertTrue((entityNameFrist.concat(entityNameSeconds)).contains(entities.get(1).getName()));
     }
 
     @Test

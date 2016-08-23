@@ -15,16 +15,13 @@
 package com.axibase.tsd.model.data.command;
 
 import com.axibase.tsd.model.data.TimeFormat;
-import com.axibase.tsd.util.AtsdUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 import java.util.Map;
 
-import static com.axibase.tsd.util.AtsdUtil.DateTime.MAX_QUERIED_DATE_TIME;
-import static com.axibase.tsd.util.AtsdUtil.DateTime.MIN_QUERIED_DATE_TIME;
-import static com.axibase.tsd.util.AtsdUtil.DateTime.parseDate;
+import static com.axibase.tsd.util.AtsdUtil.DateTime.*;
 
 
 @JsonInclude(JsonInclude.Include.NON_NULL)

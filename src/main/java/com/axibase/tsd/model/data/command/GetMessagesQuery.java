@@ -18,7 +18,6 @@ package com.axibase.tsd.model.data.command;
 
 import com.axibase.tsd.model.data.Severity;
 import com.axibase.tsd.model.data.series.Interval;
-import com.axibase.tsd.util.AtsdUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import java.util.*;
@@ -68,7 +67,7 @@ public class GetMessagesQuery {
     }
 
     public String getStartDate() {
-        return ISOFormat(startDate);
+        return isoFormat(startDate);
     }
 
     public GetMessagesQuery setStartDate(Date startDate) {
@@ -77,7 +76,7 @@ public class GetMessagesQuery {
     }
 
     public String getEndDate() {
-        return ISOFormat(endDate);
+        return isoFormat(endDate);
     }
 
     public GetMessagesQuery setEndDate(Date endDate) {

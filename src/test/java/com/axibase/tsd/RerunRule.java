@@ -32,10 +32,11 @@ public class RerunRule implements TestRule {
     private static final Logger log = LoggerFactory.getLogger(RerunRule.class);
 
     public Statement apply(Statement base, Description description) {
-        return statement(base, description);
+        return statement(base);
     }
 
-    private Statement statement(final Statement base, final Description description) {
+    private Statement statement(final Statement base) {
+
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {

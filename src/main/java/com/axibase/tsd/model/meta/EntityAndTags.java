@@ -28,9 +28,7 @@ public class EntityAndTags {
     private Long lastInsertTime;
     @JsonProperty
     private Map<String, String> tags;
-
-    public EntityAndTags() {
-    }
+    
 
     public String getEntityName() {
         return entityName;

@@ -15,10 +15,9 @@
  *
  */
 
-package com.axibase.tsd.client.metaDataService;
+package com.axibase.tsd.client.metadata;
 
 import com.axibase.tsd.RerunRule;
-import com.axibase.tsd.TestUtil;
 import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
 import com.axibase.tsd.client.MetaDataService;
@@ -27,7 +26,10 @@ import com.axibase.tsd.model.data.series.Sample;
 import com.axibase.tsd.model.meta.DataType;
 import com.axibase.tsd.model.meta.Metric;
 import com.axibase.tsd.model.meta.TagAppender;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,9 +38,7 @@ import java.util.Map;
 import static com.axibase.tsd.TestUtil.*;
 import static junit.framework.Assert.*;
 
-/**
- * @author Dmitry Korchagin.
- */
+
 public class MetricTest {
     private MetaDataService metaDataService;
     private DataService dataService;
@@ -49,7 +49,7 @@ public class MetricTest {
 
     @Before
     public void setUp() throws Exception {
-        httpClientManager = TestUtil.buildHttpClientManager();
+        httpClientManager = buildHttpClientManager();
         metaDataService = new MetaDataService();
         metaDataService.setHttpClientManager(httpClientManager);
         dataService = new DataService();
@@ -98,7 +98,7 @@ public class MetricTest {
         Metric metric = createNewTestMetric(metricName);
         {
             metric.setDataType(DataType.DOUBLE);
-            Assert.assertTrue(metaDataService.createOrReplaceMetric(metric));
+            assertTrue(metaDataService.createOrReplaceMetric(metric));
             metric = metaDataService.retrieveMetric(metricName);
             assertEquals(metric.getName(), metricName);
             assertEquals(metric.getDataType(), DataType.DOUBLE);
@@ -106,7 +106,7 @@ public class MetricTest {
 
         {
             metric.setDataType(DataType.FLOAT);
-            Assert.assertTrue(metaDataService.createOrReplaceMetric(metric));
+            assertTrue(metaDataService.createOrReplaceMetric(metric));
             metric = metaDataService.retrieveMetric(metricName);
             assertEquals(metric.getName(), metricName);
             assertEquals(metric.getDataType(), DataType.FLOAT);

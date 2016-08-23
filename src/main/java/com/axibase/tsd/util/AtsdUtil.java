@@ -94,20 +94,20 @@ public class AtsdUtil {
             try {
                 d = ISO8601Utils.parse(date, new ParsePosition(0));
             } catch (ParseException e) {
-                throw new RuntimeException(e);
+                throw new IllegalStateException(e);
             }
             return d;
         }
 
-        public static String ISOFormat(Date date) {
-            return ISOFormat(date, "GMT");
+        public static String isoFormat(Date date) {
+            return isoFormat(date, "GMT");
         }
 
-        public static String ISOFormat(Date date, String timeZoneName) {
-            return ISOFormat(date, true, timeZoneName);
+        public static String isoFormat(Date date, String timeZoneName) {
+            return isoFormat(date, true, timeZoneName);
         }
 
-        public static String ISOFormat(Date date, boolean withMillis, String timeZoneName) {
+        public static String isoFormat(Date date, boolean withMillis, String timeZoneName) {
             String pattern = (withMillis) ? "yyyy-MM-dd'T'HH:mm:ss.SSSXXX" : "yyyy-MM-dd'T'HH:mm:ssXXX";
             SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
             dateFormat.setTimeZone(TimeZone.getTimeZone(timeZoneName));

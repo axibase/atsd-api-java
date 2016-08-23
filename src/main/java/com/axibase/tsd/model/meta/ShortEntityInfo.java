@@ -27,9 +27,6 @@ public class ShortEntityInfo {
     @JsonProperty
     private Map<String, String> tags;
 
-    public ShortEntityInfo() {
-    }
-
     public String getName() {
         return name;
     }

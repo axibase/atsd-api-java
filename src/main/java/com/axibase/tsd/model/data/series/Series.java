@@ -14,7 +14,6 @@
  */
 package com.axibase.tsd.model.data.series;
 
-import com.axibase.tsd.model.data.series.aggregate.AggregateType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -34,12 +33,6 @@ public class Series {
     private Rate rate;
     private Aggregate aggregate;
     private List<Sample> data;
-
-    private void initialize() {
-        Aggregate defaultAggregate = new Aggregate();
-        aggregate.setType(AggregateType.DETAIL);
-        setType(SeriesType.HISTORY);
-    }
 
     public Series() {
         setAggregate(new Aggregate());
@@ -115,50 +108,6 @@ public class Series {
                 append(",entity=").append(entityName).
                 append(",tags=").append(tags).
                 append("]").toString();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-
-        final Series other = (Series) obj;
-        if (!this.getData().equals(other.getData())) {
-            return false;
-        }
-        if (!this.getTags().equals(other.getTags())) {
-            return false;
-        }
-        if (!this.getAggregate().equals(other.getAggregate())) {
-            return false;
-        }
-
-        if (!this.getEntityName().equals(other.getEntityName())) {
-            return false;
-        }
-
-        if (!this.getMetricName().equals(other.getMetricName())) {
-            return false;
-        }
-
-        if (!this.getType().equals(other.getType())) {
-            return false;
-        }
-
-        if (!this.getTimeSeriesKey().equals(other.getMetricName())) {
-            return false;
-        }
-
-        if (!this.getRequestId().equals(other.getRequestId())) {
-            return false;
-        }
-
-        if (!this.getRate().equals(other.getRate())) {
-            return false;
-        }
-
-        return true;
     }
 
     @Override

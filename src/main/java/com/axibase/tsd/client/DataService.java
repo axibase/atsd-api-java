@@ -171,10 +171,8 @@ public class DataService {
      */
     public List<Property> retrieveProperties(GetPropertiesQuery... getPropertiesQueries) {
         List<GetPropertiesQuery> queriesList = new ArrayList<>();
-        for (GetPropertiesQuery query : getPropertiesQueries) {
-            queriesList.add(query);
-        }
-        QueryPart<Property> query = new Query<Property>("properties/query");
+        Collections.addAll(queriesList, getPropertiesQueries);
+        QueryPart<Property> query = new Query<>("properties/query");
         return httpClientManager.requestDataList(Property.class, query,
                 post(queriesList));
     }
@@ -187,7 +185,7 @@ public class DataService {
     public List<Property> retrieveProperties(String entityName, String typeName) {
         checkEntityIsEmpty(entityName);
         checkPropertyTypeIsEmpty(typeName);
-        QueryPart<Property> query = new Query<Property>("properties");
+        QueryPart<Property> query = new Query<>("properties");
         query = query.path(entityName).path("types").path(typeName);
         return httpClientManager.requestDataList(Property.class, query, null);
     }
@@ -260,7 +258,7 @@ public class DataService {
     }
 
     public List<Alert> retrieveAlerts(GetAlertQuery... alertQueries) {
-        QueryPart<Alert> query = new Query<Alert>("/alerts/query");
+        QueryPart<Alert> query = new Query<>("/alerts/query");
         return httpClientManager.requestDataList(Alert.class, query, post(Arrays.asList(alertQueries)));
     }
 
@@ -280,15 +278,6 @@ public class DataService {
     public boolean batchUpdateAlerts(BatchAlertCommand... commands) {
         QueryPart query = new Query("alerts");
         return httpClientManager.updateData(query, patch(commands));
-    }
-
-    private static QueryPart<Alert> fillParams(QueryPart<Alert> query, String paramName, List<String> paramValueList) {
-        if (paramValueList != null) {
-            for (String paramValue : paramValueList) {
-                query = query.param(paramName, paramValue);
-            }
-        }
-        return query;
     }
 
     public void sendPlainCommand(PlainCommand plainCommand)

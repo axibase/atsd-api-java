@@ -12,10 +12,9 @@
  * express or implied. See the License for the specific language governing
  * permissions and limitations under the License.
  */
-package com.axibase.tsd.client.dataService;
+package com.axibase.tsd.client.data;
 
 import com.axibase.tsd.RerunRule;
-import com.axibase.tsd.TestUtil;
 import com.axibase.tsd.client.AtsdServerException;
 import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
@@ -27,7 +26,6 @@ import com.axibase.tsd.model.data.command.SimpleAggregateMatcher;
 import com.axibase.tsd.model.data.series.*;
 import com.axibase.tsd.model.data.series.aggregate.AggregateType;
 import com.axibase.tsd.model.system.Format;
-import com.axibase.tsd.network.AbstractInsertCommand;
 import com.axibase.tsd.network.InsertCommand;
 import com.axibase.tsd.network.PlainCommand;
 import org.apache.commons.io.IOUtils;
@@ -37,14 +35,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import javax.ws.rs.core.MultivaluedHashMap;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.axibase.tsd.TestUtil.*;
 import static junit.framework.Assert.*;
@@ -59,9 +54,8 @@ public class SeriesTest {
 
     @Before
     public void setUp() throws Exception {
-        httpClientManager = TestUtil.buildHttpClientManager();
+        httpClientManager = buildHttpClientManager();
         httpClientManager.setCheckPeriodMillis(1000);
-//        httpClientManager.setCheckPeriodMillis(30); // to extreme tests
         dataService = new DataService();
         dataService.setHttpClientManager(httpClientManager);
 
@@ -75,9 +69,6 @@ public class SeriesTest {
         final int intervalSize = 20;
 
         GetSeriesQuery getSeriesQuery = new GetSeriesQuery(entityName, metricName);
-//        getSeriesQuery.setAggregateMatcher(new SimpleAggregateMatcher(new Interval(intervalSize, IntervalUnit.SECOND),
-//                Interpolate.NONE,
-//                AggregateType.DETAIL));
         getSeriesQuery.setInterval(new Interval(intervalSize, IntervalUnit.DAY));
 
         List getSeriesResultList = dataService.retrieveSeries(getSeriesQuery);
@@ -118,9 +109,8 @@ public class SeriesTest {
         final String entityName = buildVariablePrefix() + "entity";
         final String metricName = buildVariablePrefix() + "metric";
         final Long timestamp = MOCK_TIMESTAMP;
-        final Double seriesValue = MOCK_SERIE_VALUE;
         AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName);
-        addSeriesCommand.addSeries(new Sample(timestamp, seriesValue));
+        addSeriesCommand.addSeries(new Sample(timestamp, MOCK_SERIE_VALUE));
         assertTrue(dataService.addSeries(addSeriesCommand));
 
         GetSeriesQuery getSeriesQuery = new GetSeriesQuery(entityName, metricName)
@@ -144,10 +134,8 @@ public class SeriesTest {
     public void testRetrieveSeriesWithoutTimes() throws Exception {
         final String entityName = buildVariablePrefix() + "entity";
         final String metricName = buildVariablePrefix() + "metric";
-        final Long timestamp = MOCK_TIMESTAMP;
-        final Double serieValue = MOCK_SERIE_VALUE;
         AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName);
-        addSeriesCommand.addSeries(new Sample(timestamp, serieValue));
+        addSeriesCommand.addSeries(new Sample(MOCK_TIMESTAMP, MOCK_SERIE_VALUE));
         assertTrue(dataService.addSeries(addSeriesCommand));
 
         {
@@ -163,7 +151,7 @@ public class SeriesTest {
 
     }
 
-    //TODO add tests to check start\end\interval behavior if anyone does not exist
+    //TODO: add tests to check start\end\interval behavior if anyone does not exist
 
     @Test
     public void testInsertSeries() throws Exception {
@@ -216,7 +204,7 @@ public class SeriesTest {
                         command.setEndTime(timestamp + testCnt + 100);
                     }
                 },
-                new GetSeriesQuery(entityName, metricName, TestUtil.toMVM("ttt-tag-1", "ttt-tag-value-1"))
+                new GetSeriesQuery(entityName, metricName, toMVM("ttt-tag-1", "ttt-tag-value-1"))
         );
         assertEquals(1, series.size());
         assertEquals(10, series.get(0).getData().size());
@@ -238,19 +226,27 @@ public class SeriesTest {
         Thread.sleep(2000);
 
         Map<String, String> tags = new HashMap<>();
-        long startTime = timestamp;
         long endTime = timestamp + testCnt;
-        String period = null;
         Integer limit = 10;
-        boolean last = false;
         String entityPattern = buildVariablePrefix() + "*";
         String columns = "entity, metric, time, value";
 
         InputStream inputStream = null;
         try {
-            inputStream = dataService.querySeriesPack(Format.CSV, entityPattern, metricName, tags, startTime, endTime, period,
-                    AggregateType.DETAIL, limit, last, columns);
-            List<String> lines = IOUtils.readLines(inputStream);
+            inputStream = dataService.querySeriesPack(
+                    Format.CSV,
+                    entityPattern,
+                    metricName,
+                    tags,
+                    timestamp,
+                    endTime,
+                    null,
+                    AggregateType.DETAIL,
+                    limit,
+                    false,
+                    columns
+            );
+            List lines = IOUtils.readLines(inputStream);
             assertEquals("entity,metric,time,value", lines.get(0));
             assertEquals(11, lines.size());
         } finally {
@@ -294,7 +290,7 @@ public class SeriesTest {
         final String entityName = buildVariablePrefix() + "entity";
         final String metricName = buildVariablePrefix() + "metric";
         long st = System.currentTimeMillis();
-        final ArrayList<PlainCommand> commands = new ArrayList<PlainCommand>();
+        final ArrayList<PlainCommand> commands = new ArrayList<>();
         commands.add(new InsertCommand(entityName, metricName, new Sample(st, 1.0)));
         commands.add(new InsertCommand(entityName, metricName, new Sample(st + 1, 2.0)));
         commands.add(new InsertCommand(entityName, metricName, new Sample(st + 2, 3.0)));
@@ -314,73 +310,4 @@ public class SeriesTest {
     public void tearDown() throws Exception {
         httpClientManager.close();
     }
-
-    private static class SimpleSeriesSender implements Runnable {
-        private static AtomicInteger counter = new AtomicInteger(0);
-
-        private long startMs;
-
-        private final DataService dataService;
-
-        private CountDownLatch latch;
-
-        private int cnt = 1;
-        private long sleep = 0;
-        private String entityName;
-        private String metricName;
-        private String tagName;
-        private String tagValue;
-
-        public SimpleSeriesSender(long startMs, DataService dataService, CountDownLatch latch) {
-            this.startMs = startMs;
-            this.dataService = dataService;
-            this.latch = latch;
-        }
-
-        public SimpleSeriesSender setSeriesParameters(String entityName, String metricName, String tagName, String tagValue) {
-            this.entityName = entityName;
-            this.metricName = metricName;
-            this.tagName = tagName;
-            this.tagValue = tagValue;
-            return this;
-        }
-
-        @Override
-        public void run() {
-            Sample sample = new Sample(startMs + counter.incrementAndGet(), Math.random());
-            AbstractInsertCommand plainCommand = new InsertCommand(entityName, metricName, sample,
-                    tagName, tagValue);
-//            logger.info(plainCommand.compose());
-            for (int i = 0; i < cnt; i++) {
-                if (dataService.canSendPlainCommand()) {
-                    dataService.sendPlainCommand(plainCommand);
-                    if (sleep > 0) {
-                        try {
-                            Thread.sleep(sleep);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                        }
-                    }
-                }
-            }
-            latch.countDown();
-        }
-
-    }
-
-    private int countSeries(long start, String entityName, String metricName, MultivaluedHashMap<String, String> tags) {
-        GetSeriesQuery seriesQuery = new GetSeriesQuery(entityName, metricName);
-        seriesQuery.setStartTime(start - 1);
-        seriesQuery.setEndTime(System.currentTimeMillis());
-        seriesQuery.setTags(tags);
-        List<Series> series = dataService.retrieveSeries(seriesQuery);
-        List<Series> results = series;
-        int resCnt = 0;
-        for (Series result : results) {
-            resCnt += result.getData().size();
-        }
-        return resCnt;
-    }
-
-
 }

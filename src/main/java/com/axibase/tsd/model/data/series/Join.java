@@ -30,9 +30,6 @@ public class Join {
     private Boolean truncate;
     private Interval interval;
 
-    public Join() {
-    }
-
     public JoinType getType() {
         return type;
     }

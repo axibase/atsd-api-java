@@ -35,7 +35,7 @@ import java.util.List;
 
 
 public abstract class AbstractAtsdClientExample {
-    Logger logger = LoggerFactory.getLogger(AbstractAtsdClientExample.class);
+    protected Logger logger = LoggerFactory.getLogger(AbstractAtsdClientExample.class);
     protected DataService dataService;
     protected MetaDataService metaDataService;
 

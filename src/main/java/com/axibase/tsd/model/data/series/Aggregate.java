@@ -36,9 +36,6 @@ public class Aggregate {
     private Threshold threshold;
     private Calendar calendar;
 
-    public Aggregate() {
-    }
-
     public AggregateType getType() {
         return type;
     }

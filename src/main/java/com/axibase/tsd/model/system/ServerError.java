@@ -28,9 +28,6 @@ public class ServerError {
     private String message;
     private String stackTrace;
 
-    public ServerError() {
-    }
-
     public String getMessage() {
         return message;
     }

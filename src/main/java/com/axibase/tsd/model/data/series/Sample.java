@@ -21,7 +21,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.Date;
 
-import static com.axibase.tsd.util.AtsdUtil.DateTime.ISOFormat;
 import static com.axibase.tsd.util.AtsdUtil.DateTime.parseDate;
 
 
@@ -49,7 +48,7 @@ public class Sample {
 
     public void setTimeMillis(Long timeMillis) {
         if (date == null) {
-            date = ISOFormat(new Date(timeMillis));
+            date = AtsdUtil.DateTime.isoFormat(new Date(timeMillis));
         }
         this.timeMillis = timeMillis;
     }
@@ -80,12 +79,8 @@ public class Sample {
         }
 
         final Sample other = (Sample) obj;
-        if (this.getValue() != other.getValue()) {
-            return false;
+        return this.getValue() == other.getValue();
 
-        }
-
-        return true;
     }
 
     @Override

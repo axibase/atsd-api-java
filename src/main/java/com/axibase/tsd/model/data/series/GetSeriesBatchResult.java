@@ -25,9 +25,6 @@ public class GetSeriesBatchResult {
     @JsonProperty("series")
     private List<Series> seriesResults;
 
-    public GetSeriesBatchResult() {
-    }
-
     public List<Series> getSeriesResults() {
         return seriesResults;
     }

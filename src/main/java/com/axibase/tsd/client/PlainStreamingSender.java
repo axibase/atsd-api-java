@@ -130,12 +130,12 @@ class PlainStreamingSender extends AbstractHttpEntity implements Runnable {
 
             try {
                 if (message != null) {
-                    if (!clientConfiguration.isSkipStreamingControl()) {
-                        if (marker == null && !message.startsWith(MARKER_KEYWORD)) {
-                            MarkerCommand markerCommand = new MarkerCommand();
-                            marker = markerCommand.getMarker();
-                            write(outputStream, markerCommand.compose());
-                        }
+                    if (!clientConfiguration.isSkipStreamingControl() &&
+                            marker == null && !message.startsWith(MARKER_KEYWORD)
+                            ) {
+                        MarkerCommand markerCommand = new MarkerCommand();
+                        marker = markerCommand.getMarker();
+                        write(outputStream, markerCommand.compose());
                     }
 
                     log.debug("Write message: {}", message);
@@ -274,7 +274,7 @@ class PlainStreamingSender extends AbstractHttpEntity implements Runnable {
         return markerToMessages;
     }
 
-    private static enum SenderState {
+    private enum SenderState {
         NEW,
         WORKING,
         CLOSED

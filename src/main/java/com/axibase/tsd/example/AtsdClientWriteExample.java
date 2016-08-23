@@ -33,7 +33,6 @@ public class AtsdClientWriteExample extends AbstractAtsdClientExample {
     public static final int MB = 1024 * 1024;
     public static final int CNT = 10;
     private static final double MAX_VALUE = 1517191;
-    private Set<String> memoryEater;
     private String hostName;
 
     public static void main(String[] args) {
@@ -80,7 +79,7 @@ public class AtsdClientWriteExample extends AbstractAtsdClientExample {
     protected void writeData() {
         logger.info("Writing memory usage metrics to ATSD ...");
         Runtime runtime = Runtime.getRuntime();
-        memoryEater = new HashSet<String>();
+        Set<String> memoryEater = new HashSet<String>();
         for (int i = 0; i < CNT; i++) {
             long st = System.currentTimeMillis();
             StringBuilder sb = new StringBuilder();

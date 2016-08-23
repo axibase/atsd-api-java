@@ -15,10 +15,9 @@
  *
  */
 
-package com.axibase.tsd.client.metaDataService;
+package com.axibase.tsd.client.metadata;
 
 import com.axibase.tsd.RerunRule;
-import com.axibase.tsd.TestUtil;
 import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
 import com.axibase.tsd.client.MetaDataService;
@@ -50,7 +49,7 @@ public class EntityAndTagsTest {
 
     @Before
     public void setUp() throws Exception {
-        httpClientManager = TestUtil.buildHttpClientManager();
+        httpClientManager = buildHttpClientManager();
         metaDataService = new MetaDataService();
         metaDataService.setHttpClientManager(httpClientManager);
         dataService = new DataService();

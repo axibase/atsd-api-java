@@ -15,21 +15,25 @@
  *
  */
 
-package com.axibase.tsd.client.metaDataService;
+package com.axibase.tsd.client.metadata;
 
 import com.axibase.tsd.RerunRule;
-import com.axibase.tsd.TestUtil;
-import com.axibase.tsd.client.*;
+import com.axibase.tsd.client.AtsdServerException;
+import com.axibase.tsd.client.DataService;
+import com.axibase.tsd.client.HttpClientManager;
+import com.axibase.tsd.client.MetaDataService;
 import com.axibase.tsd.model.meta.Entity;
 import com.axibase.tsd.model.meta.TagAppender;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.axibase.tsd.TestUtil.buildVariablePrefix;
-import static com.axibase.tsd.TestUtil.waitWorkingServer;
+import static com.axibase.tsd.TestUtil.*;
 import static junit.framework.Assert.*;
 
 /**
@@ -45,7 +49,7 @@ public class EntityTest {
 
     @Before
     public void setUp() throws Exception {
-        httpClientManager = TestUtil.buildHttpClientManager();
+        httpClientManager = buildHttpClientManager();
         metaDataService = new MetaDataService();
         metaDataService.setHttpClientManager(httpClientManager);
         dataService = new DataService();
@@ -97,7 +101,7 @@ public class EntityTest {
         }
         assertNull(metaDataService.retrieveEntity(entityName));
 
-        Assert.assertTrue(metaDataService.createOrReplaceEntity(new Entity(entityName)));
+        assertTrue(metaDataService.createOrReplaceEntity(new Entity(entityName)));
         Entity newEntity = metaDataService.retrieveEntity(entityName);
         assertEquals(entityName, newEntity.getName());
         assertEquals(new HashMap<>(), newEntity.getTags());
@@ -118,7 +122,7 @@ public class EntityTest {
             tags.put("test-tag1", "test-tag1-val");
             tags.put("test-tag2", "test-tag2-val1");
             entity.setTags(tags);
-            Assert.assertTrue(metaDataService.createOrReplaceEntity(entity));
+            assertTrue(metaDataService.createOrReplaceEntity(entity));
             entity = metaDataService.retrieveEntity(entityName);
             assertEquals(entity.getName(), entityName);
             assertEquals(entity.getTags(), tags);
@@ -129,7 +133,7 @@ public class EntityTest {
             tags.put("test-tag2", "test-tag2-val2");
             tags.put("test-tag3", "test-tag3-val");
             entity.setTags(tags);
-            Assert.assertTrue(metaDataService.createOrReplaceEntity(entity));
+            assertTrue(metaDataService.createOrReplaceEntity(entity));
             entity = metaDataService.retrieveEntity(entityName);
             assertEquals(entity.getName(), entityName);
             assertEquals(entity.getTags(), tags);
@@ -160,7 +164,7 @@ public class EntityTest {
         assertNull(metaDataService.retrieveEntity(entityName));
         Entity entity = new Entity(entityName);
         entity.buildTags("test- t__\\\'\" onclick=alert(1) 'g1", "test-__-  tag1-val", "test-tag2", "test-tag2-val");
-        Assert.assertFalse(metaDataService.createOrReplaceEntity(entity));
+        assertFalse(metaDataService.createOrReplaceEntity(entity));
         assertNull(metaDataService.retrieveEntity(entityName));
     }
 

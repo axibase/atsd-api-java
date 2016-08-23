@@ -14,10 +14,9 @@
  *  * permissions and limitations under the License.
  *
  */
-package com.axibase.tsd.client.dataService;
+package com.axibase.tsd.client.data;
 
 import com.axibase.tsd.RerunRule;
-import com.axibase.tsd.TestUtil;
 import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
 import com.axibase.tsd.model.data.Message;
@@ -46,7 +45,7 @@ public class MessageTest {
 
     @Before
     public void setUp() throws Exception {
-        httpClientManager = TestUtil.buildHttpClientManager();
+        httpClientManager = buildHttpClientManager();
         httpClientManager.setCheckPeriodMillis(1000);
 //        httpClientManager.setCheckPeriodMillis(30); // to extreme tests
         dataService = new DataService();

@@ -1,3 +1,5 @@
+[![CircleCI](https://circleci.com/gh/unrealwork/atsd-api-java/tree/master.svg?style=svg) ](https://circleci.com/gh/unrealwork/atsd-api-java/tree/master) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/55d1e79c7c9742a38e8852530730674f) ](https://www.codacy.com/app/unrealwork/atsd-api-java_2?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=unrealwork/atsd-api-java&amp;utm_campaign=Badge_Grade) [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/55d1e79c7c9742a38e8852530730674f)](https://www.codacy.com/app/unrealwork/atsd-api-java_2?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=unrealwork/atsd-api-java&amp;utm_campaign=Badge_Coverage)
+
 # Axibase Time Series Database Client for Java
 
 The **ATSD Client for Java** enables Java developers to build reporting, analytical, and alerting applications that read and write data and metadata from the

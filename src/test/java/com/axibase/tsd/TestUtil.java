@@ -45,7 +45,7 @@ public class TestUtil {
 
     public static final int WAIT_TIME = 1800;
 
-    static final int RERUN_COUNT = 3;
+    public static final int RERUN_COUNT = 3;
     public static final int MAX_PING_TRIES = 77;
 
     // To overwrite client properties use Maven properties like:
@@ -108,19 +108,19 @@ public class TestUtil {
     }
 
 
-    public static String ISOFormat(Date date) {
-        return ISOFormat(date, true, "UTC");
+    public static String isoFormat(Date date) {
+        return isoFormat(date, true, "UTC");
     }
 
-    public static String ISOFormat(long t) {
-        return ISOFormat(new Date(t));
+    public static String isoFormat(long t) {
+        return isoFormat(new Date(t));
     }
 
-    public static String ISOFormat(long t, boolean withMillis, String timeZoneName) {
-        return ISOFormat(new Date(t), withMillis, timeZoneName);
+    public static String isoFormat(long t, boolean withMillis, String timeZoneName) {
+        return isoFormat(new Date(t), withMillis, timeZoneName);
     }
 
-    public static String ISOFormat(Date date, boolean withMillis, String timeZoneName) {
+    public static String isoFormat(Date date, boolean withMillis, String timeZoneName) {
         String pattern = (withMillis) ? "yyyy-MM-dd'T'HH:mm:ss.SSSXXX" : "yyyy-MM-dd'T'HH:mm:ssXXX";
         SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
         dateFormat.setTimeZone(TimeZone.getTimeZone(timeZoneName));
@@ -132,7 +132,7 @@ public class TestUtil {
         try {
             d = ISO8601Utils.parse(date, new ParsePosition(0));
         } catch (ParseException e) {
-            throw new RuntimeException(e);
+            throw new IllegalStateException(e);
         }
         return d;
     }

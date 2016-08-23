@@ -14,10 +14,9 @@
  *  * permissions and limitations under the License.
  *
  */
-package com.axibase.tsd.client.dataService;
+package com.axibase.tsd.client.data;
 
 import com.axibase.tsd.RerunRule;
-import com.axibase.tsd.TestUtil;
 import com.axibase.tsd.client.AtsdServerException;
 import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
@@ -36,8 +35,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.axibase.tsd.TestUtil.buildVariablePrefix;
-import static com.axibase.tsd.TestUtil.waitWorkingServer;
+import static com.axibase.tsd.TestUtil.*;
 import static junit.framework.Assert.*;
 
 public class PropertyTest {
@@ -50,7 +48,7 @@ public class PropertyTest {
 
     @Before
     public void setUp() throws Exception {
-        httpClientManager = TestUtil.buildHttpClientManager();
+        httpClientManager = buildHttpClientManager();
         httpClientManager.setCheckPeriodMillis(1000);
         dataService = new DataService();
         dataService.setHttpClientManager(httpClientManager);
@@ -263,9 +261,8 @@ public class PropertyTest {
         }
         assertFalse(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
 
-        DeletePropertyFilter filter = new DeletePropertyFilter(propertyTypeName, entityName) {{
-            setKey(key);
-        }};
+        DeletePropertyFilter filter = new DeletePropertyFilter(propertyTypeName, entityName);
+        filter.setKey(key);
 
         assertTrue(dataService.deleteProperties(filter));
         assertTrue(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());

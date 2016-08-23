@@ -2,7 +2,6 @@ package com.axibase.tsd.client.command;
 
 import com.axibase.tsd.TestUtil;
 import com.axibase.tsd.client.DataService;
-import com.axibase.tsd.client.DefaultStreamingManager;
 import com.axibase.tsd.client.HttpClientManager;
 import com.axibase.tsd.model.data.command.GetSeriesQuery;
 import com.axibase.tsd.model.data.series.Sample;
@@ -17,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import static com.axibase.tsd.TestUtil.buildHttpClientManager;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -26,7 +26,7 @@ public class CommandSeriesQuotesTest {
     private final static String TEST_PREFIX = "command-series-quotes-test-";
     private final static String TEST_ENTITY = TEST_PREFIX + "entity";
     private final static String TEST_METRIC = TEST_PREFIX + "metric";
-    private static HttpClientManager httpClientManager = TestUtil.buildHttpClientManager();
+    private static HttpClientManager httpClientManager = buildHttpClientManager();
     private static DataService dataService = new DataService(httpClientManager);
     private static Series testSeries;
 
