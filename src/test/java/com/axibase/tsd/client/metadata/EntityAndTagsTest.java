@@ -94,10 +94,6 @@ public class EntityAndTagsTest {
         final String metricName = buildVariablePrefix() + "metric";
         final Long timestamp = MOCK_TIMESTAMP;
 
-        Map<String, String> tags = new HashMap<>();
-        tags.put("test-tag1", "test-tag1-val");
-        tags.put("test-tag2", "test-tag2-val");
-
         if (metaDataService.retrieveEntity(entityName) == null) {
             AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName, "test-tag1", "test-tag1-val", "test-tag2", "test-tag2-val");
             addSeriesCommand.addSeries(new Sample(timestamp, 1));
