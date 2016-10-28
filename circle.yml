@@ -18,8 +18,4 @@ test:
     - mvn clean test -Dmaven.test.failure.ignore=false -Daxibase.tsd.api.server.name=$ATSD_HOST -Daxibase.tsd.api.server.port=$ATSD_PORT -Dlaxibase.tsd.api.username=$ATSD_USER -Daxibase.tsd.api.password=$ATSD_PASSWORD;
     - mvn jacoco:report
   post:
-      - mkdir -p $CIRCLE_TEST_REPORTS/junit/
-      - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-      - curl -k https://www.jpm4j.org/install/script | sh
-      - jpm install com.codacy:codacy-coverage-reporter:assembly
-      - codacy-coverage-reporter -l Java -r target/site/jacoco/jacoco.xml
+    - bash <(curl -s https://codecov.io/bash)
