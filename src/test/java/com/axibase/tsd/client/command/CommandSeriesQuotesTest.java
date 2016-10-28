@@ -59,15 +59,15 @@ public class CommandSeriesQuotesTest {
 
 
     @Test
-    public void testInserting() {
+    public void testInserting() throws InterruptedException {
         PlainCommand command = new InsertCommand(
                 testSeries.getEntityName(),
                 testSeries.getMetricName(),
                 testSeries.getData().get(0),
                 testSeries.getTags()
         );
-        System.out.println(command.compose());
         dataService.sendBatch(Collections.singleton(command));
+        Thread.sleep(TestUtil.WAIT_TIME);
         GetSeriesQuery getSeriesQuery = new GetSeriesQuery(testSeries.getEntityName(), testSeries.getMetricName(), testSeries.getTags());
         getSeriesQuery.setStartDate(AtsdUtil.DateTime.MIN_QUERIED_DATE_TIME);
         getSeriesQuery.setEndDate(AtsdUtil.DateTime.MAX_QUERIED_DATE_TIME);
