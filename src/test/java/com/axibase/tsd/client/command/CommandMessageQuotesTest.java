@@ -29,16 +29,13 @@ public class CommandMessageQuotesTest {
 
     @Test
     public void testComposing() {
-
-
         PlainCommand command = new MessageInsertCommand(
                 testMessage.getEntityName(),
                 testMessage.getTimestamp(),
                 testMessage.getTags(),
                 testMessage.getMessage()
         );
-
-
+        
         assertEquals("Commands is composing incorrectly",
                 String.format("message e:\"%s\" t:tag=\"OFF- RAMP \"\" U\"\", I\" m:\"quo\"\"te\"\n",
                         testMessage.getEntityName()

@@ -43,17 +43,13 @@ public class CommandSeriesQuotesTest {
 
     @Test
     public void testComposing() {
-
-
         PlainCommand command = new InsertCommand(
                 testSeries.getEntityName(),
                 testSeries.getMetricName(),
                 testSeries.getData().get(0),
                 testSeries.getTags()
         );
-
         Sample testSample = testSeries.getData().get(0);
-
         assertEquals("Commands is composing incorrectly",
                 String.format("series e:\"%s\" ms:%d t:tag=\"OFF- RAMP \"\" U\"\", I\" m:\"%s\"=%s\n",
                         TEST_ENTITY, testSample.getTimeMillis(), TEST_METRIC, testSample.getValue()),
@@ -71,18 +67,16 @@ public class CommandSeriesQuotesTest {
                 testSeries.getTags()
         );
         System.out.println(command.compose());
-
         dataService.sendBatch(Collections.singleton(command));
-
         GetSeriesQuery getSeriesQuery = new GetSeriesQuery(testSeries.getEntityName(), testSeries.getMetricName(), testSeries.getTags());
         getSeriesQuery.setStartDate(AtsdUtil.DateTime.MIN_QUERIED_DATE_TIME);
         getSeriesQuery.setEndDate(AtsdUtil.DateTime.MAX_QUERIED_DATE_TIME);
         List<Series> retrievedSeriesList = dataService.retrieveSeries(getSeriesQuery);
-        Series responsedSeries = retrievedSeriesList.get(0);
-        assertEquals(testSeries.getEntityName(), responsedSeries.getEntityName());
-        assertEquals(testSeries.getMetricName(), responsedSeries.getMetricName());
-        assertEquals(testSeries.getData(), responsedSeries.getData());
-        assertEquals(testSeries.getTags(), responsedSeries.getTags());
+        Series actualSeries = retrievedSeriesList.get(0);
+        assertEquals(testSeries.getEntityName(), actualSeries.getEntityName());
+        assertEquals(testSeries.getMetricName(), actualSeries.getMetricName());
+        assertEquals(testSeries.getData(), actualSeries.getData());
+        assertEquals(testSeries.getTags(), actualSeries.getTags());
 
     }
 }
