@@ -20,6 +20,6 @@ test:
   post:
       - mkdir -p $CIRCLE_TEST_REPORTS/junit/
       - find . -type f -regex ".*/target/surefire-reports/.*xml" -exec cp {} $CIRCLE_TEST_REPORTS/junit/ \;
-      - curl https://www.jpm4j.org/install/script | sh
+      - curl -k https://www.jpm4j.org/install/script | sh
       - jpm install com.codacy:codacy-coverage-reporter:assembly
       - codacy-coverage-reporter -l Java -r target/site/jacoco/jacoco.xml
