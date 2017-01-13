@@ -68,12 +68,16 @@ public class TestUtil {
         return new MultivaluedHashMap<>(AtsdUtil.toMap(tagNamesAndValues));
     }
 
-    public static void waitWorkingServer(HttpClientManager httpClientManager) throws InterruptedException {
+    public static void waitWorkingServer(HttpClientManager httpClientManager) {
         for (int i = 0; i < MAX_PING_TRIES; i++) {
             if (httpClientManager.canSendPlainCommand()) {
                 return;
             } else {
-                Thread.sleep(WAIT_TIME);
+                try {
+                    Thread.sleep(WAIT_TIME);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }

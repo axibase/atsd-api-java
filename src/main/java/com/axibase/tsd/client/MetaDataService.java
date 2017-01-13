@@ -14,14 +14,12 @@
  */
 package com.axibase.tsd.client;
 
+import com.axibase.tsd.model.data.series.Series;
 import com.axibase.tsd.model.meta.*;
 import com.axibase.tsd.query.Query;
 import com.axibase.tsd.query.QueryPart;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static com.axibase.tsd.client.RequestProcessor.*;
 import static com.axibase.tsd.util.AtsdUtil.*;
@@ -81,13 +79,13 @@ public class MetaDataService {
     }
 
     /**
-     * @param expression  Specify EL expression.
+     * @param expression    Specify EL expression.
      * @param minInsertDate Include metrics with lastInsertDate equal or greater than specified time.
      *                      Time can be specified in ISO format or using <a href="https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md">endtime</a> syntax.
      * @param maxInsertDate Include metrics with lastInsertDate less than specified time.
      *                      Time can be specified in ISO format or using <a href="https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md">endtime</a> syntax.
-     * @param tagAppender Specify metric tags to be included in the response. Specify * to include all metric tags.
-     * @param limit       Limit response to first N metrics, ordered by name.
+     * @param tagAppender   Specify metric tags to be included in the response. Specify * to include all metric tags.
+     * @param limit         Limit response to first N metrics, ordered by name.
      * @return List of metrics.
      * @throws AtsdClientException raised  raised
      * @throws AtsdServerException raised  raised
@@ -137,16 +135,16 @@ public class MetaDataService {
     }
 
     /**
-     * @param entityName  Entity name.
-     * @param expression  Specify EL expression.
-     * @param minInsertDate Include metrics with lastInsertDate equal or greater than specified time.
-     *                      Time can be specified in ISO format or using <a href="https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md">endtime</a> syntax.
-     * @param maxInsertDate Include metrics with lastInsertDate less than specified time.
-     *                      Time can be specified in ISO format or using <a href="https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md">endtime</a> syntax.
+     * @param entityName          Entity name.
+     * @param expression          Specify EL expression.
+     * @param minInsertDate       Include metrics with lastInsertDate equal or greater than specified time.
+     *                            Time can be specified in ISO format or using <a href="https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md">endtime</a> syntax.
+     * @param maxInsertDate       Include metrics with lastInsertDate less than specified time.
+     *                            Time can be specified in ISO format or using <a href="https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md">endtime</a> syntax.
      * @param useEntityInsertTime If true, lastInsertDate is calculated for the specified entity and metric.
      *                            Otherwise, lastInsertDate represents the last time for all entities. Default: false.
-     * @param tagAppender Specify metric tags to be included in the response. Specify * to include all metric tags.
-     * @param limit       Limit response to first N metrics, ordered by name.
+     * @param tagAppender         Specify metric tags to be included in the response. Specify * to include all metric tags.
+     * @param limit               Limit response to first N metrics, ordered by name.
      * @return List of metrics.
      */
     public List<Metric> retrieveMetrics(String entityName,
@@ -249,13 +247,13 @@ public class MetaDataService {
     }
 
     /**
-     * @param expression  Specify EL expression.
+     * @param expression    Specify EL expression.
      * @param minInsertDate Include entities with lastInsertDate equal or greater than specified time.
      *                      Time can be specified in ISO format or using <a href="https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md">endtime</a> syntax.
      * @param maxInsertDate Include entities with lastInsertDate less than specified time.
      *                      Time can be specified in ISO format or using <a href="https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md">endtime</a> syntax.
-     * @param tagAppender Specify entity tags to be included in the response. Specify * to include all entity tags.
-     * @param limit       Limit response to first N entities, ordered by name.
+     * @param tagAppender   Specify entity tags to be included in the response. Specify * to include all entity tags.
+     * @param limit         Limit response to first N entities, ordered by name.
      * @return List of entities.
      */
     public List<Entity> retrieveEntities(String expression,
@@ -456,10 +454,10 @@ public class MetaDataService {
     /**
      * @param entityGroupName Entity group name.
      * @param expression      Specify EL expression.
-     * @param minInsertDate Include entities with lastInsertDate equal or greater than specified time.
-     *                      Time can be specified in ISO format or using <a href="https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md">endtime</a> syntax.
-     * @param maxInsertDate Include entities with lastInsertDate less than specified time.
-     *                      Time can be specified in ISO format or using <a href="https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md">endtime</a> syntax.
+     * @param minInsertDate   Include entities with lastInsertDate equal or greater than specified time.
+     *                        Time can be specified in ISO format or using <a href="https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md">endtime</a> syntax.
+     * @param maxInsertDate   Include entities with lastInsertDate less than specified time.
+     *                        Time can be specified in ISO format or using <a href="https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md">endtime</a> syntax.
      * @param tagAppender     Specify entity tags to be included in the response. Specify * to include all entity tags.
      * @param limit           limit
      * @return List of entities for an entity group.
@@ -578,5 +576,36 @@ public class MetaDataService {
      */
     public boolean deleteAllGroupEntities(String entityGroupName) {
         return replaceGroupEntities(entityGroupName, true);
+    }
+
+    /**
+     * Retrieve series list of the specified metric
+     *
+     * @param metricName metric name
+     * @return list of series
+     */
+    public List<Series> retrieveMetricSeries(String metricName) {
+        return retrieveMetricSeries(metricName, Collections.<String, String>emptyMap());
+    }
+
+    /**
+     * Retrieve series list of the specified metric
+     *
+     * @param metricName metric name
+     * @param entityName entity name's filter
+     * @return list of series
+     */
+    public List<Series> retrieveMetricSeries(String metricName, String entityName) {
+        return retrieveMetricSeries(metricName, Collections.singletonMap("entity", entityName));
+    }
+
+    private List<Series> retrieveMetricSeries(String metricName, Map<String, String> queryParams) {
+        QueryPart<Series> query = new Query<Series>("metrics")
+                .path(metricName)
+                .path("series");
+        for (Map.Entry<String, String> param : queryParams.entrySet()) {
+            query.param(param.getKey(), param.getValue());
+        }
+        return httpClientManager.requestMetaDataList(Series.class, query);
     }
 }

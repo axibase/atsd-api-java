@@ -24,6 +24,7 @@ import com.axibase.tsd.client.HttpClientManager;
 import com.axibase.tsd.client.MetaDataService;
 import com.axibase.tsd.model.data.command.AddSeriesCommand;
 import com.axibase.tsd.model.data.series.Sample;
+import com.axibase.tsd.model.data.series.Series;
 import com.axibase.tsd.model.meta.DataType;
 import com.axibase.tsd.model.meta.Metric;
 import com.axibase.tsd.model.meta.TagAppender;
@@ -32,7 +33,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.Date;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -208,4 +209,26 @@ public class MetricTest {
         assertEquals(((Metric) metrics.get(0)).getName(), metricName);
     }
 
+
+    @Test
+    public void testRetrieveMetricSeries() {
+        String testPrefix = TestUtil.buildVariablePrefix();
+        Series series = new Series();
+        series.setMetricName(testPrefix + "-metric");
+        series.setEntityName(testPrefix + "-entity");
+        series.setData(Collections.singletonList(new Sample(MOCK_TIMESTAMP, MOCK_SERIE_VALUE)));
+        AddSeriesCommand command = new AddSeriesCommand(series.getEntityName(), series.getMetricName(), null);
+        command.addSeries(series.getData());
+        dataService.addSeries(command);
+        TestUtil.waitWorkingServer(httpClientManager);
+
+        List<Series> seriesList = metaDataService.retrieveMetricSeries(series.getMetricName());
+
+        String assertMessage = String.format(
+                "Incorrect series list for metric %s",
+                series.getMetricName()
+        );
+        assertEquals("Incorrect count of series", 1, seriesList.size());
+        assertEquals(assertMessage, series.getMetricName(), seriesList.get(0).getMetricName());
+    }
 }

@@ -19,10 +19,7 @@ import com.axibase.tsd.util.AtsdUtil;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -66,19 +63,19 @@ public class AddSeriesCommand {
     }
 
     public AddSeriesCommand addSeries(Sample sample) {
+        return addSeries(Collections.singleton(sample));
+    }
+
+    public AddSeriesCommand addSeries(Collection<Sample> samples) {
         if (data == null) {
             data = new ArrayList<Sample>();
         }
-        data.add(sample);
+        data.addAll(samples);
         return this;
     }
 
     public AddSeriesCommand addSeries(Sample... series) {
-        if (data == null) {
-            data = new ArrayList<Sample>();
-        }
-        data.addAll(Arrays.asList(series));
-        return this;
+        return addSeries(Arrays.asList(series));
     }
 
     public AddSeriesCommand setTags(Map<String, String> tags) {
