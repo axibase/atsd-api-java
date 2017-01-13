@@ -11,7 +11,7 @@ Get started by downloading the zip file from [GitHub][atsd-zip] or by importing 
         <dependency>
             <groupId>com.axibase</groupId>
             <artifactId>atsd-api-java</artifactId>
-            <version>0.5.13</version>
+            <version>0.5.14</version>
         </dependency>
 ```
 
@@ -74,7 +74,7 @@ git clone https://github.com/axibase/atsd-api-java.git
 cd atsd-api-java
 mvn clean dependency:copy-dependencies compile jar:jar
 cd target
-java -cp "atsd-api-java-0.5.13.jar:dependency/*" -Daxibase.tsd.api.client.properties=./client.properties com.axibase.tsd.example.AtsdClientWriteExample
+java -cp "atsd-api-java-0.5.14.jar:dependency/*" -Daxibase.tsd.api.client.properties=./client.properties com.axibase.tsd.example.AtsdClientWriteExample
 ```
 
 ## Examples
@@ -231,7 +231,7 @@ Usage:
 
 [atsd]:https://axibase.com/products/axibase-time-series-database/
 [atsd-api]:https://github.com/axibase/atsd-docs/blob/master/api/README.md
-[atsd-zip]:https://github.com/axibase/atsd-api-java/releases/download/v.0.5.13/atsd-api-java-0.5.13-bin.zip
+[atsd-zip]:https://github.com/axibase/atsd-api-java/releases/download/v.0.5.14/atsd-api-java-0.5.14-bin.zip
 [atsd-issues]:https://axibase.com/customer-support/
 [atsd-read-example]:https://github.com/axibase/atsd-api-java/blob/master/src/main/java/com/axibase/tsd/example/AtsdClientReadExample.java
 [atsd-write-example]:https://github.com/axibase/atsd-api-java/blob/master/src/main/java/com/axibase/tsd/example/AtsdClientWriteExample.java
