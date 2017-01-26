@@ -106,7 +106,7 @@ public class AtsdUtil {
         }
 
         public static String isoFormat(Date date, boolean withMillis, String timeZoneName) {
-            String pattern = (withMillis) ? "yyyy-MM-dd'T'HH:mm:ss.SSSXXX" : "yyyy-MM-dd'T'HH:mm:ssXXX";
+            String pattern = (withMillis) ? "yyyy-MM-dd'T'HH:mm:ss.SSSZZ" : "yyyy-MM-dd'T'HH:mm:ssZZ";
             FastDateFormat formatter = FastDateFormat.getInstance(pattern, TimeZone.getTimeZone(timeZoneName), Locale.US);
             return formatter.format(date);
         }
