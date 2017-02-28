@@ -40,6 +40,7 @@ import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
 import org.glassfish.jersey.filter.LoggingFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -61,6 +62,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.LogManager;
 
 import static com.axibase.tsd.util.AtsdUtil.JSON;
 
@@ -71,6 +73,11 @@ class HttpClient {
     public static final int HTTP_STATUS_OK = 200;
     public static final int HTTP_STATUS_FAIL = 400;
     public static final int HTTP_STATUS_NOT_FOUND = 404;
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        LogManager.getLogManager().reset();
+        SLF4JBridgeHandler.install();
+    }
 
     private ClientConfiguration clientConfiguration;
     private final Client client;

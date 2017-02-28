@@ -17,11 +17,13 @@ package com.axibase.tsd.network;
 
 import com.axibase.tsd.model.data.series.Sample;
 import com.axibase.tsd.util.AtsdUtil;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Collections;
 import java.util.Map;
 
 import static com.axibase.tsd.util.AtsdUtil.checkMetricIsEmpty;
+import static com.axibase.tsd.util.AtsdUtil.formatMetricValue;
 
 
 public class InsertCommand extends AbstractInsertCommand {
@@ -46,7 +48,10 @@ public class InsertCommand extends AbstractInsertCommand {
 
     @Override
     protected void appendValues(StringBuilder sb) {
-        sb.append(" m:").append(handleStringValue(metricName)).append('=').append(sample.getValue());
+        sb.append(" m:").append(handleStringValue(metricName)).append('=').append(formatMetricValue(sample.getNumericValue()));
+        if (StringUtils.isNotEmpty(sample.getTextValue())) {
+            sb.append(" x:").append(handleStringValue(metricName)).append('=').append(sample.getTextValue());
+        }
     }
 
 }

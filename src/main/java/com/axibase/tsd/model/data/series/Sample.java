@@ -15,9 +15,8 @@
 package com.axibase.tsd.model.data.series;
 
 import com.axibase.tsd.util.AtsdUtil;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
 
@@ -32,14 +31,24 @@ public class Sample {
     @JsonProperty("d")
     private String date;
     @JsonProperty("v")
-    private double value;
+    private double numericValue;
+    @JsonProperty("x")
+    private String textValue;
 
     public Sample() {
     }
 
     public Sample(long timeMillis, double value) {
         setTimeMillis(timeMillis);
-        setValue(value);
+        setNumericValue(value);
+    }
+
+    public Sample(long timeMillis, double numericValue, String textValue) {
+        setTimeMillis(timeMillis);
+        setNumericValue(numericValue);
+        if (StringUtils.isNotEmpty(textValue)) {
+            setTextValue(textValue);
+        }
     }
 
     public Long getTimeMillis() {
@@ -64,23 +73,53 @@ public class Sample {
         this.date = date;
     }
 
+    /**
+     * @deprecated use {@link #setNumericValue(double)} instead.
+     * @since 0.5.15
+     */
+    @JsonIgnore
+    @Deprecated
     public double getValue() {
-        return value;
+        return numericValue;
     }
 
+    /**
+     * @deprecated use {@link #getNumericValue()} instead.
+     * @since 0.5.15
+     */
+    @Deprecated
     public void setValue(double value) {
-        this.value = value;
+        this.numericValue = value;
+    }
+
+    public double getNumericValue() {
+        return numericValue;
+    }
+
+    public void setNumericValue(double value) {
+        this.numericValue = value;
+    }
+
+    public String getTextValue() {
+        return textValue;
+    }
+
+    public void setTextValue(String value) {
+        this.textValue = value;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) {
+        if (!(obj instanceof Sample)) {
             return false;
         }
 
         final Sample other = (Sample) obj;
-        return this.getValue() == other.getValue();
-
+        if ((Double.isNaN(this.numericValue) && !Double.isNaN(other.numericValue))
+                || this.numericValue != other.numericValue) {
+            return false;
+        }
+        return this.textValue == null ? other.textValue == null : this.textValue.equals(other.textValue);
     }
 
     @Override
@@ -88,7 +127,8 @@ public class Sample {
         return "Sample{" +
                 "timeMillis=" + timeMillis +
                 ", date='" + date + '\'' +
-                ", value=" + value +
+                ", numericValue=" + numericValue +
+                ", textValue='" + textValue + '\'' +
                 '}';
     }
 }

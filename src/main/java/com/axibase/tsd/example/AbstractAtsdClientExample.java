@@ -22,6 +22,7 @@ import com.axibase.tsd.model.data.series.Sample;
 import com.axibase.tsd.model.data.series.Series;
 import com.axibase.tsd.model.system.ClientConfiguration;
 import com.fasterxml.jackson.databind.util.ISO8601DateFormat;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -113,7 +114,7 @@ public abstract class AbstractAtsdClientExample {
         List<Sample> data = series.getData();
         for (Sample sample : data) {
             long ts = sample.getTimeMillis();
-            logger.info(toISODate(ts) + "\t" + sample.getValue());
+            logger.info(toISODate(ts) + "\t" + sample.getNumericValue() + (StringUtils.isNotEmpty(sample.getTextValue()) ? "\t" + sample.getTextValue() : ""));
         }
     }
 }

@@ -216,7 +216,7 @@ public class MetricTest {
         Series series = new Series();
         series.setMetricName(testPrefix + "-metric");
         series.setEntityName(testPrefix + "-entity");
-        series.setData(Collections.singletonList(new Sample(MOCK_TIMESTAMP, MOCK_SERIE_VALUE)));
+        series.setData(Collections.singletonList(new Sample(MOCK_TIMESTAMP, MOCK_SERIE_NUMERIC_VALUE, MOCK_SERIE_TEXT_VALUE)));
         AddSeriesCommand command = new AddSeriesCommand(series.getEntityName(), series.getMetricName(), null);
         command.addSeries(series.getData());
         dataService.addSeries(command);

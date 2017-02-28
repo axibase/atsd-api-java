@@ -32,7 +32,7 @@ public class CommandSeriesQuotesTest {
 
     @BeforeClass
     public static void prepareData() {
-        Sample testSample = new Sample(TestUtil.parseDate("2016-06-03T09:24:00.000Z").getTime(), -31.1);
+        Sample testSample = new Sample(TestUtil.parseDate("2016-06-03T09:24:00.000Z").getTime(), -31.1, "txt");
         Map<String, String> tags = Collections.singletonMap("tag", "OFF- RAMP \" U\", I");
         testSeries = new Series();
         testSeries.setEntityName(TEST_ENTITY);
@@ -51,8 +51,8 @@ public class CommandSeriesQuotesTest {
         );
         Sample testSample = testSeries.getData().get(0);
         assertEquals("Commands is composing incorrectly",
-                String.format("series e:\"%s\" ms:%d t:tag=\"OFF- RAMP \"\" U\"\", I\" m:\"%s\"=%s\n",
-                        TEST_ENTITY, testSample.getTimeMillis(), TEST_METRIC, testSample.getValue()),
+                String.format("series e:\"%s\" ms:%d t:tag=\"OFF- RAMP \"\" U\"\", I\" m:\"%s\"=%s x:\"%s\"=%s\n",
+                        TEST_ENTITY, testSample.getTimeMillis(), TEST_METRIC, testSample.getNumericValue(), TEST_METRIC, testSample.getTextValue()),
                 command.compose()
         );
     }

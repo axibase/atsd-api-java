@@ -15,12 +15,12 @@
 package com.axibase.tsd.util;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.ws.rs.core.MediaType;
 import java.text.ParseException;
 import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.*;
 
 
@@ -32,7 +32,7 @@ public class AtsdUtil {
     public static final String PING_COMMAND = "ping\n";
 
     public static Map<String, String> toMap(String... tagNamesAndValues) {
-        if (tagNamesAndValues == null || tagNamesAndValues.length == 0) {
+        if (ArrayUtils.isEmpty(tagNamesAndValues)) {
             return Collections.emptyMap();
         }
 
@@ -48,7 +48,7 @@ public class AtsdUtil {
     }
 
     public static Map<String, Double> toValuesMap(Object... metricNamesAndValues) {
-        if (metricNamesAndValues == null || metricNamesAndValues.length == 0) {
+        if (ArrayUtils.isEmpty(metricNamesAndValues)) {
             return Collections.emptyMap();
         }
 
@@ -90,13 +90,11 @@ public class AtsdUtil {
         public static final String MAX_QUERIED_DATE_TIME = "9999-12-31T23:59:59.999Z";
 
         public static Date parseDate(String date) {
-            Date d = null;
             try {
-                d = ISO8601Utils.parse(date, new ParsePosition(0));
+                return ISO8601Utils.parse(date, new ParsePosition(0));
             } catch (ParseException e) {
                 throw new IllegalStateException(e);
             }
-            return d;
         }
 
         public static String isoFormat(Date date) {
@@ -108,11 +106,15 @@ public class AtsdUtil {
         }
 
         public static String isoFormat(Date date, boolean withMillis, String timeZoneName) {
-            String pattern = (withMillis) ? "yyyy-MM-dd'T'HH:mm:ss.SSSXXX" : "yyyy-MM-dd'T'HH:mm:ssXXX";
-            SimpleDateFormat dateFormat = new SimpleDateFormat(pattern);
-            dateFormat.setTimeZone(TimeZone.getTimeZone(timeZoneName));
-            return dateFormat.format(date);
+            return ISO8601Utils.format(date, withMillis, TimeZone.getTimeZone(timeZoneName));
         }
+    }
+
+    public static String formatMetricValue(double value) {
+        if (Double.isNaN(value)) {
+            return "NaN";
+        }
+        return Double.toString(value);
     }
 
 }

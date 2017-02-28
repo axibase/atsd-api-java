@@ -15,23 +15,35 @@
 
 package com.axibase.tsd.network;
 
+import java.util.Collections;
 import java.util.Map;
+
+import static com.axibase.tsd.util.AtsdUtil.formatMetricValue;
 
 
 public class MultipleInsertCommand extends AbstractInsertCommand {
-    private final Map<String, Double> metricsAndValues;
+    private final Map<String, Double> numericValues;
+    private final Map<String, String> textValues;
 
     public MultipleInsertCommand(String entityName, long time, Map<String, String> tags,
-                                 Map<String, Double> metricsAndValues) {
+                                 Map<String, Double> numericValues) {
+        this(entityName, time, tags, numericValues, Collections.<String, String>emptyMap());
+    }
+
+    public MultipleInsertCommand(String entityName, long time, Map<String, String> tags,
+                                 Map<String, Double> numericValues, Map<String, String> textValues) {
         super(InsertCommand.SERIES_COMMAND, entityName, time, tags);
-        this.metricsAndValues = metricsAndValues;
+        this.numericValues = numericValues == null ? Collections.<String, Double>emptyMap() : numericValues;
+        this.textValues = textValues == null ? Collections.<String, String>emptyMap() : textValues;
     }
 
     @Override
     protected void appendValues(StringBuilder sb) {
-        for (Map.Entry<String, Double> metricNameAndValue : metricsAndValues.entrySet()) {
+        for (Map.Entry<String, Double> metricNameAndValue : numericValues.entrySet()){
             sb.append(" m:").append(metricNameAndValue.getKey())
-                    .append('=').append(metricNameAndValue.getValue());
+                    .append('=').append(formatMetricValue(metricNameAndValue.getValue()));
         }
+
+        appendKeysAndValues(sb, " x:", textValues);
     }
 }

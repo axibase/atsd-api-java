@@ -77,7 +77,7 @@ public class ExportCsvExample extends AbstractAtsdClientExample {
             final List<Sample> sampleList = seriesResultList.get(0).getData();
             for (Sample sample : sampleList) {
                 final Date date = new Date(sample.getTimeMillis());
-                final double value = sample.getValue();
+                final double value = sample.getNumericValue();
                 writer.println(dateFormat.format(date) + "," + numberFormat.format(value));
             }
             logger.info("Saved " + sampleList.size() + " values");

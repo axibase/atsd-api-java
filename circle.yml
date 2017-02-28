@@ -15,7 +15,7 @@ test:
   override:
     - docker run -d --name=$ATSD_CONTAINER_NAME --publish $ATSD_PORT:$ATSD_PORT -e axiname=$ATSD_USER -e axipass=$ATSD_PASSWORD -e timezone="Asia/Kathmandu" axibase/atsd:api_test
     - while [[ $(curl --user $ATSD_USER:$ATSD_PASSWORD --write-out %{http_code} --silent --output /dev/null http://$ATSD_HOST:$ATSD_PORT/version) != 200 ]]; do  echo "waiting to start $ATSD_CONTAINER_NAME server ..."; sleep 3; done;
-    - mvn clean test -Dmaven.test.failure.ignore=false -Daxibase.tsd.api.server.name=$ATSD_HOST -Daxibase.tsd.api.server.port=$ATSD_PORT -Dlaxibase.tsd.api.name=$ATSD_USER -Daxibase.tsd.api.password=$ATSD_PASSWORD;
+    - mvn clean test -Dmaven.test.failure.ignore=false -Daxibase.tsd.api.server.name=$ATSD_HOST -Daxibase.tsd.api.server.port=$ATSD_PORT -Daxibase.tsd.api.username=$ATSD_USER -Daxibase.tsd.api.password=$ATSD_PASSWORD;
     - mvn jacoco:report
   post:
     - bash <(curl -s https://codecov.io/bash)

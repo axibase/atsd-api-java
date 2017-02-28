@@ -21,16 +21,16 @@ import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
 import com.axibase.tsd.model.data.Message;
 import com.axibase.tsd.model.data.Severity;
+import com.axibase.tsd.model.data.command.BatchResponse;
 import com.axibase.tsd.model.data.command.GetMessagesQuery;
+import com.axibase.tsd.network.MessageInsertCommand;
+import com.axibase.tsd.network.PlainCommand;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import static com.axibase.tsd.TestUtil.*;
 import static junit.framework.Assert.*;
@@ -156,6 +156,28 @@ public class MessageTest {
             recivedEntitiesName.add(msg.getEntityName());
         }
         assertTrue(recivedEntitiesName.containsAll(entitiesName));
+    }
+
+    @Test
+    public void testSendBatch() throws Exception {
+        final String entityName = buildVariablePrefix() + "entity";
+        final String messageText = "message txt 1";
+        final long st = System.currentTimeMillis();
+        final ArrayList<PlainCommand> commands = new ArrayList<>();
+        commands.add(new MessageInsertCommand(entityName, st, Collections.<String, String>emptyMap(), messageText));
+        commands.add(new MessageInsertCommand(entityName, st+2, Collections.singletonMap("tag1", "value1"), messageText));
+        commands.add(new MessageInsertCommand(entityName, st+3, Collections.singletonMap("tag1", "value1"), ""));
+
+        final BatchResponse batchResponse = dataService.sendBatch(commands);
+        assertTrue(batchResponse.getResult().getFail() == 0);
+
+        Thread.sleep(WAIT_TIME);
+
+        final GetMessagesQuery getMessagesQuery = new GetMessagesQuery(entityName);
+        getMessagesQuery.setStartDate(new Date(st));
+        getMessagesQuery.setEndDate(new Date(st + 4));
+        final List<Message> messageResults = dataService.retrieveMessages(getMessagesQuery);
+        assertEquals(3, messageResults.size());
     }
 
 

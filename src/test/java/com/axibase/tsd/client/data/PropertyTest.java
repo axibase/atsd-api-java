@@ -21,8 +21,11 @@ import com.axibase.tsd.client.AtsdServerException;
 import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
 import com.axibase.tsd.model.data.Property;
+import com.axibase.tsd.model.data.command.BatchResponse;
 import com.axibase.tsd.model.data.command.GetPropertiesQuery;
 import com.axibase.tsd.model.data.filters.DeletePropertyFilter;
+import com.axibase.tsd.network.PlainCommand;
+import com.axibase.tsd.network.PropertyInsertCommand;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -30,10 +33,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.axibase.tsd.TestUtil.*;
 import static junit.framework.Assert.*;
@@ -266,6 +266,27 @@ public class PropertyTest {
 
         assertTrue(dataService.deleteProperties(filter));
         assertTrue(dataService.retrieveProperties(entityName, propertyTypeName).isEmpty());
+    }
+
+    @Test
+    public void testSendBatch() throws Exception {
+        final String propertyTypeName = buildVariablePrefix() + "property-type";
+        final String entityName = buildVariablePrefix() + "entity";
+        final long st = System.currentTimeMillis();
+        final ArrayList<PlainCommand> commands = new ArrayList<>();
+        commands.add(new PropertyInsertCommand(entityName, propertyTypeName, st, Collections.<String, String>emptyMap(), Collections.singletonMap("prop1", "value1")));
+        commands.add(new PropertyInsertCommand(entityName, propertyTypeName, st+1, Collections.singletonMap("key1", "value1"), Collections.singletonMap("prop1", "value1")));
+
+        final BatchResponse batchResponse = dataService.sendBatch(commands);
+        assertTrue(batchResponse.getResult().getFail() == 0);
+
+        Thread.sleep(WAIT_TIME);
+
+        final GetPropertiesQuery getPropertiesQuery = new GetPropertiesQuery(propertyTypeName, entityName);
+        getPropertiesQuery.setStartTime(st);
+        getPropertiesQuery.setEndTime(st + 2);
+        final List<Property> propertyResults = dataService.retrieveProperties(getPropertiesQuery);
+        assertEquals(2, propertyResults.size());
     }
 
 }
