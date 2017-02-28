@@ -6,3 +6,5 @@ settings.xml
 local.*
 src/main/resources/client.properties
 atsd-api-java.iml
+run_atsd_api_java_tests_docker.sh
+src/main/java/com/axibase/tsd/client/AtsdClient.java

@@ -112,7 +112,7 @@ public class DataService {
             if (tagNamesAndValues.length % 2 == 1) {
                 throw new IllegalArgumentException("Tag without value");
             }
-            for (int i = 0; i < tagNamesAndValues.length; i++) {
+            for (int i = 0; i < tagNamesAndValues.length; i += 2) {
                 query = query.param(tagNamesAndValues[i], tagNamesAndValues[i + 1]);
             }
         }

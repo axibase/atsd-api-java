@@ -43,11 +43,17 @@ public class Sample {
 
     public Sample(long timeMillis, double value) {
         this();
+        if (date == null) {
+            date = AtsdUtil.DateTime.isoFormat(new Date(timeMillis));
+        }
         this.timeMillis = timeMillis;
         this.numericValue = value;
     }
 
     public Sample(long timeMillis, double numericValue, String textValue) {
+        if (date == null) {
+            date = AtsdUtil.DateTime.isoFormat(new Date(timeMillis));
+        }
         this.timeMillis = timeMillis;
         this.numericValue = numericValue;
         if (StringUtils.isNotEmpty(textValue)) {
@@ -114,24 +120,14 @@ public class Sample {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (!(o instanceof Sample)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (!(o instanceof Sample)) return false;
 
         Sample sample = (Sample) o;
 
-        if (Double.compare(sample.numericValue, numericValue) != 0) {
-            return false;
-        }
-        if (timeMillis != null ? !timeMillis.equals(sample.timeMillis) : sample.timeMillis != null) {
-            return false;
-        }
-        if (!date.equals(sample.date)) {
-            return false;
-        }
+        if (Double.compare(sample.numericValue, numericValue) != 0) return false;
+        if (timeMillis != null ? !timeMillis.equals(sample.timeMillis) : sample.timeMillis != null) return false;
+        if (date != null ? !date.equals(sample.date) : sample.date != null) return false;
         return textValue != null ? textValue.equals(sample.textValue) : sample.textValue == null;
     }
 
@@ -140,10 +136,20 @@ public class Sample {
         int result;
         long temp;
         result = timeMillis != null ? timeMillis.hashCode() : 0;
-        result = 31 * result + date.hashCode();
+        result = 31 * result + (date != null ? date.hashCode() : 0);
         temp = Double.doubleToLongBits(numericValue);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         result = 31 * result + (textValue != null ? textValue.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Sample{" +
+                "timeMillis=" + timeMillis +
+                ", date='" + date + '\'' +
+                ", numericValue=" + numericValue +
+                ", textValue='" + textValue + '\'' +
+                '}';
     }
 }
