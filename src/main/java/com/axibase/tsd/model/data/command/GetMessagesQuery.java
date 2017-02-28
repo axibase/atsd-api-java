@@ -20,13 +20,12 @@ import com.axibase.tsd.model.data.Severity;
 import com.axibase.tsd.model.data.series.Interval;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import static com.axibase.tsd.util.AtsdUtil.DateTime.*;
 
-/**
- * @author Korchagin Dmitry.
- */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetMessagesQuery {
     //TODO: entity and date filter
@@ -45,15 +44,15 @@ public class GetMessagesQuery {
     private String entityExpression;
 
     public GetMessagesQuery(String entity) {
-        setEntity(entity);
-        setStartDate(parseDate(MIN_QUERIED_DATE_TIME));
-        setEndDate(parseDate(MAX_QUERIED_DATE_TIME));
+        this.entity = entity;
+        this.startDate = parseDate(MIN_QUERIED_DATE_TIME);
+        this.endDate = parseDate(MAX_QUERIED_DATE_TIME);
     }
 
     public GetMessagesQuery(List<String> entities) {
-        setEntities(entities);
-        setStartDate(parseDate(MIN_QUERIED_DATE_TIME));
-        setEndDate(parseDate(MAX_QUERIED_DATE_TIME));
+        this.entities = entities;
+        this.startDate = parseDate(MIN_QUERIED_DATE_TIME);
+        this.endDate = parseDate(MAX_QUERIED_DATE_TIME);
     }
 
 
@@ -173,6 +172,4 @@ public class GetMessagesQuery {
         this.entityExpression = entityExpression;
         return this;
     }
-
-
 }

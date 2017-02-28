@@ -15,7 +15,10 @@
 package com.axibase.tsd.model.data.series;
 
 import com.axibase.tsd.util.AtsdUtil;
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.Date;
@@ -35,19 +38,20 @@ public class Sample {
     @JsonProperty("x")
     private String textValue;
 
-    public Sample() {
+    private Sample() {
     }
 
     public Sample(long timeMillis, double value) {
-        setTimeMillis(timeMillis);
-        setNumericValue(value);
+        this();
+        this.timeMillis = timeMillis;
+        this.numericValue = value;
     }
 
     public Sample(long timeMillis, double numericValue, String textValue) {
-        setTimeMillis(timeMillis);
-        setNumericValue(numericValue);
+        this.timeMillis = timeMillis;
+        this.numericValue = numericValue;
         if (StringUtils.isNotEmpty(textValue)) {
-            setTextValue(textValue);
+            this.textValue = textValue;
         }
     }
 
@@ -74,8 +78,8 @@ public class Sample {
     }
 
     /**
-     * @deprecated use {@link #setNumericValue(double)} instead.
      * @since 0.5.15
+     * @deprecated use {@link #setNumericValue(double)} instead.
      */
     @JsonIgnore
     @Deprecated
@@ -84,8 +88,8 @@ public class Sample {
     }
 
     /**
-     * @deprecated use {@link #getNumericValue()} instead.
      * @since 0.5.15
+     * @deprecated use {@link #getNumericValue()} instead.
      */
     @Deprecated
     public void setValue(double value) {
@@ -109,26 +113,37 @@ public class Sample {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Sample)) {
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (!(o instanceof Sample)) {
             return false;
         }
 
-        final Sample other = (Sample) obj;
-        if ((Double.isNaN(this.numericValue) && !Double.isNaN(other.numericValue))
-                || this.numericValue != other.numericValue) {
+        Sample sample = (Sample) o;
+
+        if (Double.compare(sample.numericValue, numericValue) != 0) {
             return false;
         }
-        return this.textValue == null ? other.textValue == null : this.textValue.equals(other.textValue);
+        if (timeMillis != null ? !timeMillis.equals(sample.timeMillis) : sample.timeMillis != null) {
+            return false;
+        }
+        if (!date.equals(sample.date)) {
+            return false;
+        }
+        return textValue != null ? textValue.equals(sample.textValue) : sample.textValue == null;
     }
 
     @Override
-    public String toString() {
-        return "Sample{" +
-                "timeMillis=" + timeMillis +
-                ", date='" + date + '\'' +
-                ", numericValue=" + numericValue +
-                ", textValue='" + textValue + '\'' +
-                '}';
+    public int hashCode() {
+        int result;
+        long temp;
+        result = timeMillis != null ? timeMillis.hashCode() : 0;
+        result = 31 * result + date.hashCode();
+        temp = Double.doubleToLongBits(numericValue);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (textValue != null ? textValue.hashCode() : 0);
+        return result;
     }
 }

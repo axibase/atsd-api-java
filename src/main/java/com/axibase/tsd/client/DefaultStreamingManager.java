@@ -36,15 +36,15 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class DefaultStreamingManager implements StreamingManager {
     private static final Logger log = LoggerFactory.getLogger(DefaultStreamingManager.class);
-    public static final String CHECK = "check";
+    private static final String CHECK = "check";
     private static final int DEFAULT_CHECK_PERIOD_MS = 5000;
-    private long checkPeriodMillis = DEFAULT_CHECK_PERIOD_MS;
-    private PlainStreamingSender plainSender = null;
     private final AtomicLong lastPingTime = new AtomicLong(0);
     private final AtomicReference<String> marker = new AtomicReference<String>();
-    private boolean lastPingResult = false;
     private final List<String> saved = new ArrayList<String>();
     private final HttpClientManager httpClientManager;
+    private long checkPeriodMillis = DEFAULT_CHECK_PERIOD_MS;
+    private PlainStreamingSender plainSender = null;
+    private boolean lastPingResult = false;
     private Future<?> senderFuture;
     private ExecutorService checkExecutor;
     private ExecutorService senderExecutor;
@@ -168,7 +168,6 @@ public class DefaultStreamingManager implements StreamingManager {
         Lock readLock = senderLock.readLock();
         readLock.lock();
         try {
-
             if (plainSender != null) {
                 Map<String, List<String>> markerToMessages = plainSender.getMarkerToMessages();
                 int size = markerToMessages.size();
@@ -229,9 +228,9 @@ public class DefaultStreamingManager implements StreamingManager {
                 log.warn("Sender is null");
                 return false;
             }
-        } catch (Throwable e) {
+        } catch (RuntimeException e) {
             log.warn("Ping error: ", e);
-            return false;
+            throw e;
         } finally {
             readLock.unlock();
             if (needClosing) {
@@ -254,7 +253,7 @@ public class DefaultStreamingManager implements StreamingManager {
             markerState = httpClientManager.requestData(MarkerState.class, query, null);
             log.debug("From server {} received the following state of marker ({}): {}",
                     httpClientManager.getClientConfiguration().getDataUrl(), marker, markerState);
-        } catch (Throwable e) {
+        } catch (RuntimeException e) {
             log.error("Error while checking marker count: ", e);
         }
         return markerState;
@@ -285,7 +284,7 @@ public class DefaultStreamingManager implements StreamingManager {
                 readLock.unlock();
             }
         } else {
-            log.warn("Current marker:{} is already replaced by another marker:", current, marker.get());
+            log.warn("Current marker:{} is already replaced by another marker: {}", current, marker.get());
         }
     }
 
@@ -295,9 +294,9 @@ public class DefaultStreamingManager implements StreamingManager {
             return Collections.emptyList();
         }
         synchronized (saved) {
-            List<String> result = new ArrayList<String>(saved);
+            List<String> result = new ArrayList<>(saved);
             saved.removeAll(result);
-            if (result.size() > 0) {
+            if (!result.isEmpty()) {
                 log.info("{} commands are removed from saved list", result.size());
             }
             return result;

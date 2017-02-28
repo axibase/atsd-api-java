@@ -20,8 +20,6 @@ import com.axibase.tsd.model.data.command.GetSeriesQuery;
 import com.axibase.tsd.model.data.series.Series;
 import com.axibase.tsd.util.AtsdUtil;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -29,9 +27,11 @@ import java.util.Set;
 
 
 public class AtsdClientWriteExample extends AbstractAtsdClientExample {
-    public static final long SECOND = 1000L;
-    public static final int MB = 1024 * 1024;
-    public static final int CNT = 10;
+    public static final String APPLICATION_NAME = "atsd_writer_example";
+    public static final String APPLICATION_NAME_PROPERTY = "app_name";
+    private static final long SECOND = 1000L;
+    private static final int MB = 1024 * 1024;
+    private static final int CNT = 10;
     private static final double MAX_VALUE = 1517191;
     private String hostName;
 
@@ -44,20 +44,15 @@ public class AtsdClientWriteExample extends AbstractAtsdClientExample {
 
     private void sendToAtsd(double totalMemoryMb, double freeMemoryMb) {
         hostName = "localhost";
-        try {
-            hostName = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
         long time = System.currentTimeMillis();
         dataService.addSeries(
-                AddSeriesCommand.createSingle(hostName, "total_memory_mb", time, totalMemoryMb, "app_name", "atsd_writer_example"),
-                AddSeriesCommand.createSingle(hostName, "free_memory_mb", time, freeMemoryMb, "app_name", "atsd_writer_example")
+                AddSeriesCommand.createSingle(hostName, "total_memory_mb", time, totalMemoryMb, APPLICATION_NAME_PROPERTY, APPLICATION_NAME),
+                AddSeriesCommand.createSingle(hostName, "free_memory_mb", time, freeMemoryMb, APPLICATION_NAME_PROPERTY, APPLICATION_NAME)
         );
     }
 
     protected void printData() {
-        Map<String, String> tags = AtsdUtil.toMap("app_name", "atsd_writer_example");
+        Map<String, String> tags = AtsdUtil.toMap(APPLICATION_NAME_PROPERTY, APPLICATION_NAME);
         List<Series> series = dataService.retrieveSeries(
                 new SeriesCommandPreparer() {
                     @Override
@@ -79,7 +74,7 @@ public class AtsdClientWriteExample extends AbstractAtsdClientExample {
     protected void writeData() {
         logger.info("Writing memory usage metrics to ATSD ...");
         Runtime runtime = Runtime.getRuntime();
-        Set<String> memoryEater = new HashSet<String>();
+        Set<String> memoryEater = new HashSet<>();
         for (int i = 0; i < CNT; i++) {
             long st = System.currentTimeMillis();
             StringBuilder sb = new StringBuilder();
@@ -99,11 +94,11 @@ public class AtsdClientWriteExample extends AbstractAtsdClientExample {
                 }
             } catch (InterruptedException e) {
                 // ignore
-                e.printStackTrace();
+                logger.error("{}", e);
+                Thread.currentThread().interrupt();
             }
-
-            System.out.print(i + " ");
+            logger.info("{} ", i);
         }
-        logger.info("\n");
+        logger.info("Memory Eater capacity: {}\n", memoryEater.size());
     }
 }

@@ -48,9 +48,9 @@ public class GetAlertQuery {
 
 
     public GetAlertQuery(String entity) {
-        setEntity(entity);
-        setStartDate(MIN_QUERIED_DATE_TIME);
-        setEndDate(MAX_QUERIED_DATE_TIME);
+        this.entity = entity;
+        this.startDate = MIN_QUERIED_DATE_TIME;
+        this.endDate = MAX_QUERIED_DATE_TIME;
     }
 
 
@@ -70,45 +70,45 @@ public class GetAlertQuery {
         return metricNames;
     }
 
-    public List<String> getEntityNames() {
-        return entityNames;
-    }
-
-    public List<String> getRuleNames() {
-        return ruleNames;
-    }
-
-    public List<Integer> getSeverityIds() {
-        return severityIds;
-    }
-
-    public Integer getMinSeverityId() {
-        return minSeverityId;
-    }
-
-    public TimeFormat getTimeFormat() {
-        return timeFormat;
-    }
-
     public GetAlertQuery setMetricNames(List<String> metricNames) {
         this.metricNames = metricNames;
         return this;
+    }
+
+    public List<String> getEntityNames() {
+        return entityNames;
     }
 
     public void setEntityNames(List<String> entityNames) {
         this.entityNames = entityNames;
     }
 
+    public List<String> getRuleNames() {
+        return ruleNames;
+    }
+
     public void setRuleNames(List<String> ruleNames) {
         this.ruleNames = ruleNames;
+    }
+
+    public List<Integer> getSeverityIds() {
+        return severityIds;
     }
 
     public void setSeverityIds(List<Integer> severityIds) {
         this.severityIds = severityIds;
     }
 
+    public Integer getMinSeverityId() {
+        return minSeverityId;
+    }
+
     public void setMinSeverityId(Integer minSeverityId) {
         this.minSeverityId = minSeverityId;
+    }
+
+    public TimeFormat getTimeFormat() {
+        return timeFormat;
     }
 
     public void setTimeFormat(TimeFormat timeFormat) {

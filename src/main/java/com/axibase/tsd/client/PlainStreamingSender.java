@@ -36,6 +36,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -44,20 +45,19 @@ import java.util.concurrent.*;
 import static com.axibase.tsd.util.AtsdUtil.MARKER_KEYWORD;
 
 
-class PlainStreamingSender extends AbstractHttpEntity implements Runnable {
+class PlainStreamingSender extends AbstractHttpEntity implements Runnable, AutoCloseable {
     private static final Logger log = LoggerFactory.getLogger(PlainStreamingSender.class);
     private static final int SMALL = 64;
-
+    private final long pingTimeoutMillis;
+    private final ClientConfiguration clientConfiguration;
     private String url;
     private CountDownLatch latch = new CountDownLatch(1);
     private CloseableHttpClient httpClient;
     private BlockingQueue<String> messages;
     private ConcurrentMap<String, List<String>> markerToMessages = new ConcurrentHashMap<>();
     private volatile SenderState state = SenderState.NEW;
-    private final long pingTimeoutMillis;
     private long lastMessageTime;
     private CloseableHttpResponse response;
-    private final ClientConfiguration clientConfiguration;
     private PoolingHttpClientConnectionManager connectionManager;
 
     public PlainStreamingSender(ClientConfiguration clientConfiguration, PlainStreamingSender old) {
@@ -171,7 +171,7 @@ class PlainStreamingSender extends AbstractHttpEntity implements Runnable {
     }
 
     private void write(OutputStream outputStream, String text) throws IOException {
-        outputStream.write(text.getBytes());
+        outputStream.write(text.getBytes(StandardCharsets.UTF_8));
         outputStream.flush();
     }
 
@@ -210,8 +210,9 @@ class PlainStreamingSender extends AbstractHttpEntity implements Runnable {
                     .setConnectionManager(connectionManager)
                     .build();
             httpPost = new HttpPost(fullUrl());
+            String authString = clientConfiguration.getUsername() + ":" + clientConfiguration.getPassword();
             httpPost.setHeader("Authorization", "Basic " + DatatypeConverter.printBase64Binary(
-                    (clientConfiguration.getUsername() + ":" + clientConfiguration.getPassword()).getBytes()
+                    authString.getBytes(StandardCharsets.UTF_8)
             ));
             httpPost.setEntity(new BufferedHttpEntity(this));
         } catch (IOException e) {
@@ -219,6 +220,10 @@ class PlainStreamingSender extends AbstractHttpEntity implements Runnable {
             latch.countDown();
             close();
             return;
+        } finally {
+            if (httpPost != null) {
+                httpPost.reset();
+            }
         }
         try {
             log.info("Start writing commands to {}", fullUrl());
@@ -233,6 +238,7 @@ class PlainStreamingSender extends AbstractHttpEntity implements Runnable {
         }
     }
 
+    @Override
     public void close() {
         if (state == SenderState.CLOSED) {
             return;

@@ -57,8 +57,6 @@ import java.io.InputStream;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Collections;
 import java.util.List;
@@ -68,19 +66,20 @@ import static com.axibase.tsd.util.AtsdUtil.JSON;
 
 
 class HttpClient {
+    static final int HTTP_STATUS_OK = 200;
     private static final Logger log = LoggerFactory.getLogger(HttpClient.class);
-    private final static java.util.logging.Logger legacyLogger = java.util.logging.Logger.getLogger(HttpClient.class.getName());
-    public static final int HTTP_STATUS_OK = 200;
-    public static final int HTTP_STATUS_FAIL = 400;
-    public static final int HTTP_STATUS_NOT_FOUND = 404;
+    private static final java.util.logging.Logger legacyLogger = java.util.logging.Logger.getLogger(HttpClient.class.getName());
+    private static final int HTTP_STATUS_FAIL = 400;
+    private static final int HTTP_STATUS_NOT_FOUND = 404;
+
     static {
         SLF4JBridgeHandler.removeHandlersForRootLogger();
         LogManager.getLogManager().reset();
         SLF4JBridgeHandler.install();
     }
 
-    private ClientConfiguration clientConfiguration;
     private final Client client;
+    private ClientConfiguration clientConfiguration;
 
     HttpClient(ClientConfiguration clientConfiguration) {
         client = buildClient(clientConfiguration);
@@ -120,7 +119,7 @@ class HttpClient {
         clientConfig.property(ApacheClientProperties.SSL_CONFIG, sslConfig);
     }
 
-    public static PoolingHttpClientConnectionManager createConnectionManager(ClientConfiguration clientConfiguration, SslConfigurator sslConfig) {
+    static PoolingHttpClientConnectionManager createConnectionManager(ClientConfiguration clientConfiguration, SslConfigurator sslConfig) {
         SSLContext sslContext = sslConfig.createSSLContext();
         X509HostnameVerifier hostnameVerifier;
         if (clientConfiguration.isIgnoreSSLErrors()) {
@@ -146,42 +145,60 @@ class HttpClient {
             sslContext.init(null, new TrustManager[]{
                     new IgnoringTrustManager()
             }, new SecureRandom());
-        } catch (KeyManagementException | NoSuchAlgorithmException | KeyStoreException e) {
+        } catch (KeyManagementException e) {
             log.warn("SSL context initialization error: ", e);
         }
     }
 
-    public <T> List<T> requestMetaDataList(Class<T> clazz, QueryPart<T> query) {
+    static ServerError buildAndLogServerError(Response response) {
+        ServerError serverError = null;
+        try {
+            serverError = response.readEntity(ServerError.class);
+            log.warn("Server error: {}", serverError);
+        } catch (RuntimeException e) {
+            log.warn("Couldn't read error message", e);
+        }
+        return serverError;
+    }
+
+    private static void fixApacheHttpClientBlocking(Response response) {
+        Object entity = response.getEntity();
+        if (entity instanceof InputStream) {
+            IOUtils.closeQuietly((InputStream) entity);
+        }
+    }
+
+    <T> List<T> requestMetaDataList(Class<T> clazz, QueryPart<T> query) {
         return requestList(clientConfiguration.getMetadataUrl(), clazz, query, null);
     }
 
-    public <T> T requestMetaDataObject(Class<T> clazz, QueryPart<T> query) {
+    <T> T requestMetaDataObject(Class<T> clazz, QueryPart<T> query) {
         return requestObject(clientConfiguration.getMetadataUrl(), clazz, query, null);
     }
 
-    public <E> boolean updateMetaData(QueryPart query, RequestProcessor<E> requestProcessor) {
+    <E> boolean updateMetaData(QueryPart query, RequestProcessor<E> requestProcessor) {
         return update(clientConfiguration.getMetadataUrl(), query, requestProcessor);
     }
 
-    public <E> boolean updateData(QueryPart query, RequestProcessor<E> requestProcessor) {
+    <E> boolean updateData(QueryPart query, RequestProcessor<E> requestProcessor) {
         return update(clientConfiguration.getDataUrl(), query, requestProcessor);
     }
 
-    public boolean updateData(QueryPart query, String data) {
+    boolean updateData(QueryPart query, String data) {
         return update(clientConfiguration.getDataUrl(), query, RequestProcessor.post(data), MediaType.TEXT_PLAIN);
     }
-    
-    public <T, E> Response request(QueryPart<T> query, RequestProcessor<E> requestProcessor) {
+
+    <T, E> Response request(QueryPart<T> query, RequestProcessor<E> requestProcessor) {
         String url = clientConfiguration.getDataUrl();
         return doRequest(url, query, requestProcessor);
     }
 
-    public <T, E> List<T> requestDataList(Class<T> clazz, QueryPart<T> query, RequestProcessor<E> requestProcessor) {
+    <T, E> List<T> requestDataList(Class<T> clazz, QueryPart<T> query, RequestProcessor<E> requestProcessor) {
         String url = clientConfiguration.getDataUrl();
         return requestList(url, clazz, query, requestProcessor);
     }
 
-    public <T, E> T requestData(Class<T> clazz, QueryPart<T> query, RequestProcessor<E> requestProcessor) {
+    <T, E> T requestData(Class<T> clazz, QueryPart<T> query, RequestProcessor<E> requestProcessor) {
         String url = clientConfiguration.getDataUrl();
         return requestObject(url, clazz, query, requestProcessor);
     }
@@ -209,7 +226,7 @@ class HttpClient {
         }
     }
 
-    public InputStream requestInputStream(QueryPart query, RequestProcessor requestProcessor) {
+    InputStream requestInputStream(QueryPart query, RequestProcessor requestProcessor) {
         String url = clientConfiguration.getDataUrl();
         Response response = doRequest(url, query, requestProcessor);
         Object entity = response.getEntity();
@@ -223,18 +240,16 @@ class HttpClient {
     private <E> boolean update(String url, QueryPart query, RequestProcessor<E> requestProcessor) {
         Response response = doRequest(url, query, requestProcessor);
         fixApacheHttpClientBlocking(response);
-        if (response.getStatus() == HTTP_STATUS_OK) {
-            return true;
-        } else if (response.getStatus() == HTTP_STATUS_FAIL) {
-            return false;
-        } else {
-            throw buildException(response);
-        }
+        return isValidResponse(response);
     }
 
     private <E> boolean update(String url, QueryPart query, RequestProcessor<E> requestProcessor, String mediaType) {
         Response response = doRequest(url, query, requestProcessor, mediaType);
         fixApacheHttpClientBlocking(response);
+        return isValidResponse(response);
+    }
+
+    private boolean isValidResponse(Response response) {
         if (response.getStatus() == HTTP_STATUS_OK) {
             return true;
         } else if (response.getStatus() == HTTP_STATUS_FAIL) {
@@ -251,17 +266,6 @@ class HttpClient {
         );
     }
 
-    public static ServerError buildAndLogServerError(Response response) {
-        ServerError serverError = null;
-        try {
-            serverError = response.readEntity(ServerError.class);
-            log.warn("Server error: {}", serverError);
-        } catch (Throwable e) {
-            log.warn("Couldn't read error message", e);
-        }
-        return serverError;
-    }
-
     private <T, E> Response doRequest(String url, QueryPart<T> query, RequestProcessor<E> requestProcessor) {
         return doRequest(url, query, requestProcessor, JSON);
     }
@@ -272,14 +276,14 @@ class HttpClient {
         log.debug("url = {}", target.getUri());
         Invocation.Builder request = target.request(mediaType);
 
-        Response response = null;
+        Response response;
         try {
             if (requestProcessor == null) {
                 response = request.get();
             } else {
                 response = requestProcessor.process(request, mediaType);
             }
-        } catch (Throwable e) {
+        } catch (RuntimeException e) {
             throw new AtsdClientException("Error while processing the request", e);
         }
         return response;
@@ -287,14 +291,17 @@ class HttpClient {
 
     private <T> GenericType<List<T>> listType(final Class<T> clazz) {
         ParameterizedType genericType = new ParameterizedType() {
+            @Override
             public Type[] getActualTypeArguments() {
                 return new Type[]{clazz};
             }
 
+            @Override
             public Type getRawType() {
                 return List.class;
             }
 
+            @Override
             public Type getOwnerType() {
                 return List.class;
             }
@@ -306,13 +313,6 @@ class HttpClient {
     public void close() {
         if (client != null) {
             client.close();
-        }
-    }
-
-    private static void fixApacheHttpClientBlocking(Response response) {
-        Object entity = response.getEntity();
-        if (entity instanceof InputStream) {
-            IOUtils.closeQuietly((InputStream) entity);
         }
     }
 }

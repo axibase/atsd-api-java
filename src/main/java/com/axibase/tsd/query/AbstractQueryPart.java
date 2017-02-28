@@ -19,34 +19,38 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 
 
 public abstract class AbstractQueryPart<T> implements QueryPart<T> {
+    private static String encode(String str) {
+        try {
+            return URLEncoder.encode(str, StandardCharsets.UTF_8.name()).replace("+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            throw new AtsdClientException("Encode error", e);
+        }
+    }
+
+    @Override
     public QueryPart<T> param(String name, Object value) {
         if (value != null) {
-            return new QueryParam<T>(name, value, this);
+            return new QueryParam<>(name, value, this);
         } else {
             return this;
         }
     }
 
+    @Override
     public QueryPart<T> path(String path) {
         return path(path, false);
     }
 
+    @Override
     public QueryPart<T> path(String path, boolean encode) {
         if (StringUtils.isBlank(path)) {
             throw new IllegalArgumentException("Path element is empty: " + path);
         }
-        return new Query<T>(encode ? encode(path) : path, this);
-    }
-
-    protected static String encode(String str) {
-        try {
-            return URLEncoder.encode(str, "UTF-8").replace("+", "%20");
-        } catch (UnsupportedEncodingException e) {
-            throw new AtsdClientException("Encode error", e);
-        }
+        return new Query<>(encode ? encode(path) : path, this);
     }
 
 }

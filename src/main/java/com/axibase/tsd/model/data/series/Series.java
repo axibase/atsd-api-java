@@ -35,67 +35,67 @@ public class Series {
     private List<Sample> data;
 
     public Series() {
-        setAggregate(new Aggregate());
+        this.aggregate = new Aggregate();
     }
 
     public String getRequestId() {
         return requestId;
     }
 
-    public String getEntityName() {
-        return entityName;
-    }
-
-    public String getMetricName() {
-        return metricName;
-    }
-
-    public Map<String, String> getTags() {
-        return tags;
-    }
-
-    public SeriesType getType() {
-        return type;
-    }
-
-    public Rate getRate() {
-        return rate;
-    }
-
-    public Aggregate getAggregate() {
-        return aggregate;
-    }
-
-    public List<Sample> getData() {
-        return data;
-    }
-
     public void setRequestId(String requestId) {
         this.requestId = requestId;
+    }
+
+    public String getEntityName() {
+        return entityName;
     }
 
     public void setEntityName(String entityName) {
         this.entityName = entityName;
     }
 
+    public String getMetricName() {
+        return metricName;
+    }
+
     public void setMetricName(String metricName) {
         this.metricName = metricName;
+    }
+
+    public Map<String, String> getTags() {
+        return tags;
     }
 
     public void setTags(Map<String, String> tags) {
         this.tags = tags;
     }
 
+    public SeriesType getType() {
+        return type;
+    }
+
     public void setType(SeriesType type) {
         this.type = type;
+    }
+
+    public Rate getRate() {
+        return rate;
     }
 
     public void setRate(Rate rate) {
         this.rate = rate;
     }
 
+    public Aggregate getAggregate() {
+        return aggregate;
+    }
+
     public void setAggregate(Aggregate aggregate) {
         this.aggregate = aggregate;
+    }
+
+    public List<Sample> getData() {
+        return data;
     }
 
     public void setData(List<Sample> data) {

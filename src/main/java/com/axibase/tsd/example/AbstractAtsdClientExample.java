@@ -56,7 +56,7 @@ public abstract class AbstractAtsdClientExample {
     protected void configure() {
         logger.info("Getting Started with Axibase TSD");
         ClientConfiguration clientConfiguration = ClientConfigurationFactory.createInstance().createClientConfiguration();
-        logger.info("Connecting to ATSD: " + clientConfiguration.getMetadataUrl());
+        logger.info("Connecting to ATSD: {}", clientConfiguration.getMetadataUrl());
         HttpClientManager httpClientManager = new HttpClientManager(clientConfiguration);
         dataService = new DataService(httpClientManager);
         metaDataService = new MetaDataService(httpClientManager);
@@ -75,7 +75,7 @@ public abstract class AbstractAtsdClientExample {
                 false // skipStreamingControl
         );
         ClientConfiguration clientConfiguration = configurationFactory.createClientConfiguration();
-        logger.info("Connecting to ATSD: " + clientConfiguration.getMetadataUrl());
+        logger.info("Connecting to ATSD: {}", clientConfiguration.getMetadataUrl());
         HttpClientManager httpClientManager = new HttpClientManager(clientConfiguration);
 
         GenericObjectPoolConfig objectPoolConfig = new GenericObjectPoolConfig();
@@ -89,32 +89,34 @@ public abstract class AbstractAtsdClientExample {
         metaDataService = new MetaDataService(httpClientManager);
     }
 
-    // Client Configuration -- way 3
-//    public static void main(String[] args) {
-//        Add to your pom.xml:
-//        <dependency>
-//        <groupId>org.springframework</groupId>
-//        <artifactId>spring-context</artifactId>
-//        <version>4.0.3.RELEASE</version>
-//        </dependency>
+/*     Client Configuration -- way 3
+    public static void main(String[] args) {
+        Add to your pom.xml:
+        <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>4.0.3.RELEASE</version>
+        </dependency>
 
-//        Uncomment springframework imports and code below
-//        ApplicationContext context = new ClassPathXmlApplicationContext("example-beans.xml");
-//        AtsdClientWriteExample example =(AtsdClientWriteExample)context.getBean("example");
-//        example.writeData();
-//        example.printData();
-//    }
+        Uncomment springframework imports and code below
+        ApplicationContext context = new ClassPathXmlApplicationContext("example-beans.xml");
+        AtsdClientWriteExample example =(AtsdClientWriteExample)context.getBean("example");
+        example.writeData();
+        example.printData();
+    }*/
 
     protected String toISODate(long time) {
         return getDateFormat().format(new Date(time));
     }
 
     protected void print(Series series) {
-        logger.info("Time Sample Key: " + series.getTimeSeriesKey());
+        logger.info("Time Sample Key: {}", series.getTimeSeriesKey());
         List<Sample> data = series.getData();
         for (Sample sample : data) {
             long ts = sample.getTimeMillis();
-            logger.info(toISODate(ts) + "\t" + sample.getNumericValue() + (StringUtils.isNotEmpty(sample.getTextValue()) ? "\t" + sample.getTextValue() : ""));
+            String textValue = StringUtils.isNotEmpty(sample.getTextValue()) ? "\t" + sample.getTextValue() : "";
+            String isoDate = toISODate(ts);
+            logger.info("{}\t{}{}", isoDate, sample.getNumericValue(), textValue);
         }
     }
 }

@@ -27,14 +27,14 @@ import com.axibase.tsd.query.QueryPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.util.*;
-
-import javax.ws.rs.core.Response;
 
 import static com.axibase.tsd.client.RequestProcessor.patch;
 import static com.axibase.tsd.client.RequestProcessor.post;
 import static com.axibase.tsd.util.AtsdUtil.*;
+import static java.lang.Boolean.TRUE;
 
 /**
  * Provides high-level API to retrieve and update ATSD Data Objects (time-series, alerts, properties).
@@ -44,10 +44,14 @@ import static com.axibase.tsd.util.AtsdUtil.*;
 public class DataService {
     private static final Logger logger = LoggerFactory.getLogger(DataService.class);
     private static final SeriesCommandPreparer LAST_PREPARER = new LastPreparer();
+    private static final String SERIES_PATH = "series";
+    private static final String INSERT_PATH = "insert";
+    private static final String PROPERTIES_PATH = "properties";
 
     private HttpClientManager httpClientManager;
 
-    public DataService() {
+    private DataService() {
+        //Encapsulate default constructor
     }
 
     public DataService(HttpClientManager httpClientManager) {
@@ -86,8 +90,8 @@ public class DataService {
             checkEntityIsEmpty(addSeriesCommand.getEntityName());
             checkMetricIsEmpty(addSeriesCommand.getMetricName());
         }
-        QueryPart<Series> query = new Query<Series>("series")
-                .path("insert");
+        QueryPart<Series> query = new Query<Series>(SERIES_PATH)
+                .path(INSERT_PATH);
         return httpClientManager.updateData(query,
                 post(Arrays.asList(addSeriesCommands)));
     }
@@ -101,7 +105,7 @@ public class DataService {
     public boolean addSeriesCsv(String entityName, String data, String... tagNamesAndValues) {
         checkEntityIsEmpty(entityName);
         check(data, "Data is empty");
-        QueryPart<Series> query = new Query<Series>("series")
+        QueryPart<Series> query = new Query<Series>(SERIES_PATH)
                 .path("csv")
                 .path(entityName, true);
         if (tagNamesAndValues != null) {
@@ -109,7 +113,7 @@ public class DataService {
                 throw new IllegalArgumentException("Tag without value");
             }
             for (int i = 0; i < tagNamesAndValues.length; i++) {
-                query = query.param(tagNamesAndValues[i], tagNamesAndValues[++i]);
+                query = query.param(tagNamesAndValues[i], tagNamesAndValues[i + 1]);
             }
         }
         return httpClientManager.updateData(query, data);
@@ -150,7 +154,7 @@ public class DataService {
                                        Integer limit,
                                        Boolean last,
                                        String columns) {
-        QueryPart seriesQuery = new Query("series")
+        QueryPart seriesQuery = new Query(SERIES_PATH)
                 .path(format.name().toLowerCase())
                 .path(entityName, true)
                 .path(metricName, true)
@@ -202,8 +206,8 @@ public class DataService {
             checkEntityIsEmpty(property.getEntityName());
             checkPropertyTypeIsEmpty(property.getType());
         }
-        QueryPart<Property> query = new Query<Property>("properties")
-                .path("insert");
+        QueryPart<Property> query = new Query<Property>(PROPERTIES_PATH)
+                .path(INSERT_PATH);
         return httpClientManager.updateData(query, post(Arrays.asList(properties)));
     }
 
@@ -223,7 +227,7 @@ public class DataService {
             checkEntityIsEmpty(message.getEntityName());
         }
         QueryPart<Message> query = new Query<Message>("messages")
-                .path("insert");
+                .path(INSERT_PATH);
         return httpClientManager.updateData(query, post(Arrays.asList(messages)));
     }
 
@@ -313,7 +317,7 @@ public class DataService {
     private static class LastPreparer implements SeriesCommandPreparer {
         @Override
         public void prepare(GetSeriesQuery command) {
-            command.setLast(true);
+            command.setLast(TRUE);
         }
     }
 

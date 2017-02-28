@@ -37,7 +37,13 @@ public class SimpleAggregateMatcher {
     public SimpleAggregateMatcher() {
     }
 
-    protected void init(Interval interval, Interpolate interpolate, AggregateType type, AggregateType... types) {
+    public SimpleAggregateMatcher(Interval interval, Interpolate interpolate,
+                                  AggregateType type, AggregateType... types) {
+        this();
+        init(interval, interpolate, type, types);
+    }
+
+    final void init(Interval interval, Interpolate interpolate, AggregateType type, AggregateType... types) {
         this.interval = interval;
         this.interpolate = interpolate;
         this.types = new ArrayList<AggregateType>();
@@ -45,33 +51,24 @@ public class SimpleAggregateMatcher {
         this.types.addAll(Arrays.asList(types));
     }
 
-    public SimpleAggregateMatcher(Interval interval, Interpolate interpolate,
-                                  AggregateType type, AggregateType... types) {
-        this();
-        init(interval, interpolate, type, types);
-    }
-
-
     public List<AggregateType> getTypes() {
         return types;
-    }
-
-
-    public Interval getInterval() {
-        return interval;
-    }
-
-
-    public Interpolate getInterpolate() {
-        return interpolate;
     }
 
     public void setTypes(List<AggregateType> types) {
         this.types = types;
     }
 
+    public Interval getInterval() {
+        return interval;
+    }
+
     public void setInterval(Interval interval) {
         this.interval = interval;
+    }
+
+    public Interpolate getInterpolate() {
+        return interpolate;
     }
 
     public void setInterpolate(Interpolate interpolate) {

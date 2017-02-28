@@ -41,8 +41,8 @@ public class GetPropertiesQuery {
     public GetPropertiesQuery(String type, String entityName, Date startDateTime, Date endDateTime) {
         this.entityName = entityName;
         this.type = type;
-        setStartTime(startDateTime.getTime());
-        setEndTime(endDateTime.getTime());
+        this.startTime = startDateTime.getTime();
+        this.endTime = endDateTime.getTime();
     }
 
 
@@ -62,33 +62,13 @@ public class GetPropertiesQuery {
         return startTime;
     }
 
-    public Long getEndTime() {
-        return endTime;
-    }
-
-    public String getLimit() {
-        return limit;
-    }
-
-    public boolean isLast() {
-        return last;
-    }
-
-    public Map<String, String> getKey() {
-        return key;
-    }
-
-    public String getKeyExpression() {
-        return keyExpression;
-    }
-
-    public TimeFormat getTimeFormat() {
-        return timeFormat;
-    }
-
     public GetPropertiesQuery setStartTime(long startTime) {
         this.startTime = startTime;
         return this;
+    }
+
+    public Long getEndTime() {
+        return endTime;
     }
 
     public GetPropertiesQuery setEndTime(long endTime) {
@@ -96,9 +76,17 @@ public class GetPropertiesQuery {
         return this;
     }
 
+    public String getLimit() {
+        return limit;
+    }
+
     public GetPropertiesQuery setLimit(String limit) {
         this.limit = limit;
         return this;
+    }
+
+    public boolean isLast() {
+        return last;
     }
 
     public GetPropertiesQuery setLast(boolean last) {
@@ -106,14 +94,26 @@ public class GetPropertiesQuery {
         return this;
     }
 
+    public Map<String, String> getKey() {
+        return key;
+    }
+
     public GetPropertiesQuery setKey(Map<String, String> key) {
         this.key = key;
         return this;
     }
 
+    public String getKeyExpression() {
+        return keyExpression;
+    }
+
     public GetPropertiesQuery setKeyExpression(String keyExpression) {
         this.keyExpression = keyExpression;
         return this;
+    }
+
+    public TimeFormat getTimeFormat() {
+        return timeFormat;
     }
 
     public GetPropertiesQuery setTimeFormat(TimeFormat timeFormat) {

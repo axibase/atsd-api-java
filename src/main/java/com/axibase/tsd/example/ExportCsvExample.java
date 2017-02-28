@@ -15,8 +15,8 @@
 package com.axibase.tsd.example;
 
 import com.axibase.tsd.model.data.command.GetSeriesQuery;
-import com.axibase.tsd.model.data.series.Series;
 import com.axibase.tsd.model.data.series.Sample;
+import com.axibase.tsd.model.data.series.Series;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -67,7 +67,7 @@ public class ExportCsvExample extends AbstractAtsdClientExample {
         try {
             for (int i = 0; i < seriesResultList.size(); i++) {
                 Series seriesResult = seriesResultList.get(i);
-                logger.info("Time series key [" + i + "]: " + seriesResult.getTimeSeriesKey());
+                logger.info("Time series key [{}]: {}", i, seriesResult.getTimeSeriesKey());
             }
             if (seriesResultList.size() != 1) {
                 throw new IllegalArgumentException("Select the other parameters (entity, metric, tags) " +
@@ -80,7 +80,7 @@ public class ExportCsvExample extends AbstractAtsdClientExample {
                 final double value = sample.getNumericValue();
                 writer.println(dateFormat.format(date) + "," + numberFormat.format(value));
             }
-            logger.info("Saved " + sampleList.size() + " values");
+            logger.info("Saved {} values", sampleList.size());
             writer.flush();
         } finally {
             IOUtils.closeQuietly(outputStream);

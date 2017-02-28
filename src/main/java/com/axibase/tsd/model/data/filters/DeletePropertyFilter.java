@@ -23,9 +23,13 @@ public class DeletePropertyFilter {
     @JsonProperty("entity")
     private String entityName;
 
+    private DeletePropertyFilter() {
+    }
+
     public DeletePropertyFilter(String typeName, String entityName) {
-        setTypeName(typeName);
-        setEntityName(entityName);
+        this();
+        this.typeName = typeName;
+        this.entityName = entityName;
     }
 
     public String getTypeName() {

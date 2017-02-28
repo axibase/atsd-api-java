@@ -23,6 +23,7 @@ import java.util.*;
 
 import static com.axibase.tsd.client.RequestProcessor.*;
 import static com.axibase.tsd.util.AtsdUtil.*;
+import static java.lang.Boolean.TRUE;
 
 /**
  * Provides high-level API to retrieve and update ATSD Metadata Objects (entities, entity groups, metrics).
@@ -575,7 +576,7 @@ public class MetaDataService {
      * @throws AtsdServerException raised if there is any server problem
      */
     public boolean deleteAllGroupEntities(String entityGroupName) {
-        return replaceGroupEntities(entityGroupName, true);
+        return replaceGroupEntities(entityGroupName, TRUE);
     }
 
     /**
