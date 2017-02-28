@@ -40,20 +40,17 @@ import static junit.framework.Assert.*;
  * @author Dmitry Korchagin.
  */
 public class EntityGroupTest {
-    private MetaDataService metaDataService;
-    private HttpClientManager httpClientManager;
-
     @Rule
     public RerunRule rerunRule = new RerunRule();
+    private MetaDataService metaDataService;
+    private HttpClientManager httpClientManager;
 
     @Before
     public void setUp() throws Exception {
         httpClientManager = buildHttpClientManager();
         metaDataService = new MetaDataService();
         metaDataService.setHttpClientManager(httpClientManager);
-        DataService dataService = new DataService();
-        dataService.setHttpClientManager(httpClientManager);
-
+        DataService dataService = new DataService(httpClientManager);
         waitWorkingServer(httpClientManager);
     }
 

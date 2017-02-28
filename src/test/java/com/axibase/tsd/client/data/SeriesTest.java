@@ -32,7 +32,10 @@ import com.axibase.tsd.network.MultipleInsertCommand;
 import com.axibase.tsd.network.PlainCommand;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.junit.*;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 
 import java.io.InputStream;
 import java.util.*;
@@ -42,19 +45,16 @@ import static junit.framework.Assert.*;
 
 public class SeriesTest {
 
-    private DataService dataService;
-    private HttpClientManager httpClientManager;
-
     @Rule
     public RerunRule rerunRule = new RerunRule();
+    private DataService dataService;
+    private HttpClientManager httpClientManager;
 
     @Before
     public void setUp() throws Exception {
         httpClientManager = buildHttpClientManager();
         httpClientManager.setCheckPeriodMillis(1000);
-        dataService = new DataService();
-        dataService.setHttpClientManager(httpClientManager);
-
+        dataService = new DataService(httpClientManager);
         waitWorkingServer(httpClientManager);
     }
 
@@ -106,7 +106,7 @@ public class SeriesTest {
         final String metricName = buildVariablePrefix() + "metric";
         final Long timestamp = MOCK_TIMESTAMP;
         AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName);
-        addSeriesCommand.addSeries(new Sample(timestamp, MOCK_SERIE_NUMERIC_VALUE,  MOCK_SERIE_TEXT_VALUE));
+        addSeriesCommand.addSeries(new Sample(timestamp, MOCK_SERIE_NUMERIC_VALUE, MOCK_SERIE_TEXT_VALUE));
         assertTrue(dataService.addSeries(addSeriesCommand));
 
         GetSeriesQuery getSeriesQuery = new GetSeriesQuery(entityName, metricName)
@@ -322,7 +322,7 @@ public class SeriesTest {
         long st = System.currentTimeMillis();
         final ArrayList<PlainCommand> commands = new ArrayList<>();
         commands.add(new InsertCommand(entityName, metricName, new Sample(st, Double.NaN)));
-        commands.add(new MultipleInsertCommand(entityName, st + 1,  Collections.<String, String>emptyMap(), Collections.singletonMap(metricName, Double.NaN)));
+        commands.add(new MultipleInsertCommand(entityName, st + 1, Collections.<String, String>emptyMap(), Collections.singletonMap(metricName, Double.NaN)));
         final BatchResponse batchResponse = dataService.sendBatch(commands);
         assertTrue(batchResponse.getResult().getFail() == 0);
 

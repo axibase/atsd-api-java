@@ -37,20 +37,16 @@ import static junit.framework.Assert.*;
 
 public class MessageTest {
 
-    private DataService dataService;
-    private HttpClientManager httpClientManager;
-
     @Rule
     public RerunRule rerunRule = new RerunRule();
+    private DataService dataService;
+    private HttpClientManager httpClientManager;
 
     @Before
     public void setUp() throws Exception {
         httpClientManager = buildHttpClientManager();
         httpClientManager.setCheckPeriodMillis(1000);
-//        httpClientManager.setCheckPeriodMillis(30); // to extreme tests
-        dataService = new DataService();
-        dataService.setHttpClientManager(httpClientManager);
-
+        dataService = new DataService(httpClientManager);
         waitWorkingServer(httpClientManager);
     }
 
@@ -165,8 +161,8 @@ public class MessageTest {
         final long st = System.currentTimeMillis();
         final ArrayList<PlainCommand> commands = new ArrayList<>();
         commands.add(new MessageInsertCommand(entityName, st, Collections.<String, String>emptyMap(), messageText));
-        commands.add(new MessageInsertCommand(entityName, st+2, Collections.singletonMap("tag1", "value1"), messageText));
-        commands.add(new MessageInsertCommand(entityName, st+3, Collections.singletonMap("tag1", "value1"), ""));
+        commands.add(new MessageInsertCommand(entityName, st + 2, Collections.singletonMap("tag1", "value1"), messageText));
+        commands.add(new MessageInsertCommand(entityName, st + 3, Collections.singletonMap("tag1", "value1"), ""));
 
         final BatchResponse batchResponse = dataService.sendBatch(commands);
         assertTrue(batchResponse.getResult().getFail() == 0);

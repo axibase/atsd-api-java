@@ -39,20 +39,17 @@ import static com.axibase.tsd.TestUtil.*;
 import static junit.framework.Assert.*;
 
 public class PropertyTest {
+    @Rule
+    public RerunRule rerunRule = new RerunRule();
     private Logger logger = LoggerFactory.getLogger(Property.class);
     private DataService dataService;
     private HttpClientManager httpClientManager;
-
-    @Rule
-    public RerunRule rerunRule = new RerunRule();
 
     @Before
     public void setUp() throws Exception {
         httpClientManager = buildHttpClientManager();
         httpClientManager.setCheckPeriodMillis(1000);
-        dataService = new DataService();
-        dataService.setHttpClientManager(httpClientManager);
-
+        dataService = new DataService(httpClientManager);
         waitWorkingServer(httpClientManager);
     }
 

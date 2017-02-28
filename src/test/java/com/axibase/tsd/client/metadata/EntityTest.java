@@ -18,7 +18,6 @@
 package com.axibase.tsd.client.metadata;
 
 import com.axibase.tsd.RerunRule;
-import com.axibase.tsd.TestUtil;
 import com.axibase.tsd.client.AtsdServerException;
 import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
@@ -30,7 +29,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,20 +40,24 @@ import static junit.framework.Assert.*;
  * @author Dmitry Korchagin.
  */
 public class EntityTest {
+    @Rule
+    public RerunRule rerunRule = new RerunRule();
     private MetaDataService metaDataService;
     private DataService dataService;
     private HttpClientManager httpClientManager;
 
-    @Rule
-    public RerunRule rerunRule = new RerunRule();
+    private static Entity createEntity(String entityName) {
+        Entity entity = new Entity(entityName);
+        entity.setLabel("label-" + entityName);
+        return entity;
+    }
 
     @Before
     public void setUp() throws Exception {
         httpClientManager = buildHttpClientManager();
         metaDataService = new MetaDataService();
         metaDataService.setHttpClientManager(httpClientManager);
-        dataService = new DataService();
-        dataService.setHttpClientManager(httpClientManager);
+        dataService = new DataService(httpClientManager);
         waitWorkingServer(httpClientManager);
     }
 
@@ -82,11 +84,11 @@ public class EntityTest {
         {
             List<Entity> entities = metaDataService.retrieveEntities(null, "name like '*'", TagAppender.ALL, 1);
             assertEquals(1, entities.size());
-            assertTrue(entities.get(0) instanceof Entity);
+            assertTrue(entities.get(0) != null);
 
-            entities = metaDataService.retrieveEntities("name like '*'", (String) null, null, TagAppender.ALL, 1);
+            entities = metaDataService.retrieveEntities("name like '*'", null, null, TagAppender.ALL, 1);
             assertEquals(1, entities.size());
-            assertTrue(entities.get(0) instanceof Entity);
+            assertTrue(entities.get(0) != null);
         }
 
         {
@@ -98,7 +100,7 @@ public class EntityTest {
             assertEquals(entityName, entity.getName());
             assertEquals("label-" + entityName, entity.getLabel());
 
-            entities = metaDataService.retrieveEntities("name = '" + entityName + "'", (String) null, null, TagAppender.ALL, 1);
+            entities = metaDataService.retrieveEntities("name = '" + entityName + "'", null, null, TagAppender.ALL, 1);
             assertEquals(1, entities.size());
             assertTrue(entities.get(0) instanceof Entity);
 
@@ -206,12 +208,6 @@ public class EntityTest {
 
         assertTrue(metaDataService.deleteEntity(entity));
         assertNull(metaDataService.retrieveEntity(entityName));
-    }
-
-    private static Entity createEntity(String entityName) {
-        Entity entity = new Entity(entityName);
-        entity.setLabel("label-" + entityName);
-        return entity;
     }
 
 }

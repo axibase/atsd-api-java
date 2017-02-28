@@ -43,21 +43,17 @@ import static junit.framework.Assert.*;
 
 
 public class MetricTest {
+    @Rule
+    public RerunRule rerunRule = new RerunRule();
     private MetaDataService metaDataService;
     private DataService dataService;
     private HttpClientManager httpClientManager;
 
-    @Rule
-    public RerunRule rerunRule = new RerunRule();
-
     @Before
     public void setUp() throws Exception {
         httpClientManager = buildHttpClientManager();
-        metaDataService = new MetaDataService();
-        metaDataService.setHttpClientManager(httpClientManager);
-        dataService = new DataService();
-        dataService.setHttpClientManager(httpClientManager);
-
+        metaDataService = new MetaDataService(httpClientManager);
+        dataService = new DataService(httpClientManager);
         waitWorkingServer(httpClientManager);
     }
 
@@ -203,7 +199,7 @@ public class MetricTest {
         assertTrue(metrics.get(0) instanceof Metric);
         assertEquals(((Metric) metrics.get(0)).getName(), metricName);
 
-        metrics = metaDataService.retrieveMetrics(entityName, "name like '*'", (String) null, null, null, null, 1);
+        metrics = metaDataService.retrieveMetrics(entityName, "name like '*'", null, null, null, null, 1);
         assertEquals(1, metrics.size());
         assertTrue(metrics.get(0) instanceof Metric);
         assertEquals(((Metric) metrics.get(0)).getName(), metricName);

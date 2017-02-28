@@ -38,21 +38,18 @@ import static junit.framework.Assert.*;
  * @author Dmitry Korchagin.
  */
 public class PropertyTypeTest {
+    @Rule
+    public RerunRule rerunRule = new RerunRule();
     private MetaDataService metaDataService;
     private DataService dataService;
     private HttpClientManager httpClientManager;
-
-    @Rule
-    public RerunRule rerunRule = new RerunRule();
 
     @Before
     public void setUp() throws Exception {
         httpClientManager = buildHttpClientManager();
         metaDataService = new MetaDataService();
         metaDataService.setHttpClientManager(httpClientManager);
-        dataService = new DataService();
-        dataService.setHttpClientManager(httpClientManager);
-
+        dataService = new DataService(httpClientManager);
         waitWorkingServer(httpClientManager);
     }
 
@@ -75,8 +72,8 @@ public class PropertyTypeTest {
 
         if (metaDataService.retrievePropertyTypes(entityName, timestart).size() < 2) {
             assertTrue(dataService.insertProperties(
-                            new Property(typeNameFirst, entityName, key, tags),
-                            new Property(typeNameSecond, entityName, key, tags)
+                    new Property(typeNameFirst, entityName, key, tags),
+                    new Property(typeNameSecond, entityName, key, tags)
                     )
             );
         }

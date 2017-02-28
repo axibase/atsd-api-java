@@ -40,21 +40,18 @@ import static junit.framework.Assert.*;
  * @author Dmitry Korchagin.
  */
 public class EntityAndTagsTest {
+    @Rule
+    public RerunRule rerunRule = new RerunRule();
     private MetaDataService metaDataService;
     private DataService dataService;
     private HttpClientManager httpClientManager;
-
-    @Rule
-    public RerunRule rerunRule = new RerunRule();
 
     @Before
     public void setUp() throws Exception {
         httpClientManager = buildHttpClientManager();
         metaDataService = new MetaDataService();
         metaDataService.setHttpClientManager(httpClientManager);
-        dataService = new DataService();
-        dataService.setHttpClientManager(httpClientManager);
-
+        dataService = new DataService(httpClientManager);
         waitWorkingServer(httpClientManager);
     }
 
@@ -67,14 +64,13 @@ public class EntityAndTagsTest {
     public void testRetrieveEntityAndTagsByMetric() throws Exception {
         final String entityName = buildVariablePrefix() + "entity";
         final String metricName = buildVariablePrefix() + "metric";
-        final Long timestamp = MOCK_TIMESTAMP;
         Map<String, String> tags = new HashMap<>();
         tags.put("test-tag1", "test-tag1-val");
         tags.put("test-tag2", "test-tag2-val");
 
         if (metaDataService.retrieveEntity(entityName) == null) {
             AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName, "test-tag1", "test-tag1-val", "test-tag2", "test-tag2-val");
-            addSeriesCommand.addSeries(new Sample(timestamp, 1));
+            addSeriesCommand.addSeries(new Sample(MOCK_TIMESTAMP, 1));
             assertTrue(dataService.addSeries(addSeriesCommand));
         }
 
