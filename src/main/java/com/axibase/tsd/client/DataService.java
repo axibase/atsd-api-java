@@ -27,10 +27,9 @@ import com.axibase.tsd.query.QueryPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.util.*;
-
-import javax.ws.rs.core.Response;
 
 import static com.axibase.tsd.client.RequestProcessor.patch;
 import static com.axibase.tsd.client.RequestProcessor.post;
@@ -313,7 +312,7 @@ public class DataService {
     private static class LastPreparer implements SeriesCommandPreparer {
         @Override
         public void prepare(GetSeriesQuery command) {
-            command.setLast(true);
+            command.setCache(true);
         }
     }
 

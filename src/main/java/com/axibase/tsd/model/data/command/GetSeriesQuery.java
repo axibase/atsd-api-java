@@ -29,17 +29,17 @@ import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GetSeriesQuery {
+    @JsonProperty("entity")
+    private final String entityName;
+    @JsonProperty("metric")
+    private final String metricName;
     private Long startTime = null;
     private Long endTime = null;
     private String startDate;
     private String endDate;
     private Interval interval;
     private Integer limit;
-    private Boolean last;
-    @JsonProperty("entity")
-    private final String entityName;
-    @JsonProperty("metric")
-    private final String metricName;
+    private Boolean cache;
     private MultivaluedMap<String, String> tags = new MultivaluedHashMap<>();
     private SeriesType type;
     private Join join;
@@ -94,28 +94,91 @@ public class GetSeriesQuery {
         return startTime;
     }
 
+    /**
+     * @param startTime start of the selection interval. Unix milliseconds.
+     * @return instance of method
+     */
+    public GetSeriesQuery setStartTime(Long startTime) {
+        this.startTime = startTime;
+        return this;
+    }
+
     public Long getEndTime() {
         return endTime;
+    }
+
+    /**
+     * @param endTime end of the selection interval. Unix milliseconds.
+     * @return instance of method
+     */
+    public GetSeriesQuery setEndTime(Long endTime) {
+        this.endTime = endTime;
+        return this;
     }
 
     public String getStartDate() {
         return startDate;
     }
 
+    /**
+     * @param startDate start of the selection interval. Specified in ISO format or using endtime syntax.
+     * @return instance of method
+     */
+    public GetSeriesQuery setStartDate(String startDate) {
+        this.startDate = startDate;
+        return this;
+    }
+
     public String getEndDate() {
         return endDate;
+    }
+
+    /**
+     * @param endDate end of the selection interval. Specified in ISO format or using endtime syntax.
+     * @return instance of method
+     */
+    public GetSeriesQuery setEndDate(String endDate) {
+        this.endDate = endDate;
+        return this;
     }
 
     public Interval getInterval() {
         return interval;
     }
 
+    /**
+     * @param interval Duration of the selection interval, specified as {@code count-timeunit}, for example, 1-hour
+     * @return instance of method
+     */
+    public GetSeriesQuery setInterval(Interval interval) {
+        this.interval = interval;
+        return this;
+    }
+
     public Integer getLimit() {
         return limit;
     }
 
-    public Boolean getLast() {
-        return last;
+    /**
+     * @param limit maximum number of data samples returned.
+     * @return instance of method
+     */
+    public GetSeriesQuery setLimit(Integer limit) {
+        this.limit = limit;
+        return this;
+    }
+
+    public Boolean getCache() {
+        return cache;
+    }
+
+    /**
+     * @param cache if true: Performs GET instead of scan. Retrieves only 1 most recent value.
+     * @return instance of method
+     */
+    public GetSeriesQuery setCache(Boolean cache) {
+        this.cache = cache;
+        return this;
     }
 
     public String getEntityName() {
@@ -130,93 +193,6 @@ public class GetSeriesQuery {
         return tags;
     }
 
-    public SeriesType getType() {
-        return type;
-    }
-
-    public Join getJoin() {
-        return join;
-    }
-
-    public Rate getRate() {
-        return rate;
-    }
-
-    public SimpleAggregateMatcher getAggregateMatcher() {
-        return aggregateMatcher;
-    }
-
-    public String getRequestId() {
-        return requestId;
-    }
-
-    public TimeFormat getTimeFormat() {
-        return timeFormat;
-    }
-
-    /**
-     * @param startTime start of the selection interval. Unix milliseconds.
-     * @return instance of method
-     */
-    public GetSeriesQuery setStartTime(Long startTime) {
-        this.startTime = startTime;
-        return this;
-    }
-
-    /**
-     * @param endTime end of the selection interval. Unix milliseconds.
-     * @return instance of method
-     */
-    public GetSeriesQuery setEndTime(Long endTime) {
-        this.endTime = endTime;
-        return this;
-    }
-
-    /**
-     * @param startDate start of the selection interval. Specified in ISO format or using endtime syntax.
-     * @return instance of method
-     */
-    public GetSeriesQuery setStartDate(String startDate) {
-        this.startDate = startDate;
-        return this;
-    }
-
-    /**
-     * @param endDate end of the selection interval. Specified in ISO format or using endtime syntax.
-     * @return instance of method
-     */
-    public GetSeriesQuery setEndDate(String endDate) {
-        this.endDate = endDate;
-        return this;
-    }
-
-    /**
-     * @param interval Duration of the selection interval, specified as {@code count-timeunit}, for example, 1-hour
-     * @return instance of method
-     */
-    public GetSeriesQuery setInterval(Interval interval) {
-        this.interval = interval;
-        return this;
-    }
-
-    /**
-     * @param limit maximum number of data samples returned.
-     * @return instance of method
-     */
-    public GetSeriesQuery setLimit(Integer limit) {
-        this.limit = limit;
-        return this;
-    }
-
-    /**
-     * @param last if true: Performs GET instead of scan. Retrieves only 1 most recent value.
-     * @return instance of method
-     */
-    public GetSeriesQuery setLast(Boolean last) {
-        this.last = last;
-        return this;
-    }
-
     /**
      * @param tags Object key is a tag name and a value is an array of possible tag values.
      *             User defined values ( keys: case insensitive, values: case sensitive )
@@ -225,6 +201,10 @@ public class GetSeriesQuery {
     public GetSeriesQuery setTags(MultivaluedMap<String, String> tags) {
         this.tags = tags;
         return this;
+    }
+
+    public SeriesType getType() {
+        return type;
     }
 
     /**
@@ -236,6 +216,10 @@ public class GetSeriesQuery {
         return this;
     }
 
+    public Join getJoin() {
+        return join;
+    }
+
     /**
      * @param join Merges multiple time series into one serie.
      * @return instance of method
@@ -243,6 +227,10 @@ public class GetSeriesQuery {
     public GetSeriesQuery setJoin(Join join) {
         this.join = join;
         return this;
+    }
+
+    public Rate getRate() {
+        return rate;
     }
 
     /**
@@ -254,6 +242,10 @@ public class GetSeriesQuery {
         return this;
     }
 
+    public SimpleAggregateMatcher getAggregateMatcher() {
+        return aggregateMatcher;
+    }
+
     /**
      * @param aggregateMatcher Computes statistics for the specified time intervals.
      * @return instance of method
@@ -261,6 +253,10 @@ public class GetSeriesQuery {
     public GetSeriesQuery setAggregateMatcher(SimpleAggregateMatcher aggregateMatcher) {
         this.aggregateMatcher = aggregateMatcher;
         return this;
+    }
+
+    public String getRequestId() {
+        return requestId;
     }
 
     /**
@@ -278,6 +274,10 @@ public class GetSeriesQuery {
         return this;
     }
 
+    public TimeFormat getTimeFormat() {
+        return timeFormat;
+    }
+
     public GetSeriesQuery setTimeFormat(TimeFormat timeFormat) {
         this.timeFormat = timeFormat;
         return this;
@@ -292,7 +292,7 @@ public class GetSeriesQuery {
                 ", endDate='" + endDate + '\'' +
                 ", interval='" + interval + '\'' +
                 ", limit=" + limit +
-                ", last=" + last +
+                ", cache=" + cache +
                 ", entityName='" + entityName + '\'' +
                 ", metricName='" + metricName + '\'' +
                 ", tags=" + tags +
