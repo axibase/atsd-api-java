@@ -37,7 +37,6 @@ import org.glassfish.jersey.apache.connector.ApacheConnectorProvider;
 import org.glassfish.jersey.client.ClientConfig;
 import org.glassfish.jersey.client.ClientProperties;
 import org.glassfish.jersey.client.authentication.HttpAuthenticationFeature;
-import org.glassfish.jersey.filter.LoggingFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.bridge.SLF4JBridgeHandler;
@@ -65,10 +64,9 @@ import java.util.logging.LogManager;
 import static com.axibase.tsd.util.AtsdUtil.JSON;
 
 
-class HttpClient {
-    static final int HTTP_STATUS_OK = 200;
+class HttpClient implements AutoCloseable {
+    protected static final int HTTP_STATUS_OK = 200;
     private static final Logger log = LoggerFactory.getLogger(HttpClient.class);
-    private static final java.util.logging.Logger legacyLogger = java.util.logging.Logger.getLogger(HttpClient.class.getName());
     private static final int HTTP_STATUS_FAIL = 400;
     private static final int HTTP_STATUS_NOT_FOUND = 404;
 
@@ -98,10 +96,6 @@ class HttpClient {
                 .register(HttpAuthenticationFeature.basic(clientConfiguration.getUsername(), clientConfiguration.getPassword()))
         ;
 
-        if (log.isDebugEnabled()) {
-            clientConfig.register(new LoggingFilter(legacyLogger, true));
-        }
-
         configureHttps(clientConfiguration, clientConfig);
 
         clientConfig.connectorProvider(new ApacheConnectorProvider());
@@ -119,7 +113,7 @@ class HttpClient {
         clientConfig.property(ApacheClientProperties.SSL_CONFIG, sslConfig);
     }
 
-    static PoolingHttpClientConnectionManager createConnectionManager(ClientConfiguration clientConfiguration, SslConfigurator sslConfig) {
+    protected static PoolingHttpClientConnectionManager createConnectionManager(ClientConfiguration clientConfiguration, SslConfigurator sslConfig) {
         SSLContext sslContext = sslConfig.createSSLContext();
         X509HostnameVerifier hostnameVerifier;
         if (clientConfiguration.isIgnoreSSLErrors()) {
@@ -168,37 +162,37 @@ class HttpClient {
         }
     }
 
-    <T> List<T> requestMetaDataList(Class<T> clazz, QueryPart<T> query) {
+    protected <T> List<T> requestMetaDataList(Class<T> clazz, QueryPart<T> query) {
         return requestList(clientConfiguration.getMetadataUrl(), clazz, query, null);
     }
 
-    <T> T requestMetaDataObject(Class<T> clazz, QueryPart<T> query) {
+    protected <T> T requestMetaDataObject(Class<T> clazz, QueryPart<T> query) {
         return requestObject(clientConfiguration.getMetadataUrl(), clazz, query, null);
     }
 
-    <E> boolean updateMetaData(QueryPart query, RequestProcessor<E> requestProcessor) {
+    protected <E> boolean updateMetaData(QueryPart query, RequestProcessor<E> requestProcessor) {
         return update(clientConfiguration.getMetadataUrl(), query, requestProcessor);
     }
 
-    <E> boolean updateData(QueryPart query, RequestProcessor<E> requestProcessor) {
+    protected <E> boolean updateData(QueryPart query, RequestProcessor<E> requestProcessor) {
         return update(clientConfiguration.getDataUrl(), query, requestProcessor);
     }
 
-    boolean updateData(QueryPart query, String data) {
+    protected boolean updateData(QueryPart query, String data) {
         return update(clientConfiguration.getDataUrl(), query, RequestProcessor.post(data), MediaType.TEXT_PLAIN);
     }
 
-    <T, E> Response request(QueryPart<T> query, RequestProcessor<E> requestProcessor) {
+    protected <T, E> Response request(QueryPart<T> query, RequestProcessor<E> requestProcessor) {
         String url = clientConfiguration.getDataUrl();
         return doRequest(url, query, requestProcessor);
     }
 
-    <T, E> List<T> requestDataList(Class<T> clazz, QueryPart<T> query, RequestProcessor<E> requestProcessor) {
+    protected <T, E> List<T> requestDataList(Class<T> clazz, QueryPart<T> query, RequestProcessor<E> requestProcessor) {
         String url = clientConfiguration.getDataUrl();
         return requestList(url, clazz, query, requestProcessor);
     }
 
-    <T, E> T requestData(Class<T> clazz, QueryPart<T> query, RequestProcessor<E> requestProcessor) {
+    protected <T, E> T requestData(Class<T> clazz, QueryPart<T> query, RequestProcessor<E> requestProcessor) {
         String url = clientConfiguration.getDataUrl();
         return requestObject(url, clazz, query, requestProcessor);
     }
@@ -226,7 +220,7 @@ class HttpClient {
         }
     }
 
-    InputStream requestInputStream(QueryPart query, RequestProcessor requestProcessor) {
+    protected InputStream requestInputStream(QueryPart query, RequestProcessor requestProcessor) {
         String url = clientConfiguration.getDataUrl();
         Response response = doRequest(url, query, requestProcessor);
         Object entity = response.getEntity();
@@ -310,6 +304,7 @@ class HttpClient {
         };
     }
 
+    @Override
     public void close() {
         if (client != null) {
             client.close();

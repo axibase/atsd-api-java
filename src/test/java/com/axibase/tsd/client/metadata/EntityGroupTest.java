@@ -18,7 +18,6 @@
 package com.axibase.tsd.client.metadata;
 
 import com.axibase.tsd.RerunRule;
-import com.axibase.tsd.client.DataService;
 import com.axibase.tsd.client.HttpClientManager;
 import com.axibase.tsd.client.MetaDataService;
 import com.axibase.tsd.model.meta.Entity;
@@ -50,7 +49,6 @@ public class EntityGroupTest {
         httpClientManager = buildHttpClientManager();
         metaDataService = new MetaDataService();
         metaDataService.setHttpClientManager(httpClientManager);
-        DataService dataService = new DataService(httpClientManager);
         waitWorkingServer(httpClientManager);
     }
 

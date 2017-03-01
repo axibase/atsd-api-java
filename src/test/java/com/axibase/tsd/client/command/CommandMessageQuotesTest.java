@@ -37,7 +37,7 @@ public class CommandMessageQuotesTest {
         );
 
         assertEquals("Commands is composing incorrectly",
-                String.format("message e:\"%s\" t:tag=\"OFF- RAMP \"\" U\"\", I\" m:\"quo\"\"te\"\n",
+                String.format("message e:\"%s\" t:tag=\"OFF- RAMP \"\" U\"\", I\" m:\"quo\"\"te\"%n",
                         testMessage.getEntityName()
                 ),
                 command.compose()

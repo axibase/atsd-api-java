@@ -43,7 +43,7 @@ public class SimpleAggregateMatcher {
         init(interval, interpolate, type, types);
     }
 
-    final void init(Interval interval, Interpolate interpolate, AggregateType type, AggregateType... types) {
+    protected final void init(Interval interval, Interpolate interpolate, AggregateType type, AggregateType... types) {
         this.interval = interval;
         this.interpolate = interpolate;
         this.types = new ArrayList<AggregateType>();
