@@ -42,11 +42,10 @@ import static junit.framework.Assert.*;
 
 public class SeriesTest {
 
-    private DataService dataService;
-    private HttpClientManager httpClientManager;
-
     @Rule
     public RerunRule rerunRule = new RerunRule();
+    private DataService dataService;
+    private HttpClientManager httpClientManager;
 
     @Before
     public void setUp() throws Exception {
@@ -106,7 +105,7 @@ public class SeriesTest {
         final String metricName = buildVariablePrefix() + "metric";
         final Long timestamp = MOCK_TIMESTAMP;
         AddSeriesCommand addSeriesCommand = new AddSeriesCommand(entityName, metricName);
-        addSeriesCommand.addSeries(new Sample(timestamp, MOCK_SERIE_NUMERIC_VALUE,  MOCK_SERIE_TEXT_VALUE));
+        addSeriesCommand.addSeries(new Sample(timestamp, MOCK_SERIE_NUMERIC_VALUE, MOCK_SERIE_TEXT_VALUE));
         assertTrue(dataService.addSeries(addSeriesCommand));
 
         GetSeriesQuery getSeriesQuery = new GetSeriesQuery(entityName, metricName)
@@ -252,6 +251,7 @@ public class SeriesTest {
         }
     }
 
+    @Ignore//TODO: enable test when #3965 will be fixed
     @Test
     public void testRetrieveLastSeries() throws Exception {
         final String entityName = buildVariablePrefix() + "entity";
@@ -322,7 +322,7 @@ public class SeriesTest {
         long st = System.currentTimeMillis();
         final ArrayList<PlainCommand> commands = new ArrayList<>();
         commands.add(new InsertCommand(entityName, metricName, new Sample(st, Double.NaN)));
-        commands.add(new MultipleInsertCommand(entityName, st + 1,  Collections.<String, String>emptyMap(), Collections.singletonMap(metricName, Double.NaN)));
+        commands.add(new MultipleInsertCommand(entityName, st + 1, Collections.<String, String>emptyMap(), Collections.singletonMap(metricName, Double.NaN)));
         final BatchResponse batchResponse = dataService.sendBatch(commands);
         assertTrue(batchResponse.getResult().getFail() == 0);
 
