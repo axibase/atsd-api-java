@@ -5,7 +5,7 @@ import lombok.Data;
 
 
 /**
- * Contains information about ATSD version such as build, licesnce, date settings of server.
+ * Contains information about ATSD version such as build, license, server date settings.
  */
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
