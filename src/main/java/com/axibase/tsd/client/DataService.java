@@ -79,6 +79,14 @@ public class DataService {
      * @return true if success
      */
     public boolean addSeries(AddSeriesCommand... addSeriesCommands) {
+        return addSeries(Arrays.asList(addSeriesCommands));
+    }
+
+    /**
+     * @param addSeriesCommands commands that contains time-series which are added
+     * @return true if success
+     */
+    public boolean addSeries(Collection<AddSeriesCommand> addSeriesCommands) {
         for (AddSeriesCommand addSeriesCommand : addSeriesCommands) {
             checkEntityIsEmpty(addSeriesCommand.getEntityName());
             checkMetricIsEmpty(addSeriesCommand.getMetricName());
@@ -86,7 +94,7 @@ public class DataService {
         QueryPart<Series> query = new Query<Series>(SERIES_KEYWORD)
                 .path(INSERT_KEYWORD);
         return httpClientManager.updateData(query,
-                post(Arrays.asList(addSeriesCommands)));
+                post(addSeriesCommands));
     }
 
     /**
