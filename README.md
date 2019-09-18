@@ -27,7 +27,7 @@ Get started by importing the Java Client with **Maven**:
 <dependency>
   <groupId>com.axibase</groupId>
   <artifactId>atsd-api-java</artifactId>
-  <version>1.0.8</version>
+  <version>1.0.10</version>
 </dependency>
 ```
 
