@@ -259,16 +259,38 @@ public class MetaDataService {
                                          String maxInsertDate,
                                          TagAppender tagAppender,
                                          Integer limit) {
+        return retrieveEntities(expression, minInsertDate, maxInsertDate, tagAppender, null, limit);
+    }
+
+    /**
+     * @param expression    Specify EL expression.
+     * @param minInsertDate Include entities with lastInsertDate equal or greater than specified time.
+     *                      Time can be specified in ISO format or using <a href="https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md">endtime</a> syntax.
+     * @param maxInsertDate Include entities with lastInsertDate less than specified time.
+     *                      Time can be specified in ISO format or using <a href="https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md">endtime</a> syntax.
+     * @param tagAppender   Specify entity tags to be included in the response. Specify * to include all entity tags.
+     * @param addInsertTime Include calculated field lastInsertDate, which requires additional processing, in the response.
+     * @param limit         Limit response to first N entities, ordered by name.
+     * @return List of entities.
+     */
+    public List<Entity> retrieveEntities(String expression,
+                                         String minInsertDate,
+                                         String maxInsertDate,
+                                         TagAppender tagAppender,
+                                         Boolean addInsertTime,
+                                         Integer limit) {
         QueryPart<Entity> query = new Query<Entity>("entities")
                 .param("expression", expression)
                 .param("minInsertDate", minInsertDate)
                 .param("maxInsertDate", maxInsertDate)
+                .param("addInsertTime", addInsertTime)
                 .param("limit", limit);
         if (tagAppender != null) {
             query = query.param("tags", tagAppender.getTags());
         }
         return httpClientManager.requestMetaDataList(Entity.class, query);
     }
+
 
     /**
      * @param entityName Entity name.
